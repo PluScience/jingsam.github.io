@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://jingsam.github.io/"/>
-  <updated>2017-10-20T02:22:47.372Z</updated>
+  <updated>2017-10-20T02:43:33.042Z</updated>
   <id>https://jingsam.github.io/</id>
   
   <author>
@@ -16,11 +16,11 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
-    <title>mapbox-gl如何高效地高亮元素</title>
+    <title>mapbox-gl如何高效地高亮要素</title>
     <link href="https://jingsam.github.io/2017/10/20/mapbox-gl-highlight.html"/>
     <id>https://jingsam.github.io/2017/10/20/mapbox-gl-highlight.html</id>
     <published>2017-10-20T00:42:01.000Z</published>
-    <updated>2017-10-20T02:22:47.372Z</updated>
+    <updated>2017-10-20T02:43:33.042Z</updated>
     
     <content type="html"><![CDATA[<p>mapbox-gl基于矢量瓦片的前端渲染技术，使得要素高亮变得简单。要素高亮具体如何实现，有如下三种方法：</p>
 <h1 id="第一种：动态过滤"><a href="#第一种：动态过滤" class="headerlink" title="第一种：动态过滤"></a>第一种：动态过滤</h1><p>这种方法的基本思路是添加一个高亮图层，然后根据鼠标hover的要素id，动态地改变filter条件，实现要素的高亮。</p>
