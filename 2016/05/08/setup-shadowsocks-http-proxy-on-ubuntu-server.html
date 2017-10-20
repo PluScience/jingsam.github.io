@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+  <head>
+    
+<!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+
+  <meta name="description" content="Ubuntu server命令行配置shadowsocks全局代理"/>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="jingsam">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.5.0" />
+
+
+
+<link rel="canonical" href="https://jingsam.github.io/2016/05/08/setup-shadowsocks-http-proxy-on-ubuntu-server.html"/>
+
+
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.5.0" />
+
+
+
+
+
+
+  
+
+
+
+  <script id="baidu_push">
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+
+    <title> Ubuntu server命令行配置shadowsocks全局代理 - jingsam </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  </head>
+
+  <body><div id="mobile-navbar" class="mobile-navbar">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="mobile-header-logo">
+    <a href="/." class="logo">jingsam</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    
+      <a href="/">
+        <li class="mobile-menu-item">
+          
+          
+            Home
+          
+        </li>
+      </a>
+    
+      <a href="/archives/">
+        <li class="mobile-menu-item">
+          
+          
+            Archives
+          
+        </li>
+      </a>
+    
+      <a href="/about">
+        <li class="mobile-menu-item">
+          
+          
+            About
+          
+        </li>
+      </a>
+    
+  </ul>
+</nav>
+
+    <div class="container" id="mobile-panel">
+      <header id="header" class="header"><div class="logo-wrapper">
+  <a href="/." class="logo">jingsam</a>
+</div>
+
+<nav class="site-navbar">
+  
+    <ul id="menu" class="menu">
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/">
+            
+            
+              首页
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/archives/">
+            
+            
+              归档
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/about">
+            
+            
+              关于
+            
+          </a>
+        </li>
+      
+    </ul>
+  
+</nav>
+
+      </header>
+
+      <main id="main" class="main">
+        <div class="content-wrapper">
+          <div id="content" class="content">
+            
+  
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          Ubuntu server命令行配置shadowsocks全局代理
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2016-05-08
+        </span>
+        
+      </div>
+    </header>
+
+    
+    
+  <div class="post-toc" id="post-toc">
+    <h2 class="post-toc-title">文章目录</h2>
+    <div class="post-toc-content">
+      <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#安装shadowsocks"><span class="toc-text">安装shadowsocks</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#配置shadowsocks"><span class="toc-text">配置shadowsocks</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#配置全局代理"><span class="toc-text">配置全局代理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#注意事项"><span class="toc-text">注意事项</span></a></li></ol>
+    </div>
+  </div>
+
+
+    <div class="post-content">
+      
+        <p>由于Ubuntu Server是不带用户界面的，所以要为Server配置Shadowsocks还是稍显麻烦。本文就是我配置Shadowsocks的一些经验，以待参考。</p>
+<h3 id="安装shadowsocks"><a href="#安装shadowsocks" class="headerlink" title="安装shadowsocks"></a>安装shadowsocks</h3><p>由于shadowsocks是基于python开发的，所以必须安装python：<br><figure class="highlight routeros"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo apt-<span class="builtin-name">get</span> install python</div></pre></td></tr></table></figure></p>
+<p>接着安装python的包管理器pip：<br><figure class="highlight routeros"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo apt-<span class="builtin-name">get</span> install python-pip</div></pre></td></tr></table></figure></p>
+<p>安装完毕之后，通过pip直接安装shadowsocks：<br><figure class="highlight cmake"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo pip <span class="keyword">install</span> shadowsocks</div></pre></td></tr></table></figure></p>
+<h3 id="配置shadowsocks"><a href="#配置shadowsocks" class="headerlink" title="配置shadowsocks"></a>配置shadowsocks</h3><p>新建一个配置文件<code>shawdowsocks.json</code>，然后配置相应的参数：<br><figure class="highlight json"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">  <span class="attr">"server"</span>: <span class="string">"&#123;your-server&#125;"</span>,</div><div class="line">  <span class="attr">"server_port"</span>: <span class="number">40002</span>,</div><div class="line">  <span class="attr">"local_port"</span>: <span class="number">1080</span>,</div><div class="line">  <span class="attr">"password"</span>: <span class="string">"&#123;your-password&#125;"</span>,</div><div class="line">  <span class="attr">"timeout"</span>: <span class="number">600</span>,</div><div class="line">  <span class="attr">"method"</span>: <span class="string">"aes-256-cfb"</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>上面的参数需要你的shawdowsocks服务提供商为你提供，当然你也可以自己搭建一个。如何搭建个人的shawdowsocks不在本文讨论范围之内，请参阅其他教程。</p>
+<p>配置完成后就可以启动shawdowsocks服务：<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo sslocal -c shawdowsocks<span class="selector-class">.json</span> -d start</div></pre></td></tr></table></figure></p>
+<h3 id="配置全局代理"><a href="#配置全局代理" class="headerlink" title="配置全局代理"></a>配置全局代理</h3><p>启动shawdowsocks服务后，发现并不能翻墙上网，这是因为shawdowsocks是socks 5代理，需要客户端配合才能翻墙。</p>
+<p>为了让整个系统都走shawdowsocks通道，需要配置全局代理，可以通过polipo实现。</p>
+<p>首先是安装polipo：<br><figure class="highlight routeros"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo apt-<span class="builtin-name">get</span> install polipo</div></pre></td></tr></table></figure></p>
+<p>接着修改polipo的配置文件<code>/etc/polipo/config</code>：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">logSyslog = <span class="literal">true</span></div><div class="line">logFile = /var/<span class="built_in">log</span>/polipo/polipo.log</div><div class="line"></div><div class="line">proxyAddress = <span class="string">"0.0.0.0"</span></div><div class="line"></div><div class="line">socksParentProxy = <span class="string">"127.0.0.1:1080"</span></div><div class="line">socksProxyType = socks5</div><div class="line"></div><div class="line">chunkHighMark = 50331648</div><div class="line">objectHighMark = 16384</div><div class="line"></div><div class="line">serverMaxSlots = 64</div><div class="line">serverSlots = 16</div><div class="line">serverSlots1 = 32</div></pre></td></tr></table></figure></p>
+<p>重启polipo服务：<br><figure class="highlight awk"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo <span class="regexp">/etc/i</span>nit.d<span class="regexp">/polipo restart</span></div></pre></td></tr></table></figure></p>
+<p>为终端配置http代理：<br><figure class="highlight routeros"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="builtin-name">export</span> <span class="attribute">http_proxy</span>=<span class="string">"http://127.0.0.1:8123/"</span></div></pre></td></tr></table></figure></p>
+<p>接着测试下能否翻墙：<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">curl www<span class="selector-class">.google</span><span class="selector-class">.com</span></div></pre></td></tr></table></figure></p>
+<p>如果有响应，则全局代理配置成功。</p>
+<h3 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h3><p>服务器重启后，下面两句需要重新执行：<br><figure class="highlight routeros"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">sudo sslocal -c shawdowsocks.json -d start</div><div class="line"><span class="builtin-name">export</span> <span class="attribute">http_proxy</span>=<span class="string">"http://127.0.0.1:8123/"</span></div></pre></td></tr></table></figure></p>
+
+      
+    </div>
+
+    
+      
+      
+
+
+
+      
+      
+    
+
+    
+      <footer class="post-footer">
+        
+        
+        
+  <nav class="post-nav">
+    
+      <a class="prev" href="/2016/06/04/mongodb-text-search.html">
+        <i class="iconfont icon-left"></i>
+        <span class="prev-text nav-default">Mongodb全文搜索实战</span>
+        <span class="prev-text nav-mobile">上一篇</span>
+      </a>
+    
+    
+      <a class="next" href="/2016/04/20/deploy-to-digitialocean.html">
+        <span class="next-text nav-default">Nodejs网站部署到DigtialOcean</span>
+        <span class="prev-text nav-mobile">下一篇</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
+
+      </footer>
+    
+
+  </article>
+
+
+          </div>
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>  
+      </main>
+
+      <footer id="footer" class="footer">
+
+  <div class="social-links">
+    
+      
+        
+          <a href="mailto:jing-sam@qq.com" class="iconfont icon-email" title="email"></a>
+        
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        
+          <a href="https://github.com/jingsam" class="iconfont icon-github" title="github"></a>
+        
+      
+    
+      
+        
+          <a href="http://weibo.com/u/1902650267" class="iconfont icon-weibo" title="weibo"></a>
+        
+      
+    
+      
+        
+          <a href="https://www.zhihu.com/people/jingsam" class="iconfont icon-zhihu" title="zhihu"></a>
+        
+      
+    
+      
+    
+      
+    
+      
+    
+    
+    
+      <a href="/atom.xml" class="iconfont icon-rss" title="rss"></a>
+    
+  </div>
+
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+  </span>
+  
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
+  </span>
+
+  <span class="copyright-year">
+    
+    &copy; 
+     
+      2015 - 
+    
+    2017
+
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">jingsam</span>
+  </span>
+</div>
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+
+    
+  
+  <script type="text/javascript">
+    var disqus_config = function () {
+        this.page.url = 'https://jingsam.github.io/2016/05/08/setup-shadowsocks-http-proxy-on-ubuntu-server.html';
+        this.page.identifier = '2016/05/08/setup-shadowsocks-http-proxy-on-ubuntu-server.html';
+        this.page.title = 'Ubuntu server命令行配置shadowsocks全局代理';
+    };
+    (function() {
+    var d = document, s = d.createElement('script');
+
+    s.src = '//jingsam.disqus.com/embed.js';
+
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+    })();  
+  </script>
+
+
+
+
+    
+
+
+
+
+  
+    <script type="text/javascript" src="/lib/jquery/jquery-3.1.1.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/slideout/slideout.js"></script>
+  
+
+  
+
+
+    <script type="text/javascript" src="/js/src/even.js?v=2.5.0"></script>
+<script type="text/javascript" src="/js/src/bootstrap.js?v=2.5.0"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+  </body>
+</html>
