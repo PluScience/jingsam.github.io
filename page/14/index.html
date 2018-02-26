@@ -171,13 +171,13 @@
     <header class="post-header">
       <h1 class="post-title">
         
-          <a class="post-link" href="/2016/10/05/centroid.html">多边形centroid的计算方法</a>
+          <a class="post-link" href="/2016/10/19/mapbox-gl-style-spec.html">《Mapbox 地图样式规范》中文版上线啦</a>
         
       </h1>
 
       <div class="post-meta">
         <span class="post-time">
-          2016-10-05
+          2016-10-19
         </span>
         
       </div>
@@ -192,34 +192,10 @@
         
 
         
-          <p>在<a href="/2016/09/26/polylabel2.html">上一篇</a>计算多边形的最佳注记点的算法中，需要计算多边形的centroid。本文就来讲一讲多边形centroid的计算方法。</p>
-<h2 id="Centroid的定义"><a href="#Centroid的定义" class="headerlink" title="Centroid的定义"></a>Centroid的定义</h2><p><a href="https://en.wikipedia.org/wiki/Centroid" target="_blank" rel="external">Centroid</a>是多边形的质量中心（Center of mass）。假设多边形是一块厚度均匀的薄板，当我们用一根绳子从一个平衡点吊起薄板时，薄板能够保持水平稳定，那么这个平衡点就是centroid。</p>
-<p><img src="/assets/tilt-slab-construction.jpg" alt="tilt-slab-construction"></p>
-<h2 id="算法原理"><a href="#算法原理" class="headerlink" title="算法原理"></a>算法原理</h2><p>我们先从1维直线说起，如下图，在原点的一端不同位置上分别挂着重10kg、5kg、7kg的砝码。如果我们将三个砝码当成一个整体，挂在同一个位置，使其产生的杠杆效应与之前相同，那么这个位置点就相当于质心。</p>
-<p><img src="/assets/Image1203.gif" alt="Center of mass"></p>
-<p>计算方法如下：</p>
-<p>总惯性 = 10 × 2 + 5 × 4 + 7 × 5 = 75 kg.m<br>总质量 = 10 + 5 + 7 = 22 kg<br>假设质心距离原点为d，那么 22 x d = 75，得出 d = 75 / 22 ≈ 3.4 m</p>
-<p><img src="/assets/Image1207.gif" alt="Center of mass 2"></p>
-<p>上述计算1维直线上的质心很简单，那么现在扩展到2维平面。如下图，矩形的质心很容易求得为 (2，1)。</p>
-<p><img src="/assets/Image1208.gif" alt="Center of mass 3"></p>
-<p>如果更复杂的形状呢？</p>
-<p><img src="/assets/Image1211.gif" alt="Center of mass 4"></p>
-<p>计算方法是将多边形分解为多个容易求质心的规则矩形，过程如下：</p>
-<p>首先将多边形分解为左右两个规则矩形，如下图：</p>
-<p><img src="/assets/Image1212.gif" alt="Center of mass 5"></p>
-<p>左矩形的面积为 3 x 2 = 6，质心为 (-0.5, 1)<br>左矩形的面积为 2 x 4 = 8，质心为 (2, 2)</p>
-<p>我们假设多边形质量是均匀分布的，那么矩形的面积就可以代表它的质量，所以在x轴上：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">6 x -0.5 + 8 x 2 = (6 + 8) x dx</div><div class="line">-3 + 16 = 14 x dx</div><div class="line">13 = 14 x dx</div><div class="line">dx = 13 / 14</div></pre></td></tr></table></figure></p>
-<p>同理，在y轴上：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">6 x 1 + 8 x 2 = (6 + 8) x dy</div><div class="line">6 + 16 = 14 x dy</div><div class="line">22 = 14 x dy</div><div class="line">dy = 11 / 7</div></pre></td></tr></table></figure></p>
-<p>最终求得多边形的质心为(13/14, 11/7)</p>
-<p>由以上过程，我们可以得出一个更为普遍的结论：</p>
-<p>质心 = 惯性 / 质量</p>
-<p>用公式表达即为：<br><img src="/assets/eq1.png" alt="eq1"></p>
-<p>对于任意不规则多边形，如何利用上述公式计算质心呢？其原理是将多边形剖分为三角形，然后分别计算每个三角形的面积和质心。</p>
-<p><img src="/assets/PolygonArea1.png" alt="Polygon area"></p>
-<p>对于三角形的面积，我们可以采用向量积公式计算:<br>$<br>signedArea(ABC)=\frac{1}{2}(x_1y_2 - x_2y_1)<br>$<br><img src="/assets/figure7.jpg" alt="Area of triangle"></p>
-<p>对于三角形的质心，采用如下公式计算：<br>$<br>centroid(ABC)=(\frac{A_x + B_x + C_x}{3}, \frac{A_y + B_y + C_y}{3})<br>$<br><img src="/assets/figure8.jpg" alt="Centroid of triangle"></p>
-<p>剩下的任务是选择一个剖分点P，将多边形剖分为多个三角形。由于我们在用向量积计算三角形面积时，其结果是有正负的。选择哪一个剖分点，并不影响最终加和后的总面积，<strong>前提是多边形的坐标点按逆时针排列</strong>。所以，为了简便期间，选取坐标原点作为剖分点。<br><img src="/assets/PolygonArea3.png" alt="Polygon area"></p>
-<h2 id="具体实现"><a href="#具体实现" class="headerlink" title="具体实现"></a>具体实现</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// polygon按顺时针排列顶点</span></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">getCentroid</span>(<span class="params">polygon</span>) </span>&#123;</div><div class="line">  <span class="keyword">var</span> totalArea = <span class="number">0</span></div><div class="line">  <span class="keyword">var</span> totalX = <span class="number">0</span></div><div class="line">  <span class="keyword">var</span> totalY = <span class="number">0</span></div><div class="line">  <span class="keyword">var</span> points = polygon[<span class="number">0</span>]</div><div class="line"></div><div class="line">  <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; points.length; ++i) &#123;</div><div class="line">    <span class="comment">// a、b以及原点构成一个三角形</span></div><div class="line">    <span class="keyword">var</span> a = points[i + <span class="number">1</span>]</div><div class="line">    <span class="keyword">var</span> b = points[i]</div><div class="line"></div><div class="line">    <span class="keyword">var</span> area = <span class="number">0.5</span> * (a[<span class="number">0</span>] * b[<span class="number">1</span>] - b[<span class="number">0</span>] * a[<span class="number">1</span>])  <span class="comment">// 计算面积</span></div><div class="line">    <span class="keyword">var</span> x = (a[<span class="number">0</span>] + b[<span class="number">0</span>]) / <span class="number">3</span>  <span class="comment">// 计算x方向质心</span></div><div class="line">    <span class="keyword">var</span> y = (a[<span class="number">1</span>] + b[<span class="number">1</span>]) / <span class="number">3</span>  <span class="comment">// 计算y方向质心</span></div><div class="line"></div><div class="line">    totalArea += area</div><div class="line">    totalX += area * x</div><div class="line">    totalY += area * y</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="keyword">return</span> [totalX / totalArea, totalY/ totalArea]</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+          <p>最近逮空翻译了下《Mapbox 地图样式规范》，对于英文不好或者懒得看英文的朋友们可能会有用。</p>
+<p>页面托管到了 <a href="https://jingsam.github.io/mapbox-gl-style-spec">Github</a> 上，现在也正在和 Mapbox 沟通，看能不能发布到 <a href="http://www.mapbox.cn/" target="_blank" rel="external">mapbox.cn</a> 上，服务下广大中国 Mapboxer。</p>
+<p>当然，如果有什么翻译不到位或者错误的地方，欢迎给我发 <a href="https://github.com/jingsam/mapbox-gl-style-spec/issues" target="_blank" rel="external">issue</a>。</p>
+<p><img src="/assets/mapbox-gl-style-spec.png" alt=""></p>
 
         
       
@@ -324,7 +300,7 @@
      
       2015 - 
     
-    2017
+    2018
 
     <span class="heart">
       <i class="iconfont icon-heart"></i>
@@ -359,24 +335,7 @@
 
 
     <script type="text/javascript" src="/js/src/even.js?v=2.5.0"></script>
-<script type="text/javascript" src="/js/src/bootstrap.js?v=2.5.0"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
-</script>
-
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Queue(function() {
-    var all = MathJax.Hub.getAllJax(), i;
-    for(i=0; i < all.length; i += 1) {
-      all[i].SourceElement().parentNode.className += ' has-jax';
-    }
-  });
-</script>
-
-<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-</script>
-<!-- End: Injected MathJax -->
-<!-- hexo-inject:end -->
+<script type="text/javascript" src="/js/src/bootstrap.js?v=2.5.0"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 
   </body>
 </html>

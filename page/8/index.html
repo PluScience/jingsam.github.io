@@ -171,13 +171,13 @@
     <header class="post-header">
       <h1 class="post-title">
         
-          <a class="post-link" href="/2016/12/08/things-you-should-know-about-arrow-functions.html">少年，不要滥用箭头函数啊</a>
+          <a class="post-link" href="/2017/01/12/node-pre-gyp-mirror.html">使用node-pre-gyp加速二进制包安装</a>
         
       </h1>
 
       <div class="post-meta">
         <span class="post-time">
-          2016-12-08
+          2017-01-12
         </span>
         
       </div>
@@ -192,31 +192,13 @@
         
 
         
-          <p>在ES6大行其道的今天，不应用点ES6特性似乎有些政治不正确。最近刚好有个Node的项目，最低要支持到nodejs 4.0，在<a href="1">node.green</a>看了下ES6的支持度，我想使用的特性基本都有支持，遂决定在新项目中采用ES6来写。</p>
-<p>当然第一件事情就是毫不留情地消灭var，项目中能用const的地方不用let，能用let的地方不用var。</p>
-<p>第二件事情就是使用劳动人民喜闻乐见的箭头函数替代function。当我心满意足地看到满屏的<code>=&gt;</code>时，现实给了我一记响亮的耳光——改过之后的程序错误百出！</p>
-<p>所以，当我们使用箭头函数时，一定要搞清楚箭头函数是什么回事，适用于什么场景。本文就针对以上问题来讨论下箭头函数。</p>
-<h2 id="箭头函数是什么？"><a href="#箭头函数是什么？" class="headerlink" title="箭头函数是什么？"></a>箭头函数是什么？</h2><p>箭头函数的语法我就不讲了，相信大家都见识过。跟我一样，大家喜欢箭头函数90%的原因是它好看。除了好看，它是不是与function等价呢？肯定不等价，因为TC39不可能仅因为好看而引入一个语法糖（class除外）。</p>
-<p>箭头函数的渊源可以追溯到上古时期一个叫lambda演算的东西。lambda演算是数学家提出来的，有些数学家跟我们程序员一样也很懒，数学定理那么多，今天要证三角定律，明天要证勾股定律，累不累！那能不能将所有的证明问题用一个统一的体系进行形式化描述，然后由机器来完成自动推导呢？lambda演算就是干这个的，图灵也搞了一套体系叫图灵机，两者是等价的。</p>
-<p>关于lambda演算说了这么多，好像跟今天要讲的箭头函数没什么关系？其实是有关系的，lambda演算深刻影响了箭头函数的设计。数学家们喜欢用纯函数式编程语言，纯函数的特点是没有副作用，给予特定的输入，总是产生确定的输出，甚至有些情况下通过输出能够反推输入。要实现纯函数，必须使函数的执行过程不依赖于任何外部状态，整个函数就像一个数学公式，给定一套输入参数，不管是在地球上还是火星上执行都是同一个结果。</p>
-<p>箭头函数要实现类似纯函数的效果，必须剔除外部状态。所以当你定义一个箭头函数，在普通函数里常见的<code>this</code>、<code>arguments</code>、<code>caller</code>是统统没有的。</p>
-<h2 id="箭头函数没有this"><a href="#箭头函数没有this" class="headerlink" title="箭头函数没有this"></a>箭头函数没有<code>this</code></h2><p>箭头函数没有<code>this</code>，那下面的代码明显可以取到<code>this</code>啊：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="keyword">this</span>.a = <span class="number">1</span></div><div class="line">  <span class="keyword">let</span> b = <span class="function"><span class="params">()</span> =&gt;</span> <span class="built_in">console</span>.log(<span class="keyword">this</span>.a)</div><div class="line"></div><div class="line">  b()</div><div class="line">&#125;</div><div class="line"></div><div class="line">foo()  <span class="comment">// 1</span></div></pre></td></tr></table></figure></p>
-<p>以上箭头函数中的<code>this</code>其实是父级作用域中的<code>this</code>，即函数<code>foo</code>的<code>this</code>。箭头函数引用了父级的变量，构成了一个闭包。以上代码等价于：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="keyword">this</span>.a = <span class="number">1</span></div><div class="line"></div><div class="line">  <span class="keyword">let</span> self = <span class="keyword">this</span></div><div class="line">  <span class="keyword">let</span> b = <span class="function"><span class="params">()</span> =&gt;</span> <span class="built_in">console</span>.log(self.a)</div><div class="line"></div><div class="line">  b()</div><div class="line">&#125;</div><div class="line"></div><div class="line">foo()  <span class="comment">// 1</span></div></pre></td></tr></table></figure></p>
-<p>箭头函数不仅没有<code>this</code>，常用的<code>arguments</code>也没有。如果你能获取到<code>arguments</code>，那它一定是来自父作用域的。<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="keyword">return</span> <span class="function"><span class="params">()</span> =&gt;</span> <span class="built_in">console</span>.log(<span class="built_in">arguments</span>[<span class="number">0</span>])</div><div class="line">&#125;</div><div class="line"></div><div class="line">foo(<span class="number">1</span>, <span class="number">2</span>)(<span class="number">3</span>, <span class="number">4</span>)  <span class="comment">// 1</span></div></pre></td></tr></table></figure></p>
-<p>上例中如果箭头函数有<code>arguments</code>，就应该输出的是3而不是1。</p>
-<p>一个经常犯的错误是使用箭头函数定义对象的方法，如：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">let</span> a = &#123;</div><div class="line">  foo: <span class="number">1</span>,</div><div class="line">  bar: <span class="function"><span class="params">()</span> =&gt;</span> <span class="built_in">console</span>.log(<span class="keyword">this</span>.foo)</div><div class="line">&#125;</div><div class="line"></div><div class="line">a.bar()  <span class="comment">//undefined</span></div></pre></td></tr></table></figure></p>
-<p>以上代码中，箭头函数中的<code>this</code>并不是指向<code>a</code>这个对象。对象<code>a</code>并不能构成一个作用域，所以再往上到达全局作用域，<code>this</code>就指向全局作用域。如果我们使用普通函数的定义方法，输出结果就符合预期，这是因为<code>a.bar()</code>函数执行时作用域绑定到了<code>a</code>对象。<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">let</span> a = &#123;</div><div class="line">  foo: <span class="number">1</span>,</div><div class="line">  bar: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123; <span class="built_in">console</span>.log(<span class="keyword">this</span>.foo) &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">a.bar()  <span class="comment">// 1</span></div></pre></td></tr></table></figure></p>
-<p>另一个错误是在原型上使用箭头函数，如：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">A</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="keyword">this</span>.foo = <span class="number">1</span></div><div class="line">&#125;</div><div class="line"></div><div class="line">A.prototype.bar = <span class="function"><span class="params">()</span> =&gt;</span> <span class="built_in">console</span>.log(<span class="keyword">this</span>.foo)</div><div class="line"></div><div class="line"><span class="keyword">let</span> a = <span class="keyword">new</span> A()</div><div class="line">a.bar()  <span class="comment">//undefined</span></div></pre></td></tr></table></figure></p>
-<p>同样，箭头函数中的<code>this</code>不是指向<code>A</code>，而是根据变量查找规则回溯到了全局作用域。同样，使用普通函数就不存在问题。</p>
-<p>通过以上说明，我们可以看出，箭头函数除了传入的参数之外，真的是什么都没有！如果你在箭头函数引用了<code>this</code>、<code>arguments</code>或者参数之外的变量，那它们一定不是箭头函数本身包含的，而是从父级作用域继承的。</p>
-<h2 id="什么情况下该使用箭头函数"><a href="#什么情况下该使用箭头函数" class="headerlink" title="什么情况下该使用箭头函数"></a>什么情况下该使用箭头函数</h2><p>到这里，我们可以发现箭头函数并不是万金油，稍不留神就会踩坑。</p>
-<p>至于什么情况该使用箭头函数，《You Don’t Know About JS》给出了一个决策图：<br><img src="/assets/arrow-function.png" alt="arrow function"></p>
-<p>以上决策图看起来有点复杂，我认为有三点比较重要：</p>
-<ol>
-<li>箭头函数适合于无复杂逻辑或者无副作用的纯函数场景下，例如用在<code>map</code>、<code>reduce</code>、<code>filter</code>的回调函数定义中；</li>
-<li>不要在最外层定义箭头函数，因为在函数内部操作<code>this</code>会很容易污染全局作用域。最起码在箭头函数外部包一层普通函数，将<code>this</code>控制在可见的范围内；</li>
-<li>如开头所述，箭头函数最吸引人的地方是简洁。在有多层函数嵌套的情况下，箭头函数的简洁性并没有很大的提升，反而影响了函数的作用范围的识别度，这种情况不建议使用箭头函数。</li>
-</ol>
+          <p>node-pre-gyp是一个分发nodejs二进制程序包的工具，负责将预编译好的二进制程序直接下载到用户目录。它介于npm与node-gyp之间，只在相应平台二进制包不存在时才调用node-gyp编译。</p>
+<p>node-pre-gyp存在的意义是什么呢？一些简单的nodejs C++扩展直接从源代码编译安装问题不大，但复杂的扩展编译环境难搭建、编译耗时长，因而从源代码安装非常麻烦。node-pre-gyp能够将预编译好的二进制包直接下载到用户目录，只在必要的时候才调用node-gyp从源代码编译，大大加快了nodejs C++扩展的安装速度。</p>
+<p>node-pre-gyp需要开发者将各平台编译好的二进制包上传到网络上，并在package.json的<code>binary</code>字段指明二进制包的位置。然而，很多开发者选择将二进制包上传到aws上，导致国内无法正常下载（被墙）。幸好，可以在npm中设置<code>--{module_name}_binary_host_mirror</code>选项来指定二进制包的位置。例如，安装v8-profiler可以使用如下命令安装：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm install v8-profiler --profiler_binary_host_mirror=https://npm.taobao.org/mirrors/node-inspector/</div></pre></td></tr></table></figure></p>
+<p>为了让国内开发者也能享受到node-pre-gyp带来的好处，我使用阿里云做了一个镜像，镜像的地址是：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">https://foxgis.oss-cn-shanghai.aliyuncs.com</div></pre></td></tr></table></figure></p>
+<p>如果要安装sqlite3，执行以下命令：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm install sqlite3 --sqlite3_binary_host_mirror=https://foxgis.oss-cn-shanghai.aliyuncs.com</div></pre></td></tr></table></figure></p>
+<p>目前是放到阿里云OSS上的，速度还可以，镜像上面包有：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mapnik mapbox-gl-native sqlite3 fontnik gdal osrm zipfile</div></pre></td></tr></table></figure></p>
+<p>如果有其他包需要放到上面的，请给我留言或者发邮件（abc#whu.edu.cn）。</p>
 
         
       
@@ -321,7 +303,7 @@
      
       2015 - 
     
-    2017
+    2018
 
     <span class="heart">
       <i class="iconfont icon-heart"></i>
