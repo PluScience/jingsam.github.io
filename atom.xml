@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://jingsam.github.io/"/>
-  <updated>2018-02-26T03:38:18.416Z</updated>
+  <updated>2018-02-27T08:46:47.770Z</updated>
   <id>https://jingsam.github.io/</id>
   
   <author>
@@ -14,6 +14,35 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>《ThinkPad之道》书评</title>
+    <link href="https://jingsam.github.io/2018/02/27/thinkpad.html"/>
+    <id>https://jingsam.github.io/2018/02/27/thinkpad.html</id>
+    <published>2018-02-27T03:27:47.000Z</published>
+    <updated>2018-02-27T08:46:47.770Z</updated>
+    
+    <content type="html"><![CDATA[<p>最近在西西弗书店断断续续地读完了《ThinkPad之道》这本书，本书讲的是“Thinkpad之父”内藤在正和他所领导的大和实验室，在研发ThinkPad系列笔记本电脑的过程所面临的种种困难和压力，最终成就了一款经典产品。</p>
+<p>本人大学期间拆装过无数笔记本电脑，自认为笔记本电脑没什么技术含量，无非就是几个零件组装起来。记得有一次拆装一个ThinkPad电脑，每次复原后总是会多出来几个螺丝，神奇的是每次电脑都能正常开机。心中不免有些疑惑，明明可以用更少的螺丝，为什么还要用那么多螺丝呢？看了这本书之后，明白了这些多余的螺丝，是为了保证ThinkPad在任何环境下都能正常使用。</p>
+<p>ThinkPad起初是给哈佛商学院的学生使用的，后来才逐步拓展到其他大学和商务市场。刚开始时，ThinkPad在大学的故障率非常高，甚至需要专门在大学建立售后服务中心，应对大学生笔记本返修问题。内藤在正通过在大学中实地调研，发现大学生对ThinkPad的折磨程度超过了他的想象。例如，大学生会把装着ThinkPad的书包垫在台阶上，直接坐上去，由于小红点和屏幕只有2毫米的间隙，过重的压力会导致屏幕破裂；也会将ThinkPad放入装有十几公斤书本的书包中，骑着单车，让ThinkPad随意地翻滚；甚至在嬉戏玩耍的时候，将装有ThinkPad的书包扔来扔去。</p>
+<p>为了让ThinkPad能够承受住大学生的“折磨”，大和实验室专门成立了测试ThinkPad承受能力的“酷刑室”。例如，有将笔记本开合一万次的仪器，用来测试笔记本铰链的质量；有将笔记本放在一个满是灰尘的空间中，看能不能正常使用；有将各种牛奶、果汁泼溅到笔记本键盘上，模拟使用时有液体溅入的场景。</p>
+<p>最终，他们克服了种种困难，让ThinkPad成为了“稳定、可靠、质量”的代名词。靠着优秀的品质，ThinkPad进入过太空，深入过雨林，攀登过珠峰，游历过纳米比亚沙漠。</p>
+<p>内藤在正和他的团队持续不断地对ThinkPad的改进，是一个典型的工匠精神的体现。然而，这么优秀的ThinkPad，为什么会被IBM卖给联想呢？因为IBM的PC部门一直在亏损。而且，生产核心器件如CPU、硬盘存储、屏幕的部门早已变卖，所以IBM认为PC这条产品线已经没有了核心竞争力，利润提不上去，卖给联想是明智的选择。</p>
+<p>ThinkPad转手给联想之后，联想保留了日本大和实验室和美国罗利实验室，可以说保存了ThinkPad的核心团队。从我的观察来看，联想接手ThinkPad之后，一个主要的贡献是让人人都能用得起“小黑”（ThinkPad）。曾几何时，“小黑”是和“小白”（MacBook）一级的高端电脑，动辄几万块，一般人用不起。ThinkPad的质量确实好，大和实验室想尽千万种方法，提高ThinkPad的可靠性。这种不断进取的工匠精神从一些方面是好的，然而也带来了一些弊端。内藤在正也承认，他们可以在某一方面的技术做好精益求精，但是缺少宏观的视野，即所谓的“见木不见林”。不断地提高ThinkPad的可靠性，一方面这些可靠性需要有额外的零部件和加工方法支撑，因而增加了成本，导致ThinkPad的售价居高不下；另一方面，这些可靠性有些过度了，毕竟不是每台ThinkPad都是要“上刀山下火海”的。联想接手后，降低ThinkPad的成本，扩宽ThinkPad的价格范围，进军个人和家庭消费市场。现在，一个普通大学生拿4000块钱也可以买得到ThinkPad，真正让人人都用得起ThinkPad。</p>
+<p>有段时间，ThinkPad的老用户抱怨，现在的“小黑”已经不是原来的“小黑”，话语中透露出失望的语气。但是，我认为“小黑”的精神没有丢，高端的ThinkPad产品仍然可靠，而中低端的ThinkPad产品也有着“小黑”的影子。现在无处不在的ThinkPad表明，ThinkPad在联想的经营下，焕发了新的活力。</p>
+<p>ThinkPad的经历，不禁让我思考，到底什么才是好的产品？IBM时代的ThinkPad，可靠耐用，从技术上说是好的产品，但从商业角度和消费者的角度来说，不是好的产品，因为价格太贵了。联想时代的ThinkPad，牺牲了一些可靠性，换来了价格的降低，个人消费得起，可靠性方面也能满足日常使用，这时候ThinkPad才成为了好的产品。</p>
+<p>本人同为技术人员，遇到挑战往往有一股狠劲，不解决不罢休，但容易钻牛角尖，缺乏大局观。现实世界的问题，不是都能靠技术来解决的。一款好的产品，不见得需要技术上先进，关键是要让消费者以可接受的价格满足他们的需求。所以，不能埋头只做技术，要倾听消费者的意见、进行商业上的考量、做技术上的取舍，这样才能做出好的产品。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;最近在西西弗书店断断续续地读完了《ThinkPad之道》这本书，本书讲的是“Thinkpad之父”内藤在正和他所领导的大和实验室，在研发ThinkPad系列笔记本电脑的过程所面临的种种困难和压力，最终成就了一款经典产品。&lt;/p&gt;
+&lt;p&gt;本人大学期间拆装过无数笔记本电脑，自认
+    
+    </summary>
+    
+    
+  </entry>
   
   <entry>
     <title>2018计划</title>
@@ -1016,41 +1045,6 @@
     
       &lt;p&gt;在传统的关系型数据库中，我们通常将数据结构化，通过一系列表关联、聚合来查询我们所需的结果。而在非结构化的数据中，缺少这种预定义的结构，因而如何快速查询定位到我们所需要的结果，不是一件容易的事。&lt;/p&gt;
 &lt;p&gt;Mongodb作为一种NoSQL数据库，非常适合存储和管理非结构化
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>Ubuntu server命令行配置shadowsocks全局代理</title>
-    <link href="https://jingsam.github.io/2016/05/08/setup-shadowsocks-http-proxy-on-ubuntu-server.html"/>
-    <id>https://jingsam.github.io/2016/05/08/setup-shadowsocks-http-proxy-on-ubuntu-server.html</id>
-    <published>2016-05-08T07:15:10.000Z</published>
-    <updated>2017-10-19T23:34:16.170Z</updated>
-    
-    <content type="html"><![CDATA[<p>由于Ubuntu Server是不带用户界面的，所以要为Server配置Shadowsocks还是稍显麻烦。本文就是我配置Shadowsocks的一些经验，以待参考。</p>
-<h3 id="安装shadowsocks"><a href="#安装shadowsocks" class="headerlink" title="安装shadowsocks"></a>安装shadowsocks</h3><p>由于shadowsocks是基于python开发的，所以必须安装python：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo apt-get install python</div></pre></td></tr></table></figure></p>
-<p>接着安装python的包管理器pip：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo apt-get install python-pip</div></pre></td></tr></table></figure></p>
-<p>安装完毕之后，通过pip直接安装shadowsocks：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo pip install shadowsocks</div></pre></td></tr></table></figure></p>
-<h3 id="配置shadowsocks"><a href="#配置shadowsocks" class="headerlink" title="配置shadowsocks"></a>配置shadowsocks</h3><p>新建一个配置文件<code>shawdowsocks.json</code>，然后配置相应的参数：<br><figure class="highlight json"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">  <span class="attr">"server"</span>: <span class="string">"&#123;your-server&#125;"</span>,</div><div class="line">  <span class="attr">"server_port"</span>: <span class="number">40002</span>,</div><div class="line">  <span class="attr">"local_port"</span>: <span class="number">1080</span>,</div><div class="line">  <span class="attr">"password"</span>: <span class="string">"&#123;your-password&#125;"</span>,</div><div class="line">  <span class="attr">"timeout"</span>: <span class="number">600</span>,</div><div class="line">  <span class="attr">"method"</span>: <span class="string">"aes-256-cfb"</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>上面的参数需要你的shawdowsocks服务提供商为你提供，当然你也可以自己搭建一个。如何搭建个人的shawdowsocks不在本文讨论范围之内，请参阅其他教程。</p>
-<p>配置完成后就可以启动shawdowsocks服务：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo sslocal -c shawdowsocks.json -d start</div></pre></td></tr></table></figure></p>
-<h3 id="配置全局代理"><a href="#配置全局代理" class="headerlink" title="配置全局代理"></a>配置全局代理</h3><p>启动shawdowsocks服务后，发现并不能翻墙上网，这是因为shawdowsocks是socks 5代理，需要客户端配合才能翻墙。</p>
-<p>为了让整个系统都走shawdowsocks通道，需要配置全局代理，可以通过polipo实现。</p>
-<p>首先是安装polipo：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo apt-get install polipo</div></pre></td></tr></table></figure></p>
-<p>接着修改polipo的配置文件<code>/etc/polipo/config</code>：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">logSyslog = <span class="literal">true</span></div><div class="line">logFile = /var/<span class="built_in">log</span>/polipo/polipo.log</div><div class="line"></div><div class="line">proxyAddress = <span class="string">"0.0.0.0"</span></div><div class="line"></div><div class="line">socksParentProxy = <span class="string">"127.0.0.1:1080"</span></div><div class="line">socksProxyType = socks5</div><div class="line"></div><div class="line">chunkHighMark = 50331648</div><div class="line">objectHighMark = 16384</div><div class="line"></div><div class="line">serverMaxSlots = 64</div><div class="line">serverSlots = 16</div><div class="line">serverSlots1 = 32</div></pre></td></tr></table></figure></p>
-<p>重启polipo服务：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo /etc/init.d/polipo restart</div></pre></td></tr></table></figure></p>
-<p>为终端配置http代理：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">export http_proxy=&quot;http://127.0.0.1:8123/&quot;</div></pre></td></tr></table></figure></p>
-<p>接着测试下能否翻墙：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">curl www.google.com</div></pre></td></tr></table></figure></p>
-<p>如果有响应，则全局代理配置成功。</p>
-<h3 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h3><p>服务器重启后，下面两句需要重新执行：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">sudo sslocal -c shawdowsocks.json -d start</div><div class="line">export http_proxy=&quot;http://127.0.0.1:8123/&quot;</div></pre></td></tr></table></figure></p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;由于Ubuntu Server是不带用户界面的，所以要为Server配置Shadowsocks还是稍显麻烦。本文就是我配置Shadowsocks的一些经验，以待参考。&lt;/p&gt;
-&lt;h3 id=&quot;安装shadowsocks&quot;&gt;&lt;a href=&quot;#安装shadowsocks&quot; c
     
     </summary>
     

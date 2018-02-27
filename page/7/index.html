@@ -171,13 +171,13 @@
     <header class="post-header">
       <h1 class="post-title">
         
-          <a class="post-link" href="/2017/01/23/deploy-nodejs-with-travis-ci.html">利用travis-ci持续部署nodejs应用</a>
+          <a class="post-link" href="/2017/02/07/nodejs-on-android.html">手机上也可以愉快地搞nodejs开发</a>
         
       </h1>
 
       <div class="post-meta">
         <span class="post-time">
-          2017-01-23
+          2017-02-07
         </span>
         
       </div>
@@ -192,24 +192,26 @@
         
 
         
-          <p>Travis-ci是一款持续集成（Continuous Integration）服务，它能够很好地与Github结合，每当代码更新时自动地触发集成过程。</p>
-<p>Travis-ci配置简单，很多nodejs项目都用它做自动测试。然而，对于持续集成，仅做到自动测试是不够的，还要有后续的自动部署，才能完成“提交代码 =&gt; 自动测试 =&gt; 自动部署”的集成链条。</p>
-<p>本文以nodejs应用为例，来谈谈如何利用travis-ci完成自动部署。</p>
-<h2 id="基本原理"><a href="#基本原理" class="headerlink" title="基本原理"></a>基本原理</h2><p>从自动测试到自动部署的核心问题是测试机与生产服务器的信任问题，即如何安全地把程序包传输到生产服务器。市面上的部署工具如scp、ansible、chef，都绕不开这个核心问题。</p>
-<p>以scp为例，测试机登录生产服务器的方式有两种：密码和秘钥。密码登录方式需要交互式地输入密码，总不能每次测试的时候，人为地输入密码吧，所以密码方式行不通。</p>
-<p>秘钥的方式可以实现自动登录，但首次将测试机的公钥传输给生产服务器仍然需要密码。似乎走入了死胡同，但办法总是有的。我们知道开发机是可以登录到生产服务器的，那么我们就可以<strong>将开发机的公钥复制到生产服务器，将开发机的私钥复制到测试机，测试机通过私钥来伪装成开发机，自动地登录到生产服务器</strong>。</p>
-<p>解决了自动登录的问题，另一个问题是怎么将开发机的私钥复制到测试机上。由于测试机每次都是新开的一个虚拟机，这个新开的虚拟机IP不固定，所以没办法直接登录上去。解决办法是将私钥文件作为代码库的一部分提交，这样测试机每次从代码库上拉取代码的同时也获取到了秘钥文件，通过这种方式就实现了私钥从开发机复制到测试机。</p>
-<p>将私钥文件提交到代码库有一个很严重的安全性问题，即任何人只要得到了这个私钥文件，他就可以随心所欲的操纵生产服务器。幸好，travis-ci提供了加密方案，它能够将私钥文件加密，加密后的文件只在当前代码库有效。</p>
-<p>总的来说，通过复制私钥完成自动登录以及对私钥加密来保障安全性，我们就可以建立起测试机与生产服务器的信任通道，测试机就可以安全地操作生产服务器完成自动部署。</p>
-<h2 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h2><p>现在我以scp方式部署nodejs应用为例，来说明travis-ci做自动部署的配置。</p>
-<p>首先，建立起开发机与生产服务器的信任关系：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ssh-copy-id username@host</div></pre></td></tr></table></figure></p>
-<p>然后，加密你的私钥，私钥文件通常在<code>~/.ssh/id_rsa</code>。加密私钥文件需要使用travis这个命令行工具，它是一个ruby包，使用gem安装：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">gem install travis</div><div class="line">travis login</div></pre></td></tr></table></figure></p>
-<p>输入账号密码登录成功后，使用<code>travis encrypt-file</code>加密：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">travis encrypt-file ~/.ssh/id_rsa --add</div></pre></td></tr></table></figure></p>
-<p>上面命令执行完后，会生成一段解密命令并添加到<code>.travis.yml</code>中：<br><figure class="highlight yml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="attr">before_install:</span></div><div class="line"><span class="bullet">  -</span> <span class="string">openssl</span> <span class="string">aes-256-cbc</span> <span class="bullet">-K</span> <span class="string">$encrypted_830d3b21a25d_key</span> <span class="bullet">-iv</span> <span class="string">$encrypted_830d3b21a25d_iv</span></div><div class="line"><span class="bullet">    -</span><span class="string">in</span> <span class="string">~/.ssh/id_rsa.enc</span> <span class="bullet">-out</span> <span class="string">~/.ssh/id_rsa</span> <span class="bullet">-d</span></div></pre></td></tr></table></figure></p>
-<p>接下来，把加密后的私钥文件（id_rsa.enc）复制到代码库中，千万要注意不要错把未加密的私钥文件（id_rsa）复制到你的代码库中。然后把上面的解密命令的<code>-in ~/.ssh/id_rsa.enc</code>改为<code>-in id_rsa.enc</code>。</p>
-<p>通过上面的过程就基本建立测试机与生产服务器的信任关系，但还有一些小细节要处理。例如，降低<code>id_rsa</code>文件的权限，否则ssh处于安全方面的原因会拒绝读取秘钥；将生产服务器地址加入到测试机的信任列表中，否则连接时会询问是否信任服务器。更改后的配置如下:<br><figure class="highlight yml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="attr">before_install:</span></div><div class="line"><span class="bullet">  -</span> <span class="string">openssl</span> <span class="string">aes-256-cbc</span> <span class="bullet">-K</span> <span class="string">$encrypted_830d3b21a25d_key</span> <span class="bullet">-iv</span> <span class="string">$encrypted_830d3b21a25d_iv</span></div><div class="line"><span class="bullet">    -</span><span class="string">in</span> <span class="string">id_rsa.enc</span> <span class="bullet">-out</span> <span class="string">~/.ssh/id_rsa</span> <span class="bullet">-d</span></div><div class="line"><span class="bullet">  -</span> <span class="string">chmod</span> <span class="number">600</span> <span class="string">~/.ssh/id_rsa</span></div><div class="line"><span class="bullet">  -</span> <span class="string">echo</span> <span class="bullet">-e</span> <span class="string">"Host 102.201.64.94\n\tStrictHostKeyChecking no\n"</span> <span class="string">&gt;&gt;</span> <span class="string">~/.ssh/config</span></div></pre></td></tr></table></figure></p>
-<p>最后，测试机就可以愉快地操作生产服务器了，例如下面是一个nodejs应用的<code>.travis.yml</code>文件配置：<br><figure class="highlight yml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="attr">language:</span> <span class="string">node_js</span></div><div class="line"><span class="attr">node_js:</span></div><div class="line"><span class="bullet">  -</span> <span class="string">'4.4.4'</span></div><div class="line"><span class="attr">before_install:</span></div><div class="line"><span class="bullet">  -</span> <span class="string">openssl</span> <span class="string">aes-256-cbc</span> <span class="bullet">-K</span> <span class="string">$encrypted_830d3b21a25d_key</span> <span class="bullet">-iv</span> <span class="string">$encrypted_830d3b21a25d_iv</span></div><div class="line"><span class="bullet">    -</span><span class="string">in</span> <span class="string">id_rsa.enc</span> <span class="bullet">-out</span> <span class="string">~/.ssh/id_rsa</span> <span class="bullet">-d</span></div><div class="line"><span class="bullet">  -</span> <span class="string">chmod</span> <span class="number">600</span> <span class="string">~/.ssh/id_rsa</span></div><div class="line"><span class="bullet">  -</span> <span class="string">echo</span> <span class="bullet">-e</span> <span class="string">"Host 102.201.64.94\n\tStrictHostKeyChecking no\n"</span> <span class="string">&gt;&gt;</span> <span class="string">~/.ssh/config</span></div><div class="line"><span class="attr">script:</span></div><div class="line"><span class="bullet">  -</span> <span class="string">npm</span> <span class="string">run</span> <span class="string">test</span></div><div class="line"><span class="attr">after_success:</span></div><div class="line"><span class="bullet">  -</span> <span class="string">npm</span> <span class="string">prune</span> <span class="bullet">--production</span>  <span class="comment"># 删除devDependencies</span></div><div class="line"><span class="bullet">  -</span> <span class="string">tar</span> <span class="bullet">-jcf</span> <span class="string">indoor-server.tar.bz2</span> <span class="string">*</span>    <span class="comment"># 打包并压缩代码</span></div><div class="line"><span class="bullet">  -</span> <span class="string">scp</span> <span class="string">indoor-server.tar.bz2</span> <span class="string">jingsam@102.201.64.94:~/</span>  <span class="comment"># 复制到生产服务器上</span></div><div class="line"><span class="bullet">  -</span> <span class="string">ssh</span> <span class="string">jingsam@102.201.64.94</span> <span class="string">'mkdir -p indoor-server &amp;&amp; tar -jxf indoor-server.tar.bz2 -C indoor-server'</span>   <span class="comment"># 解压</span></div><div class="line"><span class="bullet">  -</span> <span class="string">ssh</span> <span class="string">jingsam@102.201.64.94</span> <span class="string">'cd indoor-server &amp;&amp; pm2 startOrReload pm2.json'</span>  <span class="comment"># 重启pm2</span></div></pre></td></tr></table></figure></p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本篇文章讲的自动部署其实与nodejs关系不大，完全适用于各种语言的自动部署，其原理都是相通的。</p>
+          <h2 id="缘起"><a href="#缘起" class="headerlink" title="缘起"></a>缘起</h2><p>在微博上看到尤雨溪的这么一则微博：<br><img src="/assets/2017-02-07-1.png" alt=""></p>
+<p>嗬！在手机上也能跑nodejs，有点儿意思哈。顺手查了查nodejs官网，发现nodejs是支持ARM处理器的，有了这个先决条件，手机上跑nodejs应该没什么大障碍了。本文就来分享一下我在手机上跑nodejs的一点经验。</p>
+<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><p>首先你得有一部Android手机，iPhone的硬件条件有，但是由于IOS是一个封闭的系统，实际操作起来会很困难。</p>
+<p>软件方面需要安装<a href="1">Termux</a>，这是Android平台下的一个开源的终端模拟器。</p>
+<p>另外，我建议安装一个编程键盘<a href="2">Hacker’s Keyboard</a>，因为一般的输入法没有Ctrl、Alt、Tab、Esc这些常用控制键，到时候会很麻烦。安装Hacker’s Keyboard，设置为全键盘模式。</p>
+<h2 id="实施"><a href="#实施" class="headerlink" title="实施"></a>实施</h2><p>首先得把nodejs安装到手机上。Termux强大的地方在于它带有一个包管理器<code>apt</code>，使用<code>apt</code>可以直接安装nodejs：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">apt update</div><div class="line">apt install nodejs</div></pre></td></tr></table></figure></p>
+<p>这样node和npm都安装好了，node的版本是v6.9.4，版本还比较新。</p>
+<p>搞开发嘛，做好把git和vim也安装上：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">apt install git vim</div></pre></td></tr></table></figure></p>
+<p>有了npm之后，我们就可以随意安装需要的包了，这里以vue-cli为例，来跑一个vuejs工程。过程与在电脑上是一样的：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">npm i vue-cli -g</div><div class="line">vue init webpack vue-test</div><div class="line">cd vue-test</div><div class="line">npm i</div><div class="line">npm run dev</div></pre></td></tr></table></figure></p>
+<p>浏览器打开localhost:8080，你就可以看到vuejs的欢迎页面了。</p>
+<h2 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h2><p>由于Android权限管理的原因，你并不能随意地在任何位置写入文件。你的活动范围必须在Termux的权限之内，即<code>data/data/com.termux/files</code>目录下。虽然你可以写文件到SD卡，但是有些包symbolink的时候会失败，所以保险的做法是所有的操作都在HOME目录下进行，即<code>data/data/com.termux/files/home</code>目录。</p>
+<p>在HOME目录下操作的坏处是，但你卸载Termux时，HOME下的所有文件也会删除。所以玩玩而已，不要当真，哈哈！</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>实话讲，在手机上不长不方便，我想有一下3点：</p>
+<ol>
+<li>屏幕太小。本来屏幕空间就有限，输入法还要占一半，估计可以通过投屏解决；</li>
+<li>没有好的编辑器。本来就没人会在手机上搞正经开发嘛，所以不会有好的编辑器，还好Vim可以凑合着用；</li>
+<li>输入不方便。这个也是最大的问题，手机键盘真的太不方便了，有点想念诺基亚N97了。</li>
+</ol>
+<p><img src="/assets/2017-02-07-2.jpg" alt=""></p>
+<p>关于手机键盘，最好能携带方便，搜了下淘宝，下面两款似乎不错哦：<br><img src="/assets/2017-02-07-3.png" alt=""></p>
 
         
       
@@ -349,24 +351,7 @@
 
 
     <script type="text/javascript" src="/js/src/even.js?v=2.5.0"></script>
-<script type="text/javascript" src="/js/src/bootstrap.js?v=2.5.0"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
-</script>
-
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Queue(function() {
-    var all = MathJax.Hub.getAllJax(), i;
-    for(i=0; i < all.length; i += 1) {
-      all[i].SourceElement().parentNode.className += ' has-jax';
-    }
-  });
-</script>
-
-<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-</script>
-<!-- End: Injected MathJax -->
-<!-- hexo-inject:end -->
+<script type="text/javascript" src="/js/src/bootstrap.js?v=2.5.0"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 
   </body>
 </html>
