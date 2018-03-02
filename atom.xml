@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://jingsam.github.io/"/>
-  <updated>2018-02-27T08:46:47.770Z</updated>
+  <updated>2018-03-02T09:36:07.778Z</updated>
   <id>https://jingsam.github.io/</id>
   
   <author>
@@ -14,6 +14,43 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>使用pkg打包Node.js应用</title>
+    <link href="https://jingsam.github.io/2018/03/02/pkg.html"/>
+    <id>https://jingsam.github.io/2018/03/02/pkg.html</id>
+    <published>2018-03-02T03:23:39.000Z</published>
+    <updated>2018-03-02T09:36:07.778Z</updated>
+    
+    <content type="html"><![CDATA[<p>Node.js应用不需要经过编译过程，可以直接把源代码拷贝到部署机上执行，确实比C++、Java这类编译型应用部署方便。然而，Node.js应用执行需要有运行环境，意味着你需要先在部署机器上安装Node.js。虽说没有麻烦到哪里去，但毕竟多了一个步骤，特别是对于离线环境下的部署机，麻烦程度还要上升一级。假设你用Node.js写一些小的桌面级工具软件，部署到客户机上还要先安装Node.js，有点“大炮打蚊子”的感觉。更严重的是，如果部署机器上游多个Node.js应用，而且这些应用要依赖于不同的Node.js版本，那就更难部署了。</p>
+<p>理想的情况是将Node.js打包为一个单独的可执行文件，部署的时候直接拷贝过去就行了。除了部署方便外，因为不需要再拷贝源代码了，还有利于保护知识产权。</p>
+<p>将Node.js打包为可执行文件的工具有pkg、nexe、node-packer、enclose等，从打包速度、使用便捷程度、功能完整性来说，pkg是最优秀的。这篇文章就来讲一讲半年来我使用pkg打包Node.js应用的一些经验。</p>
+<p>pkg的打包原理简单来说，就是将js代码以及相关的资源文件打包到可执行文件中，然后劫持<code>fs</code>里面的一些函数，使它能够读到可执行文件中的代码和资源文件。例如，原来的<code>require(&#39;./a.js&#39;)</code>会被劫持到一个虚拟目录<code>require(&#39;/snapshot/a.js&#39;)</code>。</p>
+<h1 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h1><p>pkg既可以全局安装也可以局部安装，推荐采用局部安装：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm install pkg --save-dev</div></pre></td></tr></table></figure>
+<h1 id="用法"><a href="#用法" class="headerlink" title="用法"></a>用法</h1><p>pkg使用比较简单，执行下<code>pkg -h</code>就可以基本了解用法，基本语法是：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pkg [options] &lt;input&gt;</div></pre></td></tr></table></figure>
+<p><code>&lt;input&gt;</code>可以通过三种方式指定：</p>
+<p>1.一个脚本文件，例如<code>pkg index.js</code>;<br>2.<code>package.json</code>，例如<code>pkg package.json</code>，这时会使用<code>package.json</code>中的<code>bin</code>字段作为入口文件；<br>3.一个目录，例如<code>pkg .</code>，这时会寻找指定目录下的<code>package.json</code>文件，然后在找<code>bin</code>字段作为入口文件。</p>
+<p><code>[options]</code>中可以指定打包的参数：<br>1.<code>-t</code>指定打包的目标平台和Node版本，如<code>-t node6-win-x64,node6-linux-x64,node6-macos-x64</code>可以同时打包3个平台的可执行程序；<br>2.<code>-o</code>指定输出可执行文件的名称，但如果用<code>-t</code>指定了多个目标，那么就要用<code>--out-path</code>指定输出的目录；<br>3.<code>-c</code>指定一个JSON配置文件，用来指定需要额外打包脚本和资源文件，通常使用<code>package.json</code>配置。</p>
+<p>使用pkg的最佳实践是：在<code>package.json</code>中的<code>pkg</code>字段中指定打包参数，使用<code>npm scripts</code>来执行打包过程，例如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">  ...</div><div class="line">  &quot;bin&quot;: &quot;./bin/www&quot;,</div><div class="line">  &quot;scripts&quot;: &#123;</div><div class="line">    &quot;pkg&quot;: &quot;pkg . --out-path=dist/&quot;</div><div class="line">  &#125;,</div><div class="line">  &quot;pkg&quot;: &#123;</div><div class="line">    &quot;scripts&quot;: [...]</div><div class="line">    &quot;assets&quot;: [...],</div><div class="line">    &quot;targets&quot;: [...]</div><div class="line">  &#125;,</div><div class="line">  ...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><code>scripts</code>和<code>assets</code>用来配置未打包进可执行文件的脚本和资源文件，文件路径可以使用glob通配符。这里就浮现出一个问题：为什么有的脚本和资源文件打包不进去呢？</p>
+<p>要回答这个问题，就涉及到pkg打包文件的机制。按照pkg文档的说法，pkg只会自动地打包相对于<code>__dirname</code>、<code>__filename</code>的文件，例如<code>path.join(__dirname, &#39;../path/to/asset&#39;)</code>。至于<code>require()</code>，因为require本身就是相对于<code>__dirname</code>的，所以能够自动打包。假设文件中有以下代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">require(&apos;./build/&apos; + cmd + &apos;.js&apos;)</div><div class="line">path.join(__dirname, &apos;views/&apos; + viewName)</div></pre></td></tr></table></figure>
+<p>这些路径都不是常量，pkg没办法帮你自动识别要打包哪个文件，所以文件就丢失了，所以这时候就使用<code>scripts</code>和<code>assets</code>来告诉pkg，这些文件要打包进去。那么我们怎么知道哪些文件没有被打包呢？难倒要一行行地去翻源代码吗？其实很简单，只需要把打包好的文件运行下，报错信息一般就会告诉你缺失哪些文件，并且pkg在打包过程中也会提示一些它不能自动打包的文件。</p>
+<h1 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h1><p>如果说pkg还有哪儿还可以改进的地方，那就是无法自动打包二进制模块<code>*.node</code>文件。如果你的项目中引用了二进制模块，如sqlite3，那么你需要手动地将<code>*.node</code>文件复制到可执行文件同一目录，我通常使用命令<code>cp node_modules/**/*.node .</code>一键完成。但是，如果你要跨平台打包，例如在windows上打包linux版本，相应的二进制模块也要换成linux版本，通常需要你手动的下载或者编译。</p>
+<p>那为什么pkg不能将二进制模块打包进去呢？我猜想是require载入一个js文件和node文件，它们的机制是不一样的。另外从设计来说，不自动打包二进制模块也是合理的，因为二进制模块都是平台相关的。如果我在windows上生成一个linux文件，那么就需要拉取linux版本的<code>.node</code>文件，这是比较困难的。并且有些二进制模块不提供预编译版本，需要安装的时候编译，pkg再牛也不可能模拟一个其他平台的编译环境吧。nexe可以自动打包二进制模块，但是只能打包当前平台和当前版本的可执行文件。这意味着如果Node.js应用引用了二进制包，那么这个应用就不能跨平台打包了，所以我认为这方面，nexe不能算是一个好的设计。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;Node.js应用不需要经过编译过程，可以直接把源代码拷贝到部署机上执行，确实比C++、Java这类编译型应用部署方便。然而，Node.js应用执行需要有运行环境，意味着你需要先在部署机器上安装Node.js。虽说没有麻烦到哪里去，但毕竟多了一个步骤，特别是对于离线环境下的
+    
+    </summary>
+    
+    
+  </entry>
   
   <entry>
     <title>《ThinkPad之道》书评</title>
@@ -1009,42 +1046,6 @@
     
       &lt;p&gt;在制图过程中，对多边形进行标注是一个常见的需求。然而如何快速找到一个合适的注记点，确不是一个很容易的事情。&lt;/p&gt;
 &lt;p&gt;最近，Leaflet的作者&lt;a href=&quot;https://github.com/mourner&quot; target=&quot;_blank&quot; rel=&quot;exter
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>Mongodb全文搜索实战</title>
-    <link href="https://jingsam.github.io/2016/06/04/mongodb-text-search.html"/>
-    <id>https://jingsam.github.io/2016/06/04/mongodb-text-search.html</id>
-    <published>2016-06-04T13:10:56.000Z</published>
-    <updated>2017-10-19T23:34:16.170Z</updated>
-    
-    <content type="html"><![CDATA[<p>在传统的关系型数据库中，我们通常将数据结构化，通过一系列表关联、聚合来查询我们所需的结果。而在非结构化的数据中，缺少这种预定义的结构，因而如何快速查询定位到我们所需要的结果，不是一件容易的事。</p>
-<p>Mongodb作为一种NoSQL数据库，非常适合存储和管理非结构化数据，例如互联网上的各种文本数据。假如我们用Mongodb存储了很多博客文章，那么如何快速找到所有关于“nodejs”这个主题的文章呢？Mongodb内建的全文搜索可以帮助我们完成这个功能。</p>
-<p>在本篇博文中，将要介绍的是我使用Mongdb text search的一些经验。</p>
-<h3 id="Mongodb-text-search是什么？"><a href="#Mongodb-text-search是什么？" class="headerlink" title="Mongodb text search是什么？"></a>Mongodb text search是什么？</h3><p>Mongodb text search是Mongodb对数据库进行搜索的功能模块，类似于数据库内建的搜索引擎。有些人可能会疑问，查数据库为什么还需要搜索引擎？直接用条件查询不就得了。例如在前面的文章主题搜索中，我们不可能事先提取出每篇文章的主题，然后用专门的字段存储，因此没办法进行条件查询。并且同一个主题词，有多种不同的表达方式，例如”node”、”nodejs”可视为同一个主题。</p>
-<p>Mongodb text search可以自动地对大段的文本数据进行分词处理、模糊匹配、同义词匹配，解决文本搜索的问题。</p>
-<h3 id="建立文本索引"><a href="#建立文本索引" class="headerlink" title="建立文本索引"></a>建立文本索引</h3><p>要使Mongodb能够进行全文搜索，首先要对搜索的字段建立文本索引。建立文本索引的关键字是<code>text</code>，我们既可以建立单个字段的文本索引，也可以建立包含多个字段的复合文本索引。<strong>需要注意的是，每个collection只能建立一个文本索引，且只能对String或String数组的字段建立文本索引</strong>。</p>
-<p>我们可以通过以下命令，建立一个文本索引：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">db.collection.createIndex(&#123; subject: &quot;text&quot;, content: &quot;text&quot; &#125;)</div></pre></td></tr></table></figure></p>
-<p>在mongoose中我们可以通过以下代码，创建文本索引：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">schema.index(&#123; subject: &quot;text&quot;, content: &quot;text&quot; &#125;)</div></pre></td></tr></table></figure></p>
-<p>需要注意的是，由于每个collection只支持一个文本索引，所以当你需要在schema中添加或删除文本索引字段时，往往不起作用。这时候你需要到数据库中，手动删除已经建立的文本索引。</p>
-<h3 id="文本搜索示例"><a href="#文本搜索示例" class="headerlink" title="文本搜索示例"></a>文本搜索示例</h3><p>文本搜索的语法为：<br><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">  $text:</div><div class="line">    &#123;</div><div class="line">      $search: &lt;string&gt;,</div><div class="line">      $language: &lt;string&gt;,</div><div class="line">      $caseSensitive: &lt;boolean&gt;,</div><div class="line">      $diacriticSensitive: &lt;boolean&gt;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>在mongoose中，我们可以通过以下语句进行文本搜索：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">var query = model.find(&#123; $text: &#123; $search: &quot;hello world&quot; &#125; &#125;)</div></pre></td></tr></table></figure></p>
-<p><code>$search</code>后面的关键词可以有多个，关键词之间的分隔符可以是多种字符，例如空格、下划线、逗号、加号等，但不能是<code>-</code>和<code>\&quot;</code>，因为这两个符号会有其他用途。搜索的多个关键字是<code>or</code>的关系，除非你的关键字包含<code>-</code>。例如<code>hello world</code>会包含所有匹配<code>hello</code>或<code>world</code>的文本，而<code>hello -world</code>只会匹配包含<code>hello</code>且不包含<code>world</code>的文本。</p>
-<p><code>$language</code>指示搜索的语言类型，在最新的Mongodb 3.2 enterprise版本中，已经增加了对中文文本的搜索。</p>
-<p><code>$caseSensitive</code>设置是否区分大小写。</p>
-<p><code>$diacriticSensitive</code>设置是否区别发音符号，<code>CAFÉ</code>于<code>Café</code>是同一语义，只是重音不一样。</p>
-<p>我们还可以对搜索的结果按匹配度进行排序：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">db.posts.find(</div><div class="line">   &#123; $text: &#123; $search: &quot;hello world&quot; &#125; &#125;,</div><div class="line">   &#123; score: &#123; $meta: &quot;textScore&quot; &#125; &#125;</div><div class="line">).sort( &#123; score: &#123; $meta: &quot;textScore&quot; &#125; &#125; )</div></pre></td></tr></table></figure></p>
-<h3 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h3><p>Mongodb建立文本索引时，会对提取所有文本的关键字建立索引，因而会造成一定的性能问题。所以对于结构化的字段，建议用普通的关系查询，如果需要对大段的文本进行搜索，才考虑用全文搜索。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;在传统的关系型数据库中，我们通常将数据结构化，通过一系列表关联、聚合来查询我们所需的结果。而在非结构化的数据中，缺少这种预定义的结构，因而如何快速查询定位到我们所需要的结果，不是一件容易的事。&lt;/p&gt;
-&lt;p&gt;Mongodb作为一种NoSQL数据库，非常适合存储和管理非结构化
     
     </summary>
     
