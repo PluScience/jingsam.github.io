@@ -212,6 +212,13 @@
 <p>这些路径都不是常量，pkg没办法帮你自动识别要打包哪个文件，所以文件就丢失了，所以这时候就使用<code>scripts</code>和<code>assets</code>来告诉pkg，这些文件要打包进去。那么我们怎么知道哪些文件没有被打包呢？难倒要一行行地去翻源代码吗？其实很简单，只需要把打包好的文件运行下，报错信息一般就会告诉你缺失哪些文件，并且pkg在打包过程中也会提示一些它不能自动打包的文件。</p>
 <h1 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h1><p>如果说pkg还有哪儿还可以改进的地方，那就是无法自动打包二进制模块<code>*.node</code>文件。如果你的项目中引用了二进制模块，如sqlite3，那么你需要手动地将<code>*.node</code>文件复制到可执行文件同一目录，我通常使用命令<code>cp node_modules/**/*.node .</code>一键完成。但是，如果你要跨平台打包，例如在windows上打包linux版本，相应的二进制模块也要换成linux版本，通常需要你手动的下载或者编译。</p>
 <p>那为什么pkg不能将二进制模块打包进去呢？我猜想是require载入一个js文件和node文件，它们的机制是不一样的。另外从设计来说，不自动打包二进制模块也是合理的，因为二进制模块都是平台相关的。如果我在windows上生成一个linux文件，那么就需要拉取linux版本的<code>.node</code>文件，这是比较困难的。并且有些二进制模块不提供预编译版本，需要安装的时候编译，pkg再牛也不可能模拟一个其他平台的编译环境吧。nexe可以自动打包二进制模块，但是只能打包当前平台和当前版本的可执行文件。这意味着如果Node.js应用引用了二进制包，那么这个应用就不能跨平台打包了，所以我认为这方面，nexe不能算是一个好的设计。</p>
+<p>还有一点就是关于项目中的配置文件处理，比如数据库连接参数、环境变量等。因为这些配置文件会跟着不同的部署环境进行更改，所以为了方便更改，一般不希望把配置文件打包到exe。为了避免pkg自动地将配置文件打包到exe中，代码中不要采用以下方式读取配置文件：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">fs.readFile(path.join(__dirname, &apos;./config.json&apos;)), callback)</div></pre></td></tr></table></figure>
+<p>而是采用相对于<code>process.CWD()</code>的方法读取：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">fs.readFile(path.join(process.CWD(), &apos;./config.json&apos;), callback)</div><div class="line"></div><div class="line">// 或者</div><div class="line">fs.readFile(&apos;./config.json&apos;, callback)</div></pre></td></tr></table></figure>
+<p>如果配置文件是js格式的，那么不要直接<code>require(&#39;./config&#39;)</code>，而是采用动态require：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">const config = require(process.CWD() + &apos;./config&apos;)</div></pre></td></tr></table></figure>
+<p>另外要提及的是pkg打包之后动态载入js文件会有安全性问题，即用户可以在js文件写任何处理逻辑，注入到打包后的exe中。例如，可以读取exe里面的虚拟文件系统，把源代码导出来。所以，尽量不要采用JS作为配置文件，也不要动态载入js模块。</p>
 
       
     </div>
@@ -232,6 +239,12 @@
         
         
   <nav class="post-nav">
+    
+      <a class="prev" href="/2018/03/06/webpack.html">
+        <i class="iconfont icon-left"></i>
+        <span class="prev-text nav-default">Library项目的Webpack配置</span>
+        <span class="prev-text nav-mobile">上一篇</span>
+      </a>
     
     
       <a class="next" href="/2018/02/27/thinkpad.html">

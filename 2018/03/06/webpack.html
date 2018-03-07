@@ -17,7 +17,7 @@
 
 
 
-  <meta name="description" content="GIS, mapping"/>
+  <meta name="description" content="Library项目的Webpack配置"/>
 
 
 
@@ -40,7 +40,7 @@
 
 
 
-<link rel="canonical" href="https://jingsam.github.io/"/>
+<link rel="canonical" href="https://jingsam.github.io/2018/03/06/webpack.html"/>
 
 
 <link rel="stylesheet" type="text/css" href="/css/style.css?v=2.5.0" />
@@ -71,7 +71,7 @@
 
 
 
-    <title> jingsam </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+    <title> Library项目的Webpack配置 - jingsam </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
   </head>
 
   <body><div id="mobile-navbar" class="mobile-navbar">
@@ -164,14 +164,12 @@
         <div class="content-wrapper">
           <div id="content" class="content">
             
-  <section id="posts" class="posts">
-    
-      
+  
   <article class="post">
     <header class="post-header">
       <h1 class="post-title">
         
-          <a class="post-link" href="/2018/03/06/webpack.html">Library项目的Webpack配置</a>
+          Library项目的Webpack配置
         
       </h1>
 
@@ -185,14 +183,17 @@
 
     
     
+  <div class="post-toc" id="post-toc">
+    <h2 class="post-toc-title">文章目录</h2>
+    <div class="post-toc-content">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#生成package-json"><span class="toc-text">生成package.json</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#规划目录结构"><span class="toc-text">规划目录结构</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#配置webpack"><span class="toc-text">配置webpack</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#配置babel"><span class="toc-text">配置babel</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#配置eslint和prettier"><span class="toc-text">配置eslint和prettier</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#配置-gitignore"><span class="toc-text">配置.gitignore</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#总结"><span class="toc-text">总结</span></a></li></ol>
+    </div>
+  </div>
+
 
     <div class="post-content">
       
-        
-        
-
-        
-          <p>知乎上有个提问，叫“如何成为高级Webpack配置工程师”，戏谑Webpack已经复杂到成为一门专业学问了。但Webpack确实是非常复杂的，一般人只能做到入门而无法精通。Webpack的复杂性在于要完成各种各样的功能，即不仅要处理js、css、html、图片、字体等各种格式的前端资源，还要对这些资源进行转译、精简、提取、分割、打包等一系列操作。</p>
+        <p>知乎上有个提问，叫“如何成为高级Webpack配置工程师”，戏谑Webpack已经复杂到成为一门专业学问了。但Webpack确实是非常复杂的，一般人只能做到入门而无法精通。Webpack的复杂性在于要完成各种各样的功能，即不仅要处理js、css、html、图片、字体等各种格式的前端资源，还要对这些资源进行转译、精简、提取、分割、打包等一系列操作。</p>
 <p>Webpack在当前前端工程化中占有很重要的地位，前端工程化是为了提高前端开发的效率，但是前端工程化中的工具链配置的复杂度也逐渐提高。有时候新开一个项目，光是配置这些工具就要花一两天，这对于小型项目有点得不偿失。在配置工具链的时间花费大，诚然webpack本身配置参数多，我认为更重要的原因在于平时过于依赖于vue-cli、react-scripts这类自动化生成工具，没有具体地了解每个配置项的作用。</p>
 <p>最近要开发一个可视化的JS库，但是vue-cli、react-scripts这类自动化生成工具主要针对的是SPA，对开发Library支持不好，因而尝试下手动配置webpack、eslint、babel、prettier这些工具。好在开发的是Library，主要处理JS代码，如果是SPA，那就需要处理各种各样的前端资源，还是建议使用vue-cli、react-scripts。</p>
 <p>本文主要是做步骤记录，用于指导以后进行简单项目的手动配置，因而本篇文章不探讨深度内容。</p>
@@ -231,33 +232,54 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">.DS_Store</div><div class="line">node_modules/</div><div class="line">dist/</div><div class="line">npm-debug.log*</div><div class="line">yarn-debug.log*</div><div class="line">yarn-error.log*</div><div class="line"></div><div class="line"># Editor directories and files</div><div class="line">.idea</div><div class="line">.vscode</div><div class="line">*.suo</div><div class="line">*.ntvs*</div><div class="line">*.njsproj</div><div class="line">*.sln</div></pre></td></tr></table></figure>
 <h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>配置一个Library开发环境，分为生成package.json、规划目录结构、配置webpack、配置babel、配置eslint和prettier、配置.gitignore几个步骤。本文仅仅是流水账记录，深度不够，写到后面我都觉得乏味了，以后不写这种水文章了，匿了。</p>
 
-        
       
     </div>
 
     
+      
+      
 
+
+
+      
+      
     
 
-  </article>
-
     
-  </section>
-
-  
-  <nav class="pagination">
+      <footer class="post-footer">
+        
+        
+        
+  <nav class="post-nav">
     
     
-      <a class="next" href="/page/2/">
-        <span class="next-text">下一页</span>
+      <a class="next" href="/2018/03/02/pkg.html">
+        <span class="next-text nav-default">使用pkg打包Node.js应用</span>
+        <span class="prev-text nav-mobile">下一篇</span>
         <i class="iconfont icon-right"></i>
       </a>
     
   </nav>
 
+      </footer>
+    
+
+  </article>
+
 
           </div>
           
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
 
         </div>  
       </main>
@@ -345,6 +367,24 @@
     </div>
 
     
+  
+  <script type="text/javascript">
+    var disqus_config = function () {
+        this.page.url = 'https://jingsam.github.io/2018/03/06/webpack.html';
+        this.page.identifier = '2018/03/06/webpack.html';
+        this.page.title = 'Library项目的Webpack配置';
+    };
+    (function() {
+    var d = document, s = d.createElement('script');
+
+    s.src = '//jingsam.disqus.com/embed.js';
+
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+    })();  
+  </script>
+
+
 
 
     
