@@ -49,7 +49,7 @@
 <p>1.使用DefinePlugin将<code>process.env.NODE_ENV</code>替换为<code>production</code>，关闭所有警告信息；<br>2.使用UglifyJsPlugin对应用代码进行minify，减小应用体积。同时会删除<code>if (&#39;production&#39; === &#39;development&#39;) {}</code>这类永远不会执行的代码，进一步减小应用体积。</p>
 <p>所以，在开发时应用开发版本，不必担心最后的应用体积。但是如果开发时是以script标签的方式引用库的开发版本，上线时应该替换为响应的发布版本。</p>
 <h1 id="指向打包后的发布版本"><a href="#指向打包后的发布版本" class="headerlink" title="指向打包后的发布版本"></a>指向打包后的发布版本</h1><p>发布版本追求的是尽量减小体积，因为相比于JS引擎解析的时间，网络传输是最慢的，所以要通过减小库的体积，减少网络传输的时间。</p>
-<p>减小发布版本的文件体积，主要是通过将<code>process.env.NODE_ENV</code>设置为<code>production</code>，然后再使用UglifyJsPlugin对应用代码进行minify<br>以及删除永不执行的代码。</p>
+<p>减小发布版本的文件体积，主要是通过将<code>process.env.NODE_ENV</code>设置为<code>production</code>，然后再使用UglifyJsPlugin对应用代码进行minify以及删除永不执行的代码。</p>
 <p>那么将库的发布版本作为入口文件合不合适呢？显然不合适，因为发布版本的是经过高度压缩精简的，代码完全不可读，应用开发阶段难以调试。</p>
 <p>发布版本是适用于在应用上线时，通过script标签形式引用。</p>
 <h1 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h1><p>通过上面的分析，可以发现将库的开发版本作为库的入口才是正确合理的做法，即设置<code>&quot;main&quot;: &quot;dist/library.js&quot;</code>。而作为库的开发者，也要遵循约定，生成库的开发版本的时候，使用<code>development</code>环境变量，保留警告信息。</p>
