@@ -171,13 +171,13 @@
     <header class="post-header">
       <h1 class="post-title">
         
-          <a class="post-link" href="/2016/04/17/config-eslint.html">Eslint配置实战</a>
+          <a class="post-link" href="/2016/04/20/deploy-to-digitialocean.html">Nodejs网站部署到DigtialOcean</a>
         
       </h1>
 
       <div class="post-meta">
         <span class="post-time">
-          2016-04-17
+          2016-04-20
         </span>
         
       </div>
@@ -192,25 +192,28 @@
         
 
         
-          <p>在软件开发中，编码风格的统一，对项目可维护性具有重要作用。不像python、go语言对代码格式有着严格的规范，Javascript的语法非常灵活，开发人员可以写出天马行空的Javascript代码。而且，Javascript编译器的容错度较高，会诱使开发人员随意编写杂乱的代码。不规范的编码风格，不仅增加了理解代码的困难，也常常会产生隐含的bug。因此，Javascript相比于其他语言，更需要制定相应的编码规范。</p>
-<p>统一代码规范，最直观的方法是团队成员商定一套统一的代码规范，大家按照这套规范进行代码编写。但是这种约定的方式约束力太弱，总会有人有意或无意地不遵守规范。更好的方式是，借助代码格式检测工具，自动化地进行格式检查，并将格式检查作为代码测试的一部分，集成到项目的持续集成过程中。</p>
-<p>主流的Javascript代码格式检查工具有JSLint、JSHint、JSCS、ESLint。这些工具中，ESLint可以灵活配置规则，并以插件机制支持各种扩展，因而比前3种工具在功能上更为全面。本文以ESLint作为代码检查工具，描述如何将其集成到Javascript开发项目中。</p>
-<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>安装ESLint很简单，可以通过npm安装。ESLint既可以全局安装，也可以本地安装。推荐本地安装，因为这样做的好处一是不污染全局，二是分发比较方便，不会产生外部依赖，因为无法保证其他人的机器上也全部安装了ESLint。安装ESLint的命令如下：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm install eslint --save-dev</div></pre></td></tr></table></figure></p>
-<h2 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h2><p>要使ESLint生效，需要在项目根目录下建立一个配置文件，来设定检查规则。ESLint提供了交互式的命令行工具，可以帮助我们快速地配置规则，初始化命令如下：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">./node_modules/.bin/eslint --init</div></pre></td></tr></table></figure></p>
-<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><p>在package.json的script下添加一个lint命令，并指定要检测的文件或文件夹：<br><figure class="highlight json"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">  <span class="attr">"lint"</span>: <span class="string">"eslint *.js models/**"</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>命令行中运行如下命令，即可得到检测结果<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm run lint</div></pre></td></tr></table></figure></p>
-<p>实践中，通常会将lint集成到测试流程中：<br><figure class="highlight json"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">  <span class="attr">"lint"</span>: <span class="string">"eslint *.js models/**"</span>,</div><div class="line">  <span class="attr">"test"</span>: <span class="string">"npm run lint &amp;&amp; mocha"</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<h2 id="例外规则"><a href="#例外规则" class="headerlink" title="例外规则"></a>例外规则</h2><p>编码过程中出于实际需要，会不可避免地违反lint规则。ESLint提供了例外规则，供开发人员临时地关闭某些检测规则。</p>
-<p>屏蔽文件的某个区块：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/* eslint-disable no-console */</span></div><div class="line"></div><div class="line"><span class="built_in">console</span>.log(<span class="string">"hello, world"</span>)</div><div class="line"></div><div class="line"><span class="comment">/* eslint-enable */</span></div></pre></td></tr></table></figure></p>
-<p>屏蔽一行：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/* eslint-disable-line no-console */</span></div><div class="line"><span class="built_in">console</span>.log(<span class="string">"hello, world"</span>)</div><div class="line"></div><div class="line"><span class="built_in">console</span>.log(<span class="number">42</span>) <span class="comment">// eslint-disable-line no-console</span></div></pre></td></tr></table></figure></p>
-<p>由于项目中会用到测试框架mocha，测试用例包含的全局变量如describe、it等，会造成lint报错。屏蔽这些错误的方法是，在.eslintrc中添加运行环境mocha，配置如下：<br><figure class="highlight json"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">  <span class="attr">"env"</span>: &#123;</div><div class="line">    <span class="attr">"node"</span>: <span class="literal">true</span>,</div><div class="line">    <span class="attr">"mocha"</span>: <span class="literal">true</span></div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>如果使用了Chai或者Shouldjs，还会产生no-unused-vars的错误，用例外规则屏蔽之：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> should = <span class="built_in">require</span>(<span class="string">'chai'</span>).should() <span class="comment">// eslint-disable-line no-unused-vars</span></div></pre></td></tr></table></figure></p>
-<h2 id="Sublime集成"><a href="#Sublime集成" class="headerlink" title="Sublime集成"></a>Sublime集成</h2><p>上面配置好ESLint之后，根据命令行检测出结果，定位到文件中进行相应的修改，然后再检测在修改。这种命令行方式比较繁琐，更好的办法是集成到代码编辑器中，实时地进行检测。</p>
-<p>ESLint可以很好地集成到Sublime中，通过Package Control安装SublimeLinter、SublimeLinter-contrib-eslint两个插件，即可完成对ESLint的集成。</p>
-<p>要启用ESLint，还需要配置SublimeLinter的nodejs的路径。具体做法是打开Preference &gt; Package Settings &gt; SublimeLinter &gt; Settings - Default文件，在paths下面填写响应平台下的node路径：<br><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">"paths": &#123;</div><div class="line">  "linux": [],</div><div class="line">  "osx": [],</div><div class="line">  "windows": ["D:/Program Files/nodejs/node.exe"]</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>配置好路径后，务必<strong>重启Sublime</strong>，才会使得SublimeLinter生效。</p>
-<p>我们在编写代码时，SublimeLinter会读取项目目录下的.eslintrc规则文件，实时动态地标出错误代码的位置。</p>
-<p>另外我们可以开启SublimeLinter的debug模式，该模式下将会在状态栏给出错误的说明。启用的方法是打开Tools &gt; SublimeLinter &gt; Debug Mode。</p>
+          <p>最近基于Express + Mongodb开发了一个纯API服务，现在要部署到公网上。我选择的是DigitialOcean的主机，但整个部署过程不仅仅适用于DigitialOcean，其他VPS也可参考。</p>
+<h2 id="创建主机"><a href="#创建主机" class="headerlink" title="创建主机"></a>创建主机</h2><p>假设我们现在已经注册了DigitialOcean账号，并且通过了邮箱验证和信用卡绑定。<br>首先创建一个主机，登录后点击<code>Create Droplets</code>，即可开始创建主机。Droplets的意思是小水滴，DigitialOcean是数字海洋，两者之间的关系还是蛮形象的。<br>在创建主机界面，我们可以选择主机的操作系统、服务器的位置、服务器的硬件配置等。我选择的是Ubuntu 15.10，San Franscisco的机房，以及最便宜5美元一个月的配置：1 CPU + 512M RAM + 20G SSD。<br>选择完配置之后，先别忙着点确定。里面有一项叫SSH key，可以将你的SSH的公钥填进去，这样我们稍后登录主机的时候就不需要填密码了。当然，如果你不知道怎么生成SSH key或者嫌麻烦，也可以通过密码登录，密码会在你创建完主机之后发到你的注册邮箱。</p>
+<h2 id="创建用户"><a href="#创建用户" class="headerlink" title="创建用户"></a>创建用户</h2><p>当主机创建完之后，我们可以通过SSH远程登录到主机上：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ssh root@xxx.xxx.xxx.xxx</div></pre></td></tr></table></figure></p>
+<p>这里有个问题就是，我们是以root身份登录到系统中，而我们网站不能在root权限下部署。否则，要是有黑客获取了网站控制权限，就掌握了主机的控制权限，这是很危险的。所以，我们需要创建一个普通权限的用户，以普通用户的身份部署网站。</p>
+<p>使用下面的命令添加新用户和密码，其中<code>-m</code>表示在<code>/home</code>目录下创建用户文件夹。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">add user -m judy</div><div class="line">passwd judy</div></pre></td></tr></table></figure></p>
+<p>为了之后安装软件方便，我们将新用户添加到<code>sudo</code>组中：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo adduser judy sudo</div></pre></td></tr></table></figure></p>
+<p>现在我们完成了新用户的创建。有些人在使用SSH登录到DigitalOcean后会发现很卡，打个命令半天才回显，在这里我推荐一款很好用的SSH替代软件：mosh。SSH的机制是我们输入一个字符，这个字符会发送到远程服务器，然后远程服务器收到后再发送回终端显示。在这个传输过程中，如果网络条件不好，会产生明显地卡顿。而mosh在你输入一个字符时，立即在终端上显示，然后再后台自动地将命令发送到远程服务器。因此即使在较差的网络条件下，mosh也可以很流畅。</p>
+<p>mosh需要在客户端和服务端同时安装，安装的的命令如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">apt-get install mosh</div></pre></td></tr></table></figure></p>
+<p>退出root用户，然后用mosh重连，你将会发现比之前流畅多了，mosh连接的命令和SSH一样：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mosh judy@xxx.xxx.xxx.xxx</div></pre></td></tr></table></figure></p>
+<h2 id="安装nodejs"><a href="#安装nodejs" class="headerlink" title="安装nodejs"></a>安装nodejs</h2><p>由于我们的网站是基于Express的，因此需要安装nodejs。Ubuntu的官方源上没有nodejs，需要添加nodesource源，安装的命令如下：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">sudo apt-get install curl</div><div class="line">curl -sL https://deb.nodesource.com/setup_5.x | sudo -E bash -</div><div class="line">sudo apt-get install nodejs</div></pre></td></tr></table></figure></p>
+<p><code>sudo</code>命令是临时借用root的权限去执行命令。</p>
+<h2 id="安装mongodb和git"><a href="#安装mongodb和git" class="headerlink" title="安装mongodb和git"></a>安装mongodb和git</h2><p>网站的数据库采用的是mongodb，幸运的是Ubuntu的官方源收录了mongodb，所以我们可以直接用apt安装：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo apt-get install mongodb</div></pre></td></tr></table></figure></p>
+<p>mongodb安装完之后会自动启动守护程序mongod，并设置了开机自启动。检查mongodb是否成功启动，可以运行<code>mongo</code>连接数据是否成功。</p>
+<p>网站的源代码托管在GitHub上，所以要把代码下载下来，我们还需要安装git：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo apt-get install git</div></pre></td></tr></table></figure></p>
+<h2 id="部署"><a href="#部署" class="headerlink" title="部署"></a>部署</h2><p>通过git将网站源代码拉取下来，并安装相应的依赖：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">git clone https://github.com/&#123;your_git_repo&#125; site</div><div class="line">cd site</div><div class="line">npm install</div></pre></td></tr></table></figure></p>
+<p>网站的软件环境基本上准备好了，如果代码有测试的话，可以跑一遍测试看网站是否各项功能正常。</p>
+<p>Express网站开发的时候，默认的服务端口是3000。由于服务是公开发布的，总不能让用户还在网址后面加个端口号吧。所以，我们将网站切换到80端口：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">PORT=80 node ./bin/www</div></pre></td></tr></table></figure></p>
+<p>不幸的是，你将马上看到出错信息，信息显示80端口只有root用户才能使用。实际上，任何小于1024的端口，都只能由root用户使用。所以我们用采取一定的措施，使得网站服务可以使用80端口。方法很简单，我们可以借助cap2实现：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">sudo apt-get install libcap2-bin</div><div class="line">sudo <span class="built_in">setcap</span> cap_net_bind_service=+ep `<span class="built_in">which</span> nodejs`</div></pre></td></tr></table></figure></p>
+<p>后一条命令中的<code>which nodejs</code>是找出nodejs可执行文件的路径，一定要是nodejs的实际路径，不能是符号链接。</p>
+<p>执行以上命令后，再次测试就会发现能够使用80端口了。</p>
+<h2 id="更改时区"><a href="#更改时区" class="headerlink" title="更改时区"></a>更改时区</h2><p>新建的主机默认的时区是0时区，更改为北京时间可用交互式的命令行工具<code>tzselect</code>:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">tzselect</div><div class="line">sudo cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime</div></pre></td></tr></table></figure></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>通过以上过程，基本上完成了对服务器的配置。但是还有很多工作要做，例如nodejs进程自动重启、网站制动部署等，这将在以后的博文中逐步说明。</p>
 
         
       

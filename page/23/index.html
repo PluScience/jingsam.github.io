@@ -171,13 +171,13 @@
     <header class="post-header">
       <h1 class="post-title">
         
-          <a class="post-link" href="/2016/05/08/setup-shadowsocks-http-proxy-on-ubuntu-server.html">Ubuntu server命令行配置shadowsocks全局代理</a>
+          <a class="post-link" href="/2016/09/24/polylabel.html">多边形注记点搜索的算法原理</a>
         
       </h1>
 
       <div class="post-meta">
         <span class="post-time">
-          2016-05-08
+          2016-09-24
         </span>
         
       </div>
@@ -192,22 +192,27 @@
         
 
         
-          <p>由于Ubuntu Server是不带用户界面的，所以要为Server配置Shadowsocks还是稍显麻烦。本文就是我配置Shadowsocks的一些经验，以待参考。</p>
-<h3 id="安装shadowsocks"><a href="#安装shadowsocks" class="headerlink" title="安装shadowsocks"></a>安装shadowsocks</h3><p>由于shadowsocks是基于python开发的，所以必须安装python：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo apt-get install python</div></pre></td></tr></table></figure></p>
-<p>接着安装python的包管理器pip：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo apt-get install python-pip</div></pre></td></tr></table></figure></p>
-<p>安装完毕之后，通过pip直接安装shadowsocks：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo pip install shadowsocks</div></pre></td></tr></table></figure></p>
-<h3 id="配置shadowsocks"><a href="#配置shadowsocks" class="headerlink" title="配置shadowsocks"></a>配置shadowsocks</h3><p>新建一个配置文件<code>shawdowsocks.json</code>，然后配置相应的参数：<br><figure class="highlight json"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">  <span class="attr">"server"</span>: <span class="string">"&#123;your-server&#125;"</span>,</div><div class="line">  <span class="attr">"server_port"</span>: <span class="number">40002</span>,</div><div class="line">  <span class="attr">"local_port"</span>: <span class="number">1080</span>,</div><div class="line">  <span class="attr">"password"</span>: <span class="string">"&#123;your-password&#125;"</span>,</div><div class="line">  <span class="attr">"timeout"</span>: <span class="number">600</span>,</div><div class="line">  <span class="attr">"method"</span>: <span class="string">"aes-256-cfb"</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>上面的参数需要你的shawdowsocks服务提供商为你提供，当然你也可以自己搭建一个。如何搭建个人的shawdowsocks不在本文讨论范围之内，请参阅其他教程。</p>
-<p>配置完成后就可以启动shawdowsocks服务：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo sslocal -c shawdowsocks.json -d start</div></pre></td></tr></table></figure></p>
-<h3 id="配置全局代理"><a href="#配置全局代理" class="headerlink" title="配置全局代理"></a>配置全局代理</h3><p>启动shawdowsocks服务后，发现并不能翻墙上网，这是因为shawdowsocks是socks 5代理，需要客户端配合才能翻墙。</p>
-<p>为了让整个系统都走shawdowsocks通道，需要配置全局代理，可以通过polipo实现。</p>
-<p>首先是安装polipo：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo apt-get install polipo</div></pre></td></tr></table></figure></p>
-<p>接着修改polipo的配置文件<code>/etc/polipo/config</code>：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">logSyslog = <span class="literal">true</span></div><div class="line">logFile = /var/<span class="built_in">log</span>/polipo/polipo.log</div><div class="line"></div><div class="line">proxyAddress = <span class="string">"0.0.0.0"</span></div><div class="line"></div><div class="line">socksParentProxy = <span class="string">"127.0.0.1:1080"</span></div><div class="line">socksProxyType = socks5</div><div class="line"></div><div class="line">chunkHighMark = 50331648</div><div class="line">objectHighMark = 16384</div><div class="line"></div><div class="line">serverMaxSlots = 64</div><div class="line">serverSlots = 16</div><div class="line">serverSlots1 = 32</div></pre></td></tr></table></figure></p>
-<p>重启polipo服务：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo /etc/init.d/polipo restart</div></pre></td></tr></table></figure></p>
-<p>为终端配置http代理：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">export http_proxy=&quot;http://127.0.0.1:8123/&quot;</div></pre></td></tr></table></figure></p>
-<p>接着测试下能否翻墙：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">curl www.google.com</div></pre></td></tr></table></figure></p>
-<p>如果有响应，则全局代理配置成功。</p>
-<h3 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h3><p>服务器重启后，下面两句需要重新执行：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">sudo sslocal -c shawdowsocks.json -d start</div><div class="line">export http_proxy=&quot;http://127.0.0.1:8123/&quot;</div></pre></td></tr></table></figure></p>
+          <p>在制图过程中，对多边形进行标注是一个常见的需求。然而如何快速找到一个合适的注记点，确不是一个很容易的事情。</p>
+<p>最近，Leaflet的作者<a href="https://github.com/mourner" target="_blank" rel="external">Vladimir Agafonkin</a>大神发表了一篇<a href="https://www.mapbox.com/blog/polygon-center/" target="_blank" rel="external">博文</a>，描述了他如何用100多行JS代码，实现一个高效的多边形标注点搜寻<a href="https://github.com/mapbox/polylabel" target="_blank" rel="external">算法</a>。</p>
+<p>虽然他在博文中描述了算法的原理，但是对于我这种数学不好的人，有些细节方面的东西还不甚了解。因此，此篇文章将以我这种小白角度，事无巨细地解释下他的算法。</p>
+<h2 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h2><p>对于一个多边形，哪一个点才适合做标注点呢？自然而然我们就会想到是重心，即<a href="https://en.wikipedia.org/wiki/Centroid" target="_blank" rel="external">centroid</a>。然而对于凹多边形或者环，它们的重心会出现在多边形外部，这明显不是我们想要的。</p>
+<p><img src="/assets/centeroid.png" alt="centeroid"></p>
+<p>一个合适的标注点，应该是多边形的视觉中心，即以该点为圆心在多边形内部画一个圆，该圆的面积是最大的。假如我们定义一个点到多边形的距离为该点到多边形各边的最短距离，并且规定点在多边形内部时距离为正，点在外部时距离为负。所以多边形标注问题就可以简化为寻找离多边形最远的点，即<a href="https://en.wikipedia.org/wiki/Pole_of_inaccessibility" target="_blank" rel="external">pole of inaccessibility</a>。</p>
+<h2 id="算法原理"><a href="#算法原理" class="headerlink" title="算法原理"></a>算法原理</h2><p>理论上，只要知道多边形的各点坐标，必定能够用数学公式求出这个离多边形最远的点。然而，求解这个标注点的精确坐标必定非常耗时，实际上我们只需要一个近似解就足够了。</p>
+<p>如何搜寻这个点呢？其实算法原理很简单，即利用分而治之的思想，先搜寻一小块区域，逐步淘汰差的区域，逐步缩小搜寻范围，最终找到最优点。具体步骤为：</p>
+<ol>
+<li>对多边形进行格网划分，求出格网内部的点到多边形的最大距离。</li>
+<li>按最大距离对格网进行排序，淘汰距离小的格网，保留距离大的格网。</li>
+<li>对剩下的格网再进行细分，重复步骤1和步骤2。</li>
+</ol>
+<p>在以上的步骤中，格网内部的点到多边形的最大距离如何计算是一个问题。如下图，格网中心点到多边形的距离为<code>dist</code>，到顶点的距为<code>radius</code>，那么格网到多边形的最大距离<code>maxd = dist + radius</code>。</p>
+<p><img src="/assets/dist.jpg" alt="dist"></p>
+<p>如何证明上述计算最大距离的公式呢？我几何学得不好，没办法给出严密的数学证明，但是我可以通过图示予以说明。</p>
+<p>如下图，设多边形内部一点<code>O</code>，其距多边形的距离<code>OA</code>长度为<code>dist</code>。以<code>O</code>为圆心，以<code>radius</code>为半径作一个圆。延长AO，交圆于点<code>B</code>，那么<code>AB</code>的长度为<code>dist + radius</code>。在圆内部任意取一点<code>B&#39;</code>，显然<code>AB&#39; &lt;= AB = dist + radius</code>。假设点<code>B‘</code>到多边形的距离为<code>d</code>，那么<code>d &lt;= AB&#39; &lt;= AB = dist + radius</code>。所以对于圆内的任意一点，其到多边形的距离必定小于等于<code>dist + radius</code>。在圆内部取一个正方形区域，仍然符合<code>d &lt;= dist + radius</code>，这就证明格网区域的最大距离为<code>dist + radius</code>。</p>
+<p><img src="/assets/proof.png" alt="proof"></p>
+<p>如何对格网进行细分呢？我们可以用四叉树，将一个格网分割为4个小格网。</p>
+<p><img src="/assets/quadtree.jpg" alt="quadtree"></p>
+<p>搜寻标注点的算法原理是不是很简单？我将在下一篇博文中详细描述如何用JS实现该算法。</p>
 
         
       

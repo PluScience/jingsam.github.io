@@ -171,13 +171,13 @@
     <header class="post-header">
       <h1 class="post-title">
         
-          <a class="post-link" href="/2016/09/26/polydist.html">求点到多边形的距离的算法实现</a>
+          <a class="post-link" href="/2016/10/19/mapbox-gl-style-spec.html">《Mapbox 地图样式规范》中文版上线啦</a>
         
       </h1>
 
       <div class="post-meta">
         <span class="post-time">
-          2016-09-26
+          2016-10-19
         </span>
         
       </div>
@@ -192,37 +192,10 @@
         
 
         
-          <p>在之前的<a href="/2016/09/26/polylabel2.html">博文</a>中，多边形注记点搜寻算法需要计算点到多边形的距离，本文就来讲一讲如何用JS实现点到多边形距离的计算。</p>
-<h2 id="如何定义点到多边形的距离？"><a href="#如何定义点到多边形的距离？" class="headerlink" title="如何定义点到多边形的距离？"></a>如何定义点到多边形的距离？</h2><p>在本文中，点到多边形的距离定义如下：</p>
-<ol>
-<li>点到多边形边界的最短距离。</li>
-<li>点在多边形内部，距离为正；在多边形外部，距离为负；在边上，距离为零。</li>
-</ol>
-<p>根据上面的定义，计算点到多边形的距离需要解决两个问题：</p>
-<ol>
-<li>点到多边形的最短距离如何计算？</li>
-<li>如何判断点在多边形内部、外部、还是在边界上？</li>
-</ol>
-<h2 id="点到多边形最短距离的计算"><a href="#点到多边形最短距离的计算" class="headerlink" title="点到多边形最短距离的计算"></a>点到多边形最短距离的计算</h2><p>计算点到多边形最短距离的基本原理是：依次计算点到多边形每条边的距离，然后筛选出最短距离。</p>
-<p><img src="/assets/min-dist.png" alt="min-dist"></p>
-<p>如下图，假设<code>AB</code>为多边形的一条边，现在求点<code>P</code>到<code>AB</code>的距离。</p>
-<p><img src="/assets/segment-dist.png" alt="segment-dist"></p>
-<p>根据<a href="https://zh.wikipedia.org/wiki/%E6%95%B0%E9%87%8F%E7%A7%AF" target="_blank" rel="external">向量内集</a>的公式（$\vec{a} \cdot \vec{b} = |a||b|cosθ$）,我们可以推出：<br>$<br>\vec{AB} \cdot \vec{AP} = |AB||AP|cosθ = |AB||AD|<br>\ 设 |AD| = t|AB|<br>\ 则 t = \frac{\vec{AB} \cdot \vec{AP}}{|AB|^2}<br>$</p>
-<p>根据以上公式，我们可以求出<code>t</code>，进而求出点<code>D</code>的坐标，最终<code>PD</code>的长度就很容易求得了。</p>
-<p>但是还有一些边界条件需要注意，即最终<code>D</code>点不是落在<code>AB</code>上，有以下上中情况：</p>
-<ol>
-<li><code>t &lt; 0</code>，<code>D</code>在<code>BA</code>延长线上，此时最短距离取<code>PA</code>；</li>
-<li><code>0 &lt;= t &lt;= 1</code>，<code>D</code>在<code>AB</code>上，此时最短距离取<code>PD</code>；</li>
-<li><code>t &gt; 1</code>，<code>D</code>在<code>AB</code>延长线上，此时最短距离取<code>PB</code>；</li>
-</ol>
-<p><img src="/assets/t.png" alt="t"></p>
-<p>JS实现代码如下：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">pointToSegmentDist</span>(<span class="params">p, a, b</span>) </span>&#123;</div><div class="line">  <span class="keyword">var</span> AB = [b[<span class="number">0</span>] - a[<span class="number">0</span>], b[<span class="number">1</span>] - a[<span class="number">1</span>]]</div><div class="line">  <span class="keyword">var</span> AP = [p[<span class="number">0</span>] - a[<span class="number">0</span>], p[<span class="number">1</span>] - a[<span class="number">1</span>]]</div><div class="line"></div><div class="line">  <span class="keyword">var</span> AB_AP = AB[<span class="number">0</span>] * AP[<span class="number">0</span>] + AB[<span class="number">1</span>] * AP[<span class="number">1</span>]</div><div class="line">  <span class="keyword">var</span> distAB2 = AB[<span class="number">0</span>] * AB[<span class="number">0</span>] + AB[<span class="number">1</span>] * AB[<span class="number">1</span>]</div><div class="line"></div><div class="line">  <span class="keyword">var</span> D = [a[<span class="number">0</span>], a[<span class="number">1</span>]]</div><div class="line">  <span class="keyword">if</span> (distAB2 != <span class="number">0</span>) &#123;</div><div class="line">    <span class="keyword">var</span> t = AB_AP / distAB2</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (t &gt; <span class="number">1</span>) &#123;</div><div class="line">      D = [b[<span class="number">0</span>], b[<span class="number">1</span>]]</div><div class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (t &gt; <span class="number">0</span>) &#123;</div><div class="line">      D = [a[<span class="number">0</span>] + AB[<span class="number">0</span>] * t, a[<span class="number">1</span>] + AB[<span class="number">1</span>] * t]</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">      D = [a[<span class="number">0</span>], a[<span class="number">1</span>]]</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="keyword">var</span> AD = [p[<span class="number">0</span>] - a[<span class="number">0</span>], p[<span class="number">1</span>] - a[<span class="number">1</span>]]</div><div class="line"></div><div class="line">  <span class="keyword">return</span> <span class="built_in">Math</span>.sqrt(AD[<span class="number">0</span>] * AD[<span class="number">0</span>] + AD[<span class="number">1</span>] * AD[<span class="number">1</span>])</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<h2 id="判断点与多边形的位置关系"><a href="#判断点与多边形的位置关系" class="headerlink" title="判断点与多边形的位置关系"></a>判断点与多边形的位置关系</h2><p>判断点与多边形的位置关系，常用的算法是射线法，即经过点沿水平方向做一条直线，观察点左边或右边交点的个数。如果交点个数为奇数，点在多变形内部；交点个数为偶数，点在多边形外部。</p>
-<p><img src="/assets/ray.gif" alt="ray"></p>
-<p>如下图，<code>ab</code>与过<code>p</code>点的水平线相交于c，则有：<br>$<br>\frac{x_2 - x_1}{y_2 - y_1} = \frac{x’ - x_1}{y - y_1}<br>\ 那么 x’ = \frac{(x_2 - x_1)(y - y_1)}{y_2 - y_1} + x_1<br>$</p>
-<p><img src="/assets/ray2.png" alt="ray2"></p>
-<p>JS 算法实现为：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">pointInPolygon</span>(<span class="params">p, polygon</span>) </span>&#123;</div><div class="line">  <span class="comment">// 统计p点右边交点的个数</span></div><div class="line">  <span class="keyword">var</span> count = <span class="number">0</span></div><div class="line"></div><div class="line">  <span class="keyword">for</span> (<span class="keyword">var</span> k = <span class="number">0</span>; k &lt; polygon.length; k++) &#123;</div><div class="line">    <span class="keyword">var</span> ring = polygon[k]</div><div class="line"></div><div class="line">    <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; ring.length - <span class="number">1</span>; i++) &#123;</div><div class="line">      <span class="keyword">var</span> a = ring[i]</div><div class="line">      <span class="keyword">var</span> b = ring[j]</div><div class="line"></div><div class="line">      <span class="keyword">if</span> ((a[<span class="number">1</span>] &gt; y !== b[<span class="number">1</span>] &gt; y) &amp;&amp;</div><div class="line">        (x &lt; (b[<span class="number">0</span>] - a[<span class="number">0</span>]) * (y - a[<span class="number">1</span>]) / (b[<span class="number">1</span>] - a[<span class="number">1</span>]) + a[<span class="number">0</span>])) count++;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="keyword">return</span> count % <span class="number">2</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<h2 id="完整实现"><a href="#完整实现" class="headerlink" title="完整实现"></a>完整实现</h2><p>解决了以上两个难题之后，下面给出完整实现：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">pointToPolygonDist</span>(<span class="params">p, polygon</span>) </span>&#123;</div><div class="line">  <span class="comment">// 统计p点右边交点的个数</span></div><div class="line">  <span class="keyword">var</span> count = <span class="number">0</span></div><div class="line">  <span class="keyword">var</span> minDist = <span class="literal">Infinity</span></div><div class="line"></div><div class="line">  <span class="keyword">for</span> (<span class="keyword">var</span> k = <span class="number">0</span>; k &lt; polygon.length; k++) &#123;</div><div class="line">    <span class="keyword">var</span> ring = polygon[k]</div><div class="line"></div><div class="line">    <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; ring.length - <span class="number">1</span>; i++) &#123;</div><div class="line">      <span class="keyword">var</span> a = ring[i]</div><div class="line">      <span class="keyword">var</span> b = ring[j]</div><div class="line"></div><div class="line">      <span class="keyword">if</span> ((a[<span class="number">1</span>] &gt; y !== b[<span class="number">1</span>] &gt; y) &amp;&amp;</div><div class="line">        (x &lt; (b[<span class="number">0</span>] - a[<span class="number">0</span>]) * (y - a[<span class="number">1</span>]) / (b[<span class="number">1</span>] - a[<span class="number">1</span>]) + a[<span class="number">0</span>])) count++;</div><div class="line"></div><div class="line">      minDist = <span class="built_in">Math</span>.min(minDist, pointToSegmentDist(p, a, b))</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="keyword">if</span> (count % <span class="number">2</span> === <span class="number">0</span>) minDist = -minDist</div><div class="line"></div><div class="line">  <span class="keyword">return</span> minDist</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+          <p>最近逮空翻译了下《Mapbox 地图样式规范》，对于英文不好或者懒得看英文的朋友们可能会有用。</p>
+<p>页面托管到了 <a href="https://jingsam.github.io/mapbox-gl-style-spec">Github</a> 上，现在也正在和 Mapbox 沟通，看能不能发布到 <a href="http://www.mapbox.cn/" target="_blank" rel="external">mapbox.cn</a> 上，服务下广大中国 Mapboxer。</p>
+<p>当然，如果有什么翻译不到位或者错误的地方，欢迎给我发 <a href="https://github.com/jingsam/mapbox-gl-style-spec/issues" target="_blank" rel="external">issue</a>。</p>
+<p><img src="/assets/mapbox-gl-style-spec.png" alt=""></p>
 
         
       
@@ -362,24 +335,7 @@
 
 
     <script type="text/javascript" src="/js/src/even.js?v=2.5.0"></script>
-<script type="text/javascript" src="/js/src/bootstrap.js?v=2.5.0"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
-</script>
-
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Queue(function() {
-    var all = MathJax.Hub.getAllJax(), i;
-    for(i=0; i < all.length; i += 1) {
-      all[i].SourceElement().parentNode.className += ' has-jax';
-    }
-  });
-</script>
-
-<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-</script>
-<!-- End: Injected MathJax -->
-<!-- hexo-inject:end -->
+<script type="text/javascript" src="/js/src/bootstrap.js?v=2.5.0"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 
   </body>
 </html>

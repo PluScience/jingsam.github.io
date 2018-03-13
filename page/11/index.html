@@ -171,13 +171,13 @@
     <header class="post-header">
       <h1 class="post-title">
         
-          <a class="post-link" href="/2017/01/12/node-pre-gyp-mirror.html">使用node-pre-gyp加速二进制包安装</a>
+          <a class="post-link" href="/2017/02/07/nodejs-on-android.html">手机上也可以愉快地搞nodejs开发</a>
         
       </h1>
 
       <div class="post-meta">
         <span class="post-time">
-          2017-01-12
+          2017-02-07
         </span>
         
       </div>
@@ -192,13 +192,26 @@
         
 
         
-          <p>node-pre-gyp是一个分发nodejs二进制程序包的工具，负责将预编译好的二进制程序直接下载到用户目录。它介于npm与node-gyp之间，只在相应平台二进制包不存在时才调用node-gyp编译。</p>
-<p>node-pre-gyp存在的意义是什么呢？一些简单的nodejs C++扩展直接从源代码编译安装问题不大，但复杂的扩展编译环境难搭建、编译耗时长，因而从源代码安装非常麻烦。node-pre-gyp能够将预编译好的二进制包直接下载到用户目录，只在必要的时候才调用node-gyp从源代码编译，大大加快了nodejs C++扩展的安装速度。</p>
-<p>node-pre-gyp需要开发者将各平台编译好的二进制包上传到网络上，并在package.json的<code>binary</code>字段指明二进制包的位置。然而，很多开发者选择将二进制包上传到aws上，导致国内无法正常下载（被墙）。幸好，可以在npm中设置<code>--{module_name}_binary_host_mirror</code>选项来指定二进制包的位置。例如，安装v8-profiler可以使用如下命令安装：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm install v8-profiler --profiler_binary_host_mirror=https://npm.taobao.org/mirrors/node-inspector/</div></pre></td></tr></table></figure></p>
-<p>为了让国内开发者也能享受到node-pre-gyp带来的好处，我使用阿里云做了一个镜像，镜像的地址是：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">https://foxgis.oss-cn-shanghai.aliyuncs.com</div></pre></td></tr></table></figure></p>
-<p>如果要安装sqlite3，执行以下命令：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm install sqlite3 --sqlite3_binary_host_mirror=https://foxgis.oss-cn-shanghai.aliyuncs.com</div></pre></td></tr></table></figure></p>
-<p>目前是放到阿里云OSS上的，速度还可以，镜像上面包有：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mapnik mapbox-gl-native sqlite3 fontnik gdal osrm zipfile</div></pre></td></tr></table></figure></p>
-<p>如果有其他包需要放到上面的，请给我留言或者发邮件（abc#whu.edu.cn）。</p>
+          <h2 id="缘起"><a href="#缘起" class="headerlink" title="缘起"></a>缘起</h2><p>在微博上看到尤雨溪的这么一则微博：<br><img src="/assets/2017-02-07-1.png" alt=""></p>
+<p>嗬！在手机上也能跑nodejs，有点儿意思哈。顺手查了查nodejs官网，发现nodejs是支持ARM处理器的，有了这个先决条件，手机上跑nodejs应该没什么大障碍了。本文就来分享一下我在手机上跑nodejs的一点经验。</p>
+<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><p>首先你得有一部Android手机，iPhone的硬件条件有，但是由于IOS是一个封闭的系统，实际操作起来会很困难。</p>
+<p>软件方面需要安装<a href="1">Termux</a>，这是Android平台下的一个开源的终端模拟器。</p>
+<p>另外，我建议安装一个编程键盘<a href="2">Hacker’s Keyboard</a>，因为一般的输入法没有Ctrl、Alt、Tab、Esc这些常用控制键，到时候会很麻烦。安装Hacker’s Keyboard，设置为全键盘模式。</p>
+<h2 id="实施"><a href="#实施" class="headerlink" title="实施"></a>实施</h2><p>首先得把nodejs安装到手机上。Termux强大的地方在于它带有一个包管理器<code>apt</code>，使用<code>apt</code>可以直接安装nodejs：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">apt update</div><div class="line">apt install nodejs</div></pre></td></tr></table></figure></p>
+<p>这样node和npm都安装好了，node的版本是v6.9.4，版本还比较新。</p>
+<p>搞开发嘛，做好把git和vim也安装上：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">apt install git vim</div></pre></td></tr></table></figure></p>
+<p>有了npm之后，我们就可以随意安装需要的包了，这里以vue-cli为例，来跑一个vuejs工程。过程与在电脑上是一样的：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">npm i vue-cli -g</div><div class="line">vue init webpack vue-test</div><div class="line">cd vue-test</div><div class="line">npm i</div><div class="line">npm run dev</div></pre></td></tr></table></figure></p>
+<p>浏览器打开localhost:8080，你就可以看到vuejs的欢迎页面了。</p>
+<h2 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h2><p>由于Android权限管理的原因，你并不能随意地在任何位置写入文件。你的活动范围必须在Termux的权限之内，即<code>data/data/com.termux/files</code>目录下。虽然你可以写文件到SD卡，但是有些包symbolink的时候会失败，所以保险的做法是所有的操作都在HOME目录下进行，即<code>data/data/com.termux/files/home</code>目录。</p>
+<p>在HOME目录下操作的坏处是，但你卸载Termux时，HOME下的所有文件也会删除。所以玩玩而已，不要当真，哈哈！</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>实话讲，在手机上不长不方便，我想有一下3点：</p>
+<ol>
+<li>屏幕太小。本来屏幕空间就有限，输入法还要占一半，估计可以通过投屏解决；</li>
+<li>没有好的编辑器。本来就没人会在手机上搞正经开发嘛，所以不会有好的编辑器，还好Vim可以凑合着用；</li>
+<li>输入不方便。这个也是最大的问题，手机键盘真的太不方便了，有点想念诺基亚N97了。</li>
+</ol>
+<p><img src="/assets/2017-02-07-2.jpg" alt=""></p>
+<p>关于手机键盘，最好能携带方便，搜了下淘宝，下面两款似乎不错哦：<br><img src="/assets/2017-02-07-3.png" alt=""></p>
 
         
       

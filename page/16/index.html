@@ -171,13 +171,13 @@
     <header class="post-header">
       <h1 class="post-title">
         
-          <a class="post-link" href="/2016/10/23/standalone-vs-runtime-only-build-in-vuejs2.html">Vue.js 2.0 独立构建和运行时构建的区别</a>
+          <a class="post-link" href="/2016/11/01/peerDependencies-in-Vue-components.html">开发组件库时 Vue 应该放哪儿：devDependencies or peerDependencies？</a>
         
       </h1>
 
       <div class="post-meta">
         <span class="post-time">
-          2016-10-23
+          2016-11-01
         </span>
         
       </div>
@@ -192,19 +192,236 @@
         
 
         
-          <p>在使用 Vue.js 2.0 时，有独立构建（standalone）和运行时构建（runtime-only）两种版本可供选择。而在 Vue.js 1.0 中，却没有这种版本区别。到底该使用哪一个版本？这让我有点懵逼的感觉。本着知其然还要知其所以然的精神，我决定好好研究下两者间的区别。</p>
-<p>Vue.js 的官方教程上是这么说的：</p>
-<blockquote>
+          <p>最近在和 Aresn 开发 iView 组件库的时候，关于依赖包 Vue 到底是放在 devDependencies 还是 peerDependencies 有些争论。本着打破砂锅问到底的精神，这篇文章讨论下 package.json 里面的各种 depedencies 字段到底是干嘛的。</p>
+<p>npm 的 package.json 包括 5 种 dependencies：</p>
+<ol>
+<li><code>dependencies</code>：应用能够正常运行所依赖的包。这种 dependencies 是最常见的，用户在使用 <code>npm install</code> 安装你的包时会自动安装这些依赖。</li>
+<li><code>devDependencies</code>：开发应用时所依赖的工具包。通常是一些开发、测试、打包工具，例如 webpack、ESLint、Mocha。应用正常运行并不依赖于这些包，用户在使用 <code>npm install</code> 安装你的包时也不会安装这些依赖。</li>
+<li><code>peerDependencies</code>：应用运行依赖的宿主包。最典型的就是插件，例如各种 jQuery 插件，这些插件本身不包含 jQeury，需要外部提供。用户使用 npm 1 或 2 时会自动安装这种依赖，npm 3 不会自动安装，会提示用户安装。</li>
+<li><code>bundledDependencies</code>：发布包时需要打包的依赖，似乎很少见。</li>
+<li><code>optionalDependencies</code>：可选的依赖包。此种依赖不是程序运行所必须的，但是安装后可能会有新功能，例如一个图片解码库，安装了 <code>optionalDependencies</code> 后会支持更多的格式。</li>
+</ol>
+<p>从以上的定义可以看出，<code>dependencies</code> 是程序运行依赖，<code>devDependencies</code> 一般是一些开发工具，<code>peerDependencies</code> 一般用于插件。</p>
+<p>下表是我在 awesome-vue 中找到的 28 个 Vue 组件库，统计了 Vue 在这些库中的位置。其中，11 个库选择放到 <code>dependencies</code>，10 个库选择放到 <code>devDependencies</code>，4 个库选择放到 <code>peerDependencies</code>，2 个库选择不放 Vue 依赖，最后还有 1 个库选择在 <code>devDependencies</code> 和 <code>peerDependencies</code> 同时加上 Vue 依赖。</p>
+<table>
+<thead>
+<tr>
+<th>UI</th>
+<th>dependencies</th>
+<th>devDependencies</th>
+<th>peerDependencies</th>
+<th>none</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>vue-strap</td>
+<td>✔</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>gritcode-components</td>
+<td>✔</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Keen-UI</td>
+<td>✔</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>material-ui-vue</td>
+<td>✔</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>vue-admin</td>
+<td>✔</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>vue-carbon</td>
+<td>✔</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>vue-impression</td>
+<td>✔</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>vuikit</td>
+<td>✔</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>vue-material</td>
+<td>✔</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>vue-kit</td>
+<td>✔</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>vue-material-design</td>
+<td>✔</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>vuestrap-base-components</td>
+<td></td>
+<td>✔</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>vux</td>
+<td></td>
+<td>✔</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>vue-materialize</td>
+<td></td>
+<td>✔</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>mint-ui</td>
+<td></td>
+<td>✔</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>N3-components</td>
+<td></td>
+<td>✔</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>vue-desktop</td>
+<td></td>
+<td>✔</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>vue-beauty</td>
+<td></td>
+<td>✔</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>radon-ui</td>
+<td></td>
+<td>✔</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>vue-antd</td>
+<td></td>
+<td>✔</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>bootstrap-vue</td>
+<td></td>
+<td>✔</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>iview</td>
+<td></td>
+<td></td>
+<td>✔</td>
+<td></td>
+</tr>
+<tr>
+<td>wovue</td>
+<td></td>
+<td></td>
+<td>✔</td>
+<td></td>
+</tr>
+<tr>
+<td>vue-bulma</td>
+<td></td>
+<td></td>
+<td>✔</td>
+<td></td>
+</tr>
+<tr>
+<td>quasar</td>
+<td></td>
+<td></td>
+<td>✔</td>
+<td></td>
+</tr>
+<tr>
+<td>vueboot</td>
+<td></td>
+<td></td>
+<td></td>
+<td>✔</td>
+</tr>
+<tr>
+<td>material-components</td>
+<td></td>
+<td></td>
+<td></td>
+<td>✔</td>
+</tr>
+<tr>
+<td>element</td>
+<td></td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+</tbody>
+</table>
+<p>下面分析下各种选择的优劣：</p>
 <ul>
-<li>独立构建包括编译和支持 template 选项。 它也依赖于浏览器的接口的存在，所以你不能使用它来为服务器端渲染。</li>
-<li>运行时构建不包括模板编译，不支持 template 选项。运行时构建，可以用 render 选项，但它只在单文件组件中起作用，因为单文件组件的模板是在构建时预编译到 render 函数中，运行时构建只有独立构建大小的 30%，只有 16Kb min+gzip 大小。</li>
+<li><code>dependencies</code>：放到 <code>dependencies</code> 的好处是安装组件库的时候 Vue 会自动安装。问题是已有的工程项目中往往已经安装了 Vue，会导致在 npm 1 或 2 中重复安装 Vue。虽然此问题在 npm 3 中可以规避，但是如果已安装的 Vue 版本与组件库所依赖的版本不兼容时，Vue 仍然会重复安装。</li>
+<li><code>devDependencies</code>：由于组件库单元测试时会用到 Vue，所以严格来说 Vue 是属于开发工具包，放到 <code>devDependencies</code> 合情合理。但是，在 <code>devDependencies</code> 中的 Vue 依赖不会自动安装，所以需要用户去查文档来确定到底应该安装哪个版本的 Vue，对用户似乎不太友好。</li>
+<li><code>peerDevDependencies</code>：Vue 组件库本质上是 Vue 的插件，依赖于外部提供的 Vue。把 Vue 放到这里，npm 能够提示用户需要安装哪个版本的 Vue，这点比 <code>devDependencies</code>  友好。问题在于，从 npm 3 开始，<code>peerDevDependencies</code> 中的依赖不会自动安装，会导致自动集成测试失败。</li>
+<li>不添加依赖：这基本上是最差的选择了，用户甚至不能知道组件库到底依赖哪个版本的 Vue，只能靠猜。</li>
+<li><code>devDependencies</code>、<code>peerDevDependencies</code> 同时添加：这是我和 Element UI 的开发者讨论后最优的做法。<code>peerDevDependencies</code> 中的 Vue 是组件库运行所依赖的 Vue 的最低版本，而 <code>devDependencies</code> 运行测试时需要的 Vue 版本，一般情况下 <code>devDependencies &gt;= peerDevDependencies</code>。这种做法保证了 npm 1、2、3 都不会出问题，并且当用户安装组件库时给予友好的提示信息。</li>
 </ul>
-</blockquote>
-<p>看了半天，实在没搞清两者之间的区别。经过一番搜索，终于搞清楚了问题的本源，且听我娓娓道来。</p>
-<p>Vue.js 的运行过程实际上包含两步。第一步，编译器将字符串模板（template）编译为渲染函数（render），称之为编译过程；第二步，运行时实际调用编译的渲染函数，称之为运行过程。</p>
-<p>由于 Vue.js 1.0 的编译过程需要依赖浏览器的 DOM，所以无法（或者说没有意义）将编译器和运行时分开。因此在 Vue.js 1.0 分发包中，编译器和运行时是打包在一起，都在浏览器端执行。</p>
-<p>然而到了 Vue.js 2.0，为了支持服务端渲染（server-side rendering），编译器不能依赖于 DOM，所以必须将编译器和运行时分开。这就形成了独立构建（编译器 + 运行时）和运行时构建（仅运行时）。显而易见，运行时构建要小于独立构建。</p>
-<p>在现代前端工程构建中，通常会使用 vue-loader 和 vueify 预编译模板。在这种情况下，只需要打包运行时，而不需要打包编译器，运行时构建即可满足所需。当然，如果你需要在前端使用 <code>template</code> 选项实时编译模板，那么还是需要使用独立构建将编译器发送到浏览器。</p>
+<p>到这里，我们可以得出以下结论：<strong>在开发 Vue 组件库是，应当同时在 <code>devDependencies</code> 和 <code>peerDevDependencies</code> 添加 Vue 依赖。</strong></p>
+<p>最后，可能有人会说：哥们，何必较真呢，能用不就行了吗？我的观点是，如果大家都按照规范来，会减少很多不必要的麻烦。想想看，如果大家在 npm 上发布包的时候不遵守 semver 规范，你还有信心说，你的程序只要 npm install 就能正常运行么？</p>
+<p>按老罗的话说，我不是为了输赢，我就是认真！</p>
 
         
       

@@ -171,13 +171,13 @@
     <header class="post-header">
       <h1 class="post-title">
         
-          <a class="post-link" href="/2016/04/20/deploy-to-digitialocean.html">Nodejs网站部署到DigtialOcean</a>
+          <a class="post-link" href="/2016/06/04/mongodb-text-search.html">Mongodb全文搜索实战</a>
         
       </h1>
 
       <div class="post-meta">
         <span class="post-time">
-          2016-04-20
+          2016-06-04
         </span>
         
       </div>
@@ -192,28 +192,23 @@
         
 
         
-          <p>最近基于Express + Mongodb开发了一个纯API服务，现在要部署到公网上。我选择的是DigitialOcean的主机，但整个部署过程不仅仅适用于DigitialOcean，其他VPS也可参考。</p>
-<h2 id="创建主机"><a href="#创建主机" class="headerlink" title="创建主机"></a>创建主机</h2><p>假设我们现在已经注册了DigitialOcean账号，并且通过了邮箱验证和信用卡绑定。<br>首先创建一个主机，登录后点击<code>Create Droplets</code>，即可开始创建主机。Droplets的意思是小水滴，DigitialOcean是数字海洋，两者之间的关系还是蛮形象的。<br>在创建主机界面，我们可以选择主机的操作系统、服务器的位置、服务器的硬件配置等。我选择的是Ubuntu 15.10，San Franscisco的机房，以及最便宜5美元一个月的配置：1 CPU + 512M RAM + 20G SSD。<br>选择完配置之后，先别忙着点确定。里面有一项叫SSH key，可以将你的SSH的公钥填进去，这样我们稍后登录主机的时候就不需要填密码了。当然，如果你不知道怎么生成SSH key或者嫌麻烦，也可以通过密码登录，密码会在你创建完主机之后发到你的注册邮箱。</p>
-<h2 id="创建用户"><a href="#创建用户" class="headerlink" title="创建用户"></a>创建用户</h2><p>当主机创建完之后，我们可以通过SSH远程登录到主机上：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ssh root@xxx.xxx.xxx.xxx</div></pre></td></tr></table></figure></p>
-<p>这里有个问题就是，我们是以root身份登录到系统中，而我们网站不能在root权限下部署。否则，要是有黑客获取了网站控制权限，就掌握了主机的控制权限，这是很危险的。所以，我们需要创建一个普通权限的用户，以普通用户的身份部署网站。</p>
-<p>使用下面的命令添加新用户和密码，其中<code>-m</code>表示在<code>/home</code>目录下创建用户文件夹。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">add user -m judy</div><div class="line">passwd judy</div></pre></td></tr></table></figure></p>
-<p>为了之后安装软件方便，我们将新用户添加到<code>sudo</code>组中：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo adduser judy sudo</div></pre></td></tr></table></figure></p>
-<p>现在我们完成了新用户的创建。有些人在使用SSH登录到DigitalOcean后会发现很卡，打个命令半天才回显，在这里我推荐一款很好用的SSH替代软件：mosh。SSH的机制是我们输入一个字符，这个字符会发送到远程服务器，然后远程服务器收到后再发送回终端显示。在这个传输过程中，如果网络条件不好，会产生明显地卡顿。而mosh在你输入一个字符时，立即在终端上显示，然后再后台自动地将命令发送到远程服务器。因此即使在较差的网络条件下，mosh也可以很流畅。</p>
-<p>mosh需要在客户端和服务端同时安装，安装的的命令如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">apt-get install mosh</div></pre></td></tr></table></figure></p>
-<p>退出root用户，然后用mosh重连，你将会发现比之前流畅多了，mosh连接的命令和SSH一样：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mosh judy@xxx.xxx.xxx.xxx</div></pre></td></tr></table></figure></p>
-<h2 id="安装nodejs"><a href="#安装nodejs" class="headerlink" title="安装nodejs"></a>安装nodejs</h2><p>由于我们的网站是基于Express的，因此需要安装nodejs。Ubuntu的官方源上没有nodejs，需要添加nodesource源，安装的命令如下：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">sudo apt-get install curl</div><div class="line">curl -sL https://deb.nodesource.com/setup_5.x | sudo -E bash -</div><div class="line">sudo apt-get install nodejs</div></pre></td></tr></table></figure></p>
-<p><code>sudo</code>命令是临时借用root的权限去执行命令。</p>
-<h2 id="安装mongodb和git"><a href="#安装mongodb和git" class="headerlink" title="安装mongodb和git"></a>安装mongodb和git</h2><p>网站的数据库采用的是mongodb，幸运的是Ubuntu的官方源收录了mongodb，所以我们可以直接用apt安装：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo apt-get install mongodb</div></pre></td></tr></table></figure></p>
-<p>mongodb安装完之后会自动启动守护程序mongod，并设置了开机自启动。检查mongodb是否成功启动，可以运行<code>mongo</code>连接数据是否成功。</p>
-<p>网站的源代码托管在GitHub上，所以要把代码下载下来，我们还需要安装git：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo apt-get install git</div></pre></td></tr></table></figure></p>
-<h2 id="部署"><a href="#部署" class="headerlink" title="部署"></a>部署</h2><p>通过git将网站源代码拉取下来，并安装相应的依赖：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">git clone https://github.com/&#123;your_git_repo&#125; site</div><div class="line">cd site</div><div class="line">npm install</div></pre></td></tr></table></figure></p>
-<p>网站的软件环境基本上准备好了，如果代码有测试的话，可以跑一遍测试看网站是否各项功能正常。</p>
-<p>Express网站开发的时候，默认的服务端口是3000。由于服务是公开发布的，总不能让用户还在网址后面加个端口号吧。所以，我们将网站切换到80端口：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">PORT=80 node ./bin/www</div></pre></td></tr></table></figure></p>
-<p>不幸的是，你将马上看到出错信息，信息显示80端口只有root用户才能使用。实际上，任何小于1024的端口，都只能由root用户使用。所以我们用采取一定的措施，使得网站服务可以使用80端口。方法很简单，我们可以借助cap2实现：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">sudo apt-get install libcap2-bin</div><div class="line">sudo <span class="built_in">setcap</span> cap_net_bind_service=+ep `<span class="built_in">which</span> nodejs`</div></pre></td></tr></table></figure></p>
-<p>后一条命令中的<code>which nodejs</code>是找出nodejs可执行文件的路径，一定要是nodejs的实际路径，不能是符号链接。</p>
-<p>执行以上命令后，再次测试就会发现能够使用80端口了。</p>
-<h2 id="更改时区"><a href="#更改时区" class="headerlink" title="更改时区"></a>更改时区</h2><p>新建的主机默认的时区是0时区，更改为北京时间可用交互式的命令行工具<code>tzselect</code>:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">tzselect</div><div class="line">sudo cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime</div></pre></td></tr></table></figure></p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>通过以上过程，基本上完成了对服务器的配置。但是还有很多工作要做，例如nodejs进程自动重启、网站制动部署等，这将在以后的博文中逐步说明。</p>
+          <p>在传统的关系型数据库中，我们通常将数据结构化，通过一系列表关联、聚合来查询我们所需的结果。而在非结构化的数据中，缺少这种预定义的结构，因而如何快速查询定位到我们所需要的结果，不是一件容易的事。</p>
+<p>Mongodb作为一种NoSQL数据库，非常适合存储和管理非结构化数据，例如互联网上的各种文本数据。假如我们用Mongodb存储了很多博客文章，那么如何快速找到所有关于“nodejs”这个主题的文章呢？Mongodb内建的全文搜索可以帮助我们完成这个功能。</p>
+<p>在本篇博文中，将要介绍的是我使用Mongdb text search的一些经验。</p>
+<h3 id="Mongodb-text-search是什么？"><a href="#Mongodb-text-search是什么？" class="headerlink" title="Mongodb text search是什么？"></a>Mongodb text search是什么？</h3><p>Mongodb text search是Mongodb对数据库进行搜索的功能模块，类似于数据库内建的搜索引擎。有些人可能会疑问，查数据库为什么还需要搜索引擎？直接用条件查询不就得了。例如在前面的文章主题搜索中，我们不可能事先提取出每篇文章的主题，然后用专门的字段存储，因此没办法进行条件查询。并且同一个主题词，有多种不同的表达方式，例如”node”、”nodejs”可视为同一个主题。</p>
+<p>Mongodb text search可以自动地对大段的文本数据进行分词处理、模糊匹配、同义词匹配，解决文本搜索的问题。</p>
+<h3 id="建立文本索引"><a href="#建立文本索引" class="headerlink" title="建立文本索引"></a>建立文本索引</h3><p>要使Mongodb能够进行全文搜索，首先要对搜索的字段建立文本索引。建立文本索引的关键字是<code>text</code>，我们既可以建立单个字段的文本索引，也可以建立包含多个字段的复合文本索引。<strong>需要注意的是，每个collection只能建立一个文本索引，且只能对String或String数组的字段建立文本索引</strong>。</p>
+<p>我们可以通过以下命令，建立一个文本索引：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">db.collection.createIndex(&#123; subject: &quot;text&quot;, content: &quot;text&quot; &#125;)</div></pre></td></tr></table></figure></p>
+<p>在mongoose中我们可以通过以下代码，创建文本索引：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">schema.index(&#123; subject: &quot;text&quot;, content: &quot;text&quot; &#125;)</div></pre></td></tr></table></figure></p>
+<p>需要注意的是，由于每个collection只支持一个文本索引，所以当你需要在schema中添加或删除文本索引字段时，往往不起作用。这时候你需要到数据库中，手动删除已经建立的文本索引。</p>
+<h3 id="文本搜索示例"><a href="#文本搜索示例" class="headerlink" title="文本搜索示例"></a>文本搜索示例</h3><p>文本搜索的语法为：<br><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">  $text:</div><div class="line">    &#123;</div><div class="line">      $search: &lt;string&gt;,</div><div class="line">      $language: &lt;string&gt;,</div><div class="line">      $caseSensitive: &lt;boolean&gt;,</div><div class="line">      $diacriticSensitive: &lt;boolean&gt;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>在mongoose中，我们可以通过以下语句进行文本搜索：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">var query = model.find(&#123; $text: &#123; $search: &quot;hello world&quot; &#125; &#125;)</div></pre></td></tr></table></figure></p>
+<p><code>$search</code>后面的关键词可以有多个，关键词之间的分隔符可以是多种字符，例如空格、下划线、逗号、加号等，但不能是<code>-</code>和<code>\&quot;</code>，因为这两个符号会有其他用途。搜索的多个关键字是<code>or</code>的关系，除非你的关键字包含<code>-</code>。例如<code>hello world</code>会包含所有匹配<code>hello</code>或<code>world</code>的文本，而<code>hello -world</code>只会匹配包含<code>hello</code>且不包含<code>world</code>的文本。</p>
+<p><code>$language</code>指示搜索的语言类型，在最新的Mongodb 3.2 enterprise版本中，已经增加了对中文文本的搜索。</p>
+<p><code>$caseSensitive</code>设置是否区分大小写。</p>
+<p><code>$diacriticSensitive</code>设置是否区别发音符号，<code>CAFÉ</code>于<code>Café</code>是同一语义，只是重音不一样。</p>
+<p>我们还可以对搜索的结果按匹配度进行排序：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">db.posts.find(</div><div class="line">   &#123; $text: &#123; $search: &quot;hello world&quot; &#125; &#125;,</div><div class="line">   &#123; score: &#123; $meta: &quot;textScore&quot; &#125; &#125;</div><div class="line">).sort( &#123; score: &#123; $meta: &quot;textScore&quot; &#125; &#125; )</div></pre></td></tr></table></figure></p>
+<h3 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h3><p>Mongodb建立文本索引时，会对提取所有文本的关键字建立索引，因而会造成一定的性能问题。所以对于结构化的字段，建议用普通的关系查询，如果需要对大段的文本进行搜索，才考虑用全文搜索。</p>
 
         
       
@@ -353,7 +348,24 @@
 
 
     <script type="text/javascript" src="/js/src/even.js?v=2.5.0"></script>
-<script type="text/javascript" src="/js/src/bootstrap.js?v=2.5.0"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+<script type="text/javascript" src="/js/src/bootstrap.js?v=2.5.0"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
 
   </body>
 </html>

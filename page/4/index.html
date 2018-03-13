@@ -171,13 +171,13 @@
     <header class="post-header">
       <h1 class="post-title">
         
-          <a class="post-link" href="/2018/02/26/2018-plan.html">2018计划</a>
+          <a class="post-link" href="/2018/03/02/pkg.html">使用pkg打包Node.js应用</a>
         
       </h1>
 
       <div class="post-meta">
         <span class="post-time">
-          2018-02-26
+          2018-03-02
         </span>
         
       </div>
@@ -192,13 +192,32 @@
         
 
         
-          <p>过去一年，发现自己越来越难以下笔写东西，原因是身体和思想上的双重懒惰。常常是心中拟定了很多写作的题目，而到要下笔写的时候，总是觉得我对这个主题研究还不够深入全面，然后就默默地为自己找到一个借口：“等我把这个研究透之后再下笔写”，最终就不了了之了。</p>
-<p>博文对于我而言，是一种对技术的总结和沉淀。回望2017，自己的博文写得很少，心中很是失落。失落在于自己的心太浮躁，对技术没有进行总结和沉淀。</p>
-<p>我下决心在2018年要多写文章，在此立下flag：“2018年每月要产出4篇文章，全年要有48篇文章上线”。要实现这个目标，首先“等我把这个研究透之后再下笔写”这种借口就不成立了，想到某个主题直接写就是了，深度不够？再来一篇。其二，时间上要保障，自己要把逛社交网站、看新闻的时间，抽出来作为写作的时间。三是注意力要集中，不能什么技术研究到一半，注意力又转移到其他技术上了。</p>
-<p>关于写作的主题范围，主要还是矢量瓦片方面的技术，包括mapbox-gl-js、矢量切片工具、矢量瓦片服务以及矢量瓦片在时空大数据可视化方面的应用。</p>
-<p>关于个人的技术成长，总来的说，要强核心、补短板、宽视野。“强核心”是要强化自己在在线制图和大数据可视化方面的积累，这是自己的核心竞争力，看家老本不能丢。“补短板”是补全自己在Web开发方面的不足，主要是CSS、WebGL以及对MVVM模式的认识，这方面需要自己系统地阅读书籍以及流行库的源代码。“宽视野”是要扩大自己的技术范围，自己不能局限于某一项技术上，要广泛涉猎，知道各项技术的原理，能够敏锐地察觉到某项技在地理信息中的应用前景。</p>
-<p>最后，以上的目标要实现的前提是，自己要加强时间的管理。过去的一年，自己没闲着，一直在忙项目上的事情。但从心底来说，对于去年自己的成果，不甚满意，我认为本来还可以完成更多事情。究其原因，自己在时间的安排、任务优先级的把控方面很是不足。所以，今年迫切要改掉坏习惯，把自己的时间规划好。具体做法还是多动笔杆子，把自己的计划事项写下来，这样自己才能不断地排优先级、做计划、实施以及最后的回顾。</p>
-<p>总而言之，“凡事预则立，不预则废”。2018，我要做一个有计划的人。</p>
+          <p>Node.js应用不需要经过编译过程，可以直接把源代码拷贝到部署机上执行，确实比C++、Java这类编译型应用部署方便。然而，Node.js应用执行需要有运行环境，意味着你需要先在部署机器上安装Node.js。虽说没有麻烦到哪里去，但毕竟多了一个步骤，特别是对于离线环境下的部署机，麻烦程度还要上升一级。假设你用Node.js写一些小的桌面级工具软件，部署到客户机上还要先安装Node.js，有点“大炮打蚊子”的感觉。更严重的是，如果部署机器上游多个Node.js应用，而且这些应用要依赖于不同的Node.js版本，那就更难部署了。</p>
+<p>理想的情况是将Node.js打包为一个单独的可执行文件，部署的时候直接拷贝过去就行了。除了部署方便外，因为不需要再拷贝源代码了，还有利于保护知识产权。</p>
+<p>将Node.js打包为可执行文件的工具有pkg、nexe、node-packer、enclose等，从打包速度、使用便捷程度、功能完整性来说，pkg是最优秀的。这篇文章就来讲一讲半年来我使用pkg打包Node.js应用的一些经验。</p>
+<p>pkg的打包原理简单来说，就是将js代码以及相关的资源文件打包到可执行文件中，然后劫持<code>fs</code>里面的一些函数，使它能够读到可执行文件中的代码和资源文件。例如，原来的<code>require(&#39;./a.js&#39;)</code>会被劫持到一个虚拟目录<code>require(&#39;/snapshot/a.js&#39;)</code>。</p>
+<h1 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h1><p>pkg既可以全局安装也可以局部安装，推荐采用局部安装：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm install pkg --save-dev</div></pre></td></tr></table></figure>
+<h1 id="用法"><a href="#用法" class="headerlink" title="用法"></a>用法</h1><p>pkg使用比较简单，执行下<code>pkg -h</code>就可以基本了解用法，基本语法是：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pkg [options] &lt;input&gt;</div></pre></td></tr></table></figure>
+<p><code>&lt;input&gt;</code>可以通过三种方式指定：</p>
+<p>1.一个脚本文件，例如<code>pkg index.js</code>;<br>2.<code>package.json</code>，例如<code>pkg package.json</code>，这时会使用<code>package.json</code>中的<code>bin</code>字段作为入口文件；<br>3.一个目录，例如<code>pkg .</code>，这时会寻找指定目录下的<code>package.json</code>文件，然后在找<code>bin</code>字段作为入口文件。</p>
+<p><code>[options]</code>中可以指定打包的参数：<br>1.<code>-t</code>指定打包的目标平台和Node版本，如<code>-t node6-win-x64,node6-linux-x64,node6-macos-x64</code>可以同时打包3个平台的可执行程序；<br>2.<code>-o</code>指定输出可执行文件的名称，但如果用<code>-t</code>指定了多个目标，那么就要用<code>--out-path</code>指定输出的目录；<br>3.<code>-c</code>指定一个JSON配置文件，用来指定需要额外打包脚本和资源文件，通常使用<code>package.json</code>配置。</p>
+<p>使用pkg的最佳实践是：在<code>package.json</code>中的<code>pkg</code>字段中指定打包参数，使用<code>npm scripts</code>来执行打包过程，例如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">  ...</div><div class="line">  &quot;bin&quot;: &quot;./bin/www&quot;,</div><div class="line">  &quot;scripts&quot;: &#123;</div><div class="line">    &quot;pkg&quot;: &quot;pkg . --out-path=dist/&quot;</div><div class="line">  &#125;,</div><div class="line">  &quot;pkg&quot;: &#123;</div><div class="line">    &quot;scripts&quot;: [...]</div><div class="line">    &quot;assets&quot;: [...],</div><div class="line">    &quot;targets&quot;: [...]</div><div class="line">  &#125;,</div><div class="line">  ...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><code>scripts</code>和<code>assets</code>用来配置未打包进可执行文件的脚本和资源文件，文件路径可以使用glob通配符。这里就浮现出一个问题：为什么有的脚本和资源文件打包不进去呢？</p>
+<p>要回答这个问题，就涉及到pkg打包文件的机制。按照pkg文档的说法，pkg只会自动地打包相对于<code>__dirname</code>、<code>__filename</code>的文件，例如<code>path.join(__dirname, &#39;../path/to/asset&#39;)</code>。至于<code>require()</code>，因为require本身就是相对于<code>__dirname</code>的，所以能够自动打包。假设文件中有以下代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">require(&apos;./build/&apos; + cmd + &apos;.js&apos;)</div><div class="line">path.join(__dirname, &apos;views/&apos; + viewName)</div></pre></td></tr></table></figure>
+<p>这些路径都不是常量，pkg没办法帮你自动识别要打包哪个文件，所以文件就丢失了，所以这时候就使用<code>scripts</code>和<code>assets</code>来告诉pkg，这些文件要打包进去。那么我们怎么知道哪些文件没有被打包呢？难倒要一行行地去翻源代码吗？其实很简单，只需要把打包好的文件运行下，报错信息一般就会告诉你缺失哪些文件，并且pkg在打包过程中也会提示一些它不能自动打包的文件。</p>
+<h1 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h1><p>如果说pkg还有哪儿还可以改进的地方，那就是无法自动打包二进制模块<code>*.node</code>文件。如果你的项目中引用了二进制模块，如sqlite3，那么你需要手动地将<code>*.node</code>文件复制到可执行文件同一目录，我通常使用命令<code>cp node_modules/**/*.node .</code>一键完成。但是，如果你要跨平台打包，例如在windows上打包linux版本，相应的二进制模块也要换成linux版本，通常需要你手动的下载或者编译。</p>
+<p>那为什么pkg不能将二进制模块打包进去呢？我猜想是require载入一个js文件和node文件，它们的机制是不一样的。另外从设计来说，不自动打包二进制模块也是合理的，因为二进制模块都是平台相关的。如果我在windows上生成一个linux文件，那么就需要拉取linux版本的<code>.node</code>文件，这是比较困难的。并且有些二进制模块不提供预编译版本，需要安装的时候编译，pkg再牛也不可能模拟一个其他平台的编译环境吧。nexe可以自动打包二进制模块，但是只能打包当前平台和当前版本的可执行文件。这意味着如果Node.js应用引用了二进制包，那么这个应用就不能跨平台打包了，所以我认为这方面，nexe不能算是一个好的设计。</p>
+<p>还有一点就是关于项目中的配置文件处理，比如数据库连接参数、环境变量等。因为这些配置文件会跟着不同的部署环境进行更改，所以为了方便更改，一般不希望把配置文件打包到exe。为了避免pkg自动地将配置文件打包到exe中，代码中不要采用以下方式读取配置文件：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">fs.readFile(path.join(__dirname, &apos;./config.json&apos;)), callback)</div></pre></td></tr></table></figure>
+<p>而是采用相对于<code>process.CWD()</code>的方法读取：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">fs.readFile(path.join(process.CWD(), &apos;./config.json&apos;), callback)</div><div class="line"></div><div class="line">// 或者</div><div class="line">fs.readFile(&apos;./config.json&apos;, callback)</div></pre></td></tr></table></figure>
+<p>如果配置文件是js格式的，那么不要直接<code>require(&#39;./config&#39;)</code>，而是采用动态require：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">const config = require(process.CWD() + &apos;./config&apos;)</div></pre></td></tr></table></figure>
+<p>另外要提及的是pkg打包之后动态载入js文件会有安全性问题，即用户可以在js文件写任何处理逻辑，注入到打包后的exe中。例如，可以读取exe里面的虚拟文件系统，把源代码导出来。所以，尽量不要采用JS作为配置文件，也不要动态载入js模块。</p>
 
         
       

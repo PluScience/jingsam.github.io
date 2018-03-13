@@ -171,13 +171,13 @@
     <header class="post-header">
       <h1 class="post-title">
         
-          <a class="post-link" href="/2016/11/01/peerDependencies-in-Vue-components.html">开发组件库时 Vue 应该放哪儿：devDependencies or peerDependencies？</a>
+          <a class="post-link" href="/2016/12/08/things-you-should-know-about-arrow-functions.html">少年，不要滥用箭头函数啊</a>
         
       </h1>
 
       <div class="post-meta">
         <span class="post-time">
-          2016-11-01
+          2016-12-08
         </span>
         
       </div>
@@ -192,236 +192,31 @@
         
 
         
-          <p>最近在和 Aresn 开发 iView 组件库的时候，关于依赖包 Vue 到底是放在 devDependencies 还是 peerDependencies 有些争论。本着打破砂锅问到底的精神，这篇文章讨论下 package.json 里面的各种 depedencies 字段到底是干嘛的。</p>
-<p>npm 的 package.json 包括 5 种 dependencies：</p>
+          <p>在ES6大行其道的今天，不应用点ES6特性似乎有些政治不正确。最近刚好有个Node的项目，最低要支持到nodejs 4.0，在<a href="1">node.green</a>看了下ES6的支持度，我想使用的特性基本都有支持，遂决定在新项目中采用ES6来写。</p>
+<p>当然第一件事情就是毫不留情地消灭var，项目中能用const的地方不用let，能用let的地方不用var。</p>
+<p>第二件事情就是使用劳动人民喜闻乐见的箭头函数替代function。当我心满意足地看到满屏的<code>=&gt;</code>时，现实给了我一记响亮的耳光——改过之后的程序错误百出！</p>
+<p>所以，当我们使用箭头函数时，一定要搞清楚箭头函数是什么回事，适用于什么场景。本文就针对以上问题来讨论下箭头函数。</p>
+<h2 id="箭头函数是什么？"><a href="#箭头函数是什么？" class="headerlink" title="箭头函数是什么？"></a>箭头函数是什么？</h2><p>箭头函数的语法我就不讲了，相信大家都见识过。跟我一样，大家喜欢箭头函数90%的原因是它好看。除了好看，它是不是与function等价呢？肯定不等价，因为TC39不可能仅因为好看而引入一个语法糖（class除外）。</p>
+<p>箭头函数的渊源可以追溯到上古时期一个叫lambda演算的东西。lambda演算是数学家提出来的，有些数学家跟我们程序员一样也很懒，数学定理那么多，今天要证三角定律，明天要证勾股定律，累不累！那能不能将所有的证明问题用一个统一的体系进行形式化描述，然后由机器来完成自动推导呢？lambda演算就是干这个的，图灵也搞了一套体系叫图灵机，两者是等价的。</p>
+<p>关于lambda演算说了这么多，好像跟今天要讲的箭头函数没什么关系？其实是有关系的，lambda演算深刻影响了箭头函数的设计。数学家们喜欢用纯函数式编程语言，纯函数的特点是没有副作用，给予特定的输入，总是产生确定的输出，甚至有些情况下通过输出能够反推输入。要实现纯函数，必须使函数的执行过程不依赖于任何外部状态，整个函数就像一个数学公式，给定一套输入参数，不管是在地球上还是火星上执行都是同一个结果。</p>
+<p>箭头函数要实现类似纯函数的效果，必须剔除外部状态。所以当你定义一个箭头函数，在普通函数里常见的<code>this</code>、<code>arguments</code>、<code>caller</code>是统统没有的。</p>
+<h2 id="箭头函数没有this"><a href="#箭头函数没有this" class="headerlink" title="箭头函数没有this"></a>箭头函数没有<code>this</code></h2><p>箭头函数没有<code>this</code>，那下面的代码明显可以取到<code>this</code>啊：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="keyword">this</span>.a = <span class="number">1</span></div><div class="line">  <span class="keyword">let</span> b = <span class="function"><span class="params">()</span> =&gt;</span> <span class="built_in">console</span>.log(<span class="keyword">this</span>.a)</div><div class="line"></div><div class="line">  b()</div><div class="line">&#125;</div><div class="line"></div><div class="line">foo()  <span class="comment">// 1</span></div></pre></td></tr></table></figure></p>
+<p>以上箭头函数中的<code>this</code>其实是父级作用域中的<code>this</code>，即函数<code>foo</code>的<code>this</code>。箭头函数引用了父级的变量，构成了一个闭包。以上代码等价于：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="keyword">this</span>.a = <span class="number">1</span></div><div class="line"></div><div class="line">  <span class="keyword">let</span> self = <span class="keyword">this</span></div><div class="line">  <span class="keyword">let</span> b = <span class="function"><span class="params">()</span> =&gt;</span> <span class="built_in">console</span>.log(self.a)</div><div class="line"></div><div class="line">  b()</div><div class="line">&#125;</div><div class="line"></div><div class="line">foo()  <span class="comment">// 1</span></div></pre></td></tr></table></figure></p>
+<p>箭头函数不仅没有<code>this</code>，常用的<code>arguments</code>也没有。如果你能获取到<code>arguments</code>，那它一定是来自父作用域的。<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="keyword">return</span> <span class="function"><span class="params">()</span> =&gt;</span> <span class="built_in">console</span>.log(<span class="built_in">arguments</span>[<span class="number">0</span>])</div><div class="line">&#125;</div><div class="line"></div><div class="line">foo(<span class="number">1</span>, <span class="number">2</span>)(<span class="number">3</span>, <span class="number">4</span>)  <span class="comment">// 1</span></div></pre></td></tr></table></figure></p>
+<p>上例中如果箭头函数有<code>arguments</code>，就应该输出的是3而不是1。</p>
+<p>一个经常犯的错误是使用箭头函数定义对象的方法，如：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">let</span> a = &#123;</div><div class="line">  foo: <span class="number">1</span>,</div><div class="line">  bar: <span class="function"><span class="params">()</span> =&gt;</span> <span class="built_in">console</span>.log(<span class="keyword">this</span>.foo)</div><div class="line">&#125;</div><div class="line"></div><div class="line">a.bar()  <span class="comment">//undefined</span></div></pre></td></tr></table></figure></p>
+<p>以上代码中，箭头函数中的<code>this</code>并不是指向<code>a</code>这个对象。对象<code>a</code>并不能构成一个作用域，所以再往上到达全局作用域，<code>this</code>就指向全局作用域。如果我们使用普通函数的定义方法，输出结果就符合预期，这是因为<code>a.bar()</code>函数执行时作用域绑定到了<code>a</code>对象。<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">let</span> a = &#123;</div><div class="line">  foo: <span class="number">1</span>,</div><div class="line">  bar: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123; <span class="built_in">console</span>.log(<span class="keyword">this</span>.foo) &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">a.bar()  <span class="comment">// 1</span></div></pre></td></tr></table></figure></p>
+<p>另一个错误是在原型上使用箭头函数，如：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">A</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="keyword">this</span>.foo = <span class="number">1</span></div><div class="line">&#125;</div><div class="line"></div><div class="line">A.prototype.bar = <span class="function"><span class="params">()</span> =&gt;</span> <span class="built_in">console</span>.log(<span class="keyword">this</span>.foo)</div><div class="line"></div><div class="line"><span class="keyword">let</span> a = <span class="keyword">new</span> A()</div><div class="line">a.bar()  <span class="comment">//undefined</span></div></pre></td></tr></table></figure></p>
+<p>同样，箭头函数中的<code>this</code>不是指向<code>A</code>，而是根据变量查找规则回溯到了全局作用域。同样，使用普通函数就不存在问题。</p>
+<p>通过以上说明，我们可以看出，箭头函数除了传入的参数之外，真的是什么都没有！如果你在箭头函数引用了<code>this</code>、<code>arguments</code>或者参数之外的变量，那它们一定不是箭头函数本身包含的，而是从父级作用域继承的。</p>
+<h2 id="什么情况下该使用箭头函数"><a href="#什么情况下该使用箭头函数" class="headerlink" title="什么情况下该使用箭头函数"></a>什么情况下该使用箭头函数</h2><p>到这里，我们可以发现箭头函数并不是万金油，稍不留神就会踩坑。</p>
+<p>至于什么情况该使用箭头函数，《You Don’t Know About JS》给出了一个决策图：<br><img src="/assets/arrow-function.png" alt="arrow function"></p>
+<p>以上决策图看起来有点复杂，我认为有三点比较重要：</p>
 <ol>
-<li><code>dependencies</code>：应用能够正常运行所依赖的包。这种 dependencies 是最常见的，用户在使用 <code>npm install</code> 安装你的包时会自动安装这些依赖。</li>
-<li><code>devDependencies</code>：开发应用时所依赖的工具包。通常是一些开发、测试、打包工具，例如 webpack、ESLint、Mocha。应用正常运行并不依赖于这些包，用户在使用 <code>npm install</code> 安装你的包时也不会安装这些依赖。</li>
-<li><code>peerDependencies</code>：应用运行依赖的宿主包。最典型的就是插件，例如各种 jQuery 插件，这些插件本身不包含 jQeury，需要外部提供。用户使用 npm 1 或 2 时会自动安装这种依赖，npm 3 不会自动安装，会提示用户安装。</li>
-<li><code>bundledDependencies</code>：发布包时需要打包的依赖，似乎很少见。</li>
-<li><code>optionalDependencies</code>：可选的依赖包。此种依赖不是程序运行所必须的，但是安装后可能会有新功能，例如一个图片解码库，安装了 <code>optionalDependencies</code> 后会支持更多的格式。</li>
+<li>箭头函数适合于无复杂逻辑或者无副作用的纯函数场景下，例如用在<code>map</code>、<code>reduce</code>、<code>filter</code>的回调函数定义中；</li>
+<li>不要在最外层定义箭头函数，因为在函数内部操作<code>this</code>会很容易污染全局作用域。最起码在箭头函数外部包一层普通函数，将<code>this</code>控制在可见的范围内；</li>
+<li>如开头所述，箭头函数最吸引人的地方是简洁。在有多层函数嵌套的情况下，箭头函数的简洁性并没有很大的提升，反而影响了函数的作用范围的识别度，这种情况不建议使用箭头函数。</li>
 </ol>
-<p>从以上的定义可以看出，<code>dependencies</code> 是程序运行依赖，<code>devDependencies</code> 一般是一些开发工具，<code>peerDependencies</code> 一般用于插件。</p>
-<p>下表是我在 awesome-vue 中找到的 28 个 Vue 组件库，统计了 Vue 在这些库中的位置。其中，11 个库选择放到 <code>dependencies</code>，10 个库选择放到 <code>devDependencies</code>，4 个库选择放到 <code>peerDependencies</code>，2 个库选择不放 Vue 依赖，最后还有 1 个库选择在 <code>devDependencies</code> 和 <code>peerDependencies</code> 同时加上 Vue 依赖。</p>
-<table>
-<thead>
-<tr>
-<th>UI</th>
-<th>dependencies</th>
-<th>devDependencies</th>
-<th>peerDependencies</th>
-<th>none</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>vue-strap</td>
-<td>✔</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>gritcode-components</td>
-<td>✔</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>Keen-UI</td>
-<td>✔</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>material-ui-vue</td>
-<td>✔</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>vue-admin</td>
-<td>✔</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>vue-carbon</td>
-<td>✔</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>vue-impression</td>
-<td>✔</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>vuikit</td>
-<td>✔</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>vue-material</td>
-<td>✔</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>vue-kit</td>
-<td>✔</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>vue-material-design</td>
-<td>✔</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>vuestrap-base-components</td>
-<td></td>
-<td>✔</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>vux</td>
-<td></td>
-<td>✔</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>vue-materialize</td>
-<td></td>
-<td>✔</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>mint-ui</td>
-<td></td>
-<td>✔</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>N3-components</td>
-<td></td>
-<td>✔</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>vue-desktop</td>
-<td></td>
-<td>✔</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>vue-beauty</td>
-<td></td>
-<td>✔</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>radon-ui</td>
-<td></td>
-<td>✔</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>vue-antd</td>
-<td></td>
-<td>✔</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>bootstrap-vue</td>
-<td></td>
-<td>✔</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>iview</td>
-<td></td>
-<td></td>
-<td>✔</td>
-<td></td>
-</tr>
-<tr>
-<td>wovue</td>
-<td></td>
-<td></td>
-<td>✔</td>
-<td></td>
-</tr>
-<tr>
-<td>vue-bulma</td>
-<td></td>
-<td></td>
-<td>✔</td>
-<td></td>
-</tr>
-<tr>
-<td>quasar</td>
-<td></td>
-<td></td>
-<td>✔</td>
-<td></td>
-</tr>
-<tr>
-<td>vueboot</td>
-<td></td>
-<td></td>
-<td></td>
-<td>✔</td>
-</tr>
-<tr>
-<td>material-components</td>
-<td></td>
-<td></td>
-<td></td>
-<td>✔</td>
-</tr>
-<tr>
-<td>element</td>
-<td></td>
-<td>✔</td>
-<td>✔</td>
-</tr>
-</tbody>
-</table>
-<p>下面分析下各种选择的优劣：</p>
-<ul>
-<li><code>dependencies</code>：放到 <code>dependencies</code> 的好处是安装组件库的时候 Vue 会自动安装。问题是已有的工程项目中往往已经安装了 Vue，会导致在 npm 1 或 2 中重复安装 Vue。虽然此问题在 npm 3 中可以规避，但是如果已安装的 Vue 版本与组件库所依赖的版本不兼容时，Vue 仍然会重复安装。</li>
-<li><code>devDependencies</code>：由于组件库单元测试时会用到 Vue，所以严格来说 Vue 是属于开发工具包，放到 <code>devDependencies</code> 合情合理。但是，在 <code>devDependencies</code> 中的 Vue 依赖不会自动安装，所以需要用户去查文档来确定到底应该安装哪个版本的 Vue，对用户似乎不太友好。</li>
-<li><code>peerDevDependencies</code>：Vue 组件库本质上是 Vue 的插件，依赖于外部提供的 Vue。把 Vue 放到这里，npm 能够提示用户需要安装哪个版本的 Vue，这点比 <code>devDependencies</code>  友好。问题在于，从 npm 3 开始，<code>peerDevDependencies</code> 中的依赖不会自动安装，会导致自动集成测试失败。</li>
-<li>不添加依赖：这基本上是最差的选择了，用户甚至不能知道组件库到底依赖哪个版本的 Vue，只能靠猜。</li>
-<li><code>devDependencies</code>、<code>peerDevDependencies</code> 同时添加：这是我和 Element UI 的开发者讨论后最优的做法。<code>peerDevDependencies</code> 中的 Vue 是组件库运行所依赖的 Vue 的最低版本，而 <code>devDependencies</code> 运行测试时需要的 Vue 版本，一般情况下 <code>devDependencies &gt;= peerDevDependencies</code>。这种做法保证了 npm 1、2、3 都不会出问题，并且当用户安装组件库时给予友好的提示信息。</li>
-</ul>
-<p>到这里，我们可以得出以下结论：<strong>在开发 Vue 组件库是，应当同时在 <code>devDependencies</code> 和 <code>peerDevDependencies</code> 添加 Vue 依赖。</strong></p>
-<p>最后，可能有人会说：哥们，何必较真呢，能用不就行了吗？我的观点是，如果大家都按照规范来，会减少很多不必要的麻烦。想想看，如果大家在 npm 上发布包的时候不遵守 semver 规范，你还有信心说，你的程序只要 npm install 就能正常运行么？</p>
-<p>按老罗的话说，我不是为了输赢，我就是认真！</p>
 
         
       

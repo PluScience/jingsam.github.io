@@ -17,7 +17,7 @@
 
 
 
-  <meta name="description" content="GIS, mapping"/>
+  <meta name="description" content="关于package.json中main字段的指向问题"/>
 
 
 
@@ -40,7 +40,7 @@
 
 
 
-<link rel="canonical" href="https://jingsam.github.io/page/2/"/>
+<link rel="canonical" href="https://jingsam.github.io/2018/03/12/npm-main.html"/>
 
 
 <link rel="stylesheet" type="text/css" href="/css/style.css?v=2.5.0" />
@@ -71,7 +71,7 @@
 
 
 
-    <title> jingsam </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+    <title> 关于package.json中main字段的指向问题 - jingsam </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
   </head>
 
   <body><div id="mobile-navbar" class="mobile-navbar">
@@ -164,14 +164,12 @@
         <div class="content-wrapper">
           <div id="content" class="content">
             
-  <section id="posts" class="posts">
-    
-      
+  
   <article class="post">
     <header class="post-header">
       <h1 class="post-title">
         
-          <a class="post-link" href="/2018/03/12/npm-main.html">关于package.json中main字段的指向问题</a>
+          关于package.json中main字段的指向问题
         
       </h1>
 
@@ -185,14 +183,17 @@
 
     
     
+  <div class="post-toc" id="post-toc">
+    <h2 class="post-toc-title">文章目录</h2>
+    <div class="post-toc-content">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#指向源代码入口文件"><span class="toc-text">指向源代码入口文件</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#指向打包后的开发版本"><span class="toc-text">指向打包后的开发版本</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#指向打包后的发布版本"><span class="toc-text">指向打包后的发布版本</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#结论"><span class="toc-text">结论</span></a></li></ol>
+    </div>
+  </div>
+
 
     <div class="post-content">
       
-        
-        
-
-        
-          <p><code>package.json</code>中的<code>main</code>字段指向的是Library的入口，通常有3个选择：</p>
+        <p><code>package.json</code>中的<code>main</code>字段指向的是Library的入口，通常有3个选择：</p>
 <p>1.指向源代码入口文件，如<code>src/index.js</code>;<br>2.指向打包后的开发版本，如<code>dist/library.js</code>;<br>3.指向打包后的发布版本，如<code>dist/library.min.js</code>。</p>
 <p>引用Library的方式也分为两种：</p>
 <p>1.通过script标签直接引用，适用于简单页面；<br>2.通过require或import方式引用，需要借助打包工具打包，适用于复杂页面。</p>
@@ -220,38 +221,60 @@
 <p>发布版本是适用于在应用上线时，通过script标签形式引用。</p>
 <h1 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h1><p>通过上面的分析，可以发现将库的开发版本作为库的入口才是正确合理的做法，即设置<code>&quot;main&quot;: &quot;dist/library.js&quot;</code>。而作为库的开发者，也要遵循约定，生成库的开发版本的时候，使用<code>development</code>环境变量，保留警告信息。</p>
 
-        
       
     </div>
 
     
+      
+      
 
+
+
+      
+      
     
 
-  </article>
-
     
-  </section>
-
-  
-  <nav class="pagination">
+      <footer class="post-footer">
+        
+        
+        
+  <nav class="post-nav">
     
-      <a class="prev" href="/">
+      <a class="prev" href="/2018/03/13/windows-server-rearm.html">
         <i class="iconfont icon-left"></i>
-        <span class="prev-text">上一页</span>
+        <span class="prev-text nav-default">Windows Server 2012评估版本延长使用期限</span>
+        <span class="prev-text nav-mobile">上一篇</span>
       </a>
     
     
-      <a class="next" href="/page/3/">
-        <span class="next-text">下一页</span>
+      <a class="next" href="/2018/03/06/webpack.html">
+        <span class="next-text nav-default">Library项目的Webpack配置</span>
+        <span class="prev-text nav-mobile">下一篇</span>
         <i class="iconfont icon-right"></i>
       </a>
     
   </nav>
 
+      </footer>
+    
+
+  </article>
+
 
           </div>
           
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
 
         </div>  
       </main>
@@ -339,6 +362,24 @@
     </div>
 
     
+  
+  <script type="text/javascript">
+    var disqus_config = function () {
+        this.page.url = 'https://jingsam.github.io/2018/03/12/npm-main.html';
+        this.page.identifier = '2018/03/12/npm-main.html';
+        this.page.title = '关于package.json中main字段的指向问题';
+    };
+    (function() {
+    var d = document, s = d.createElement('script');
+
+    s.src = '//jingsam.disqus.com/embed.js';
+
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+    })();  
+  </script>
+
+
 
 
     

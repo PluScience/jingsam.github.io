@@ -171,13 +171,13 @@
     <header class="post-header">
       <h1 class="post-title">
         
-          <a class="post-link" href="/2016/06/04/mongodb-text-search.html">Mongodb全文搜索实战</a>
+          <a class="post-link" href="/2016/09/26/polylabel2.html">多边形注记点搜索算法实现</a>
         
       </h1>
 
       <div class="post-meta">
         <span class="post-time">
-          2016-06-04
+          2016-09-26
         </span>
         
       </div>
@@ -192,23 +192,26 @@
         
 
         
-          <p>在传统的关系型数据库中，我们通常将数据结构化，通过一系列表关联、聚合来查询我们所需的结果。而在非结构化的数据中，缺少这种预定义的结构，因而如何快速查询定位到我们所需要的结果，不是一件容易的事。</p>
-<p>Mongodb作为一种NoSQL数据库，非常适合存储和管理非结构化数据，例如互联网上的各种文本数据。假如我们用Mongodb存储了很多博客文章，那么如何快速找到所有关于“nodejs”这个主题的文章呢？Mongodb内建的全文搜索可以帮助我们完成这个功能。</p>
-<p>在本篇博文中，将要介绍的是我使用Mongdb text search的一些经验。</p>
-<h3 id="Mongodb-text-search是什么？"><a href="#Mongodb-text-search是什么？" class="headerlink" title="Mongodb text search是什么？"></a>Mongodb text search是什么？</h3><p>Mongodb text search是Mongodb对数据库进行搜索的功能模块，类似于数据库内建的搜索引擎。有些人可能会疑问，查数据库为什么还需要搜索引擎？直接用条件查询不就得了。例如在前面的文章主题搜索中，我们不可能事先提取出每篇文章的主题，然后用专门的字段存储，因此没办法进行条件查询。并且同一个主题词，有多种不同的表达方式，例如”node”、”nodejs”可视为同一个主题。</p>
-<p>Mongodb text search可以自动地对大段的文本数据进行分词处理、模糊匹配、同义词匹配，解决文本搜索的问题。</p>
-<h3 id="建立文本索引"><a href="#建立文本索引" class="headerlink" title="建立文本索引"></a>建立文本索引</h3><p>要使Mongodb能够进行全文搜索，首先要对搜索的字段建立文本索引。建立文本索引的关键字是<code>text</code>，我们既可以建立单个字段的文本索引，也可以建立包含多个字段的复合文本索引。<strong>需要注意的是，每个collection只能建立一个文本索引，且只能对String或String数组的字段建立文本索引</strong>。</p>
-<p>我们可以通过以下命令，建立一个文本索引：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">db.collection.createIndex(&#123; subject: &quot;text&quot;, content: &quot;text&quot; &#125;)</div></pre></td></tr></table></figure></p>
-<p>在mongoose中我们可以通过以下代码，创建文本索引：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">schema.index(&#123; subject: &quot;text&quot;, content: &quot;text&quot; &#125;)</div></pre></td></tr></table></figure></p>
-<p>需要注意的是，由于每个collection只支持一个文本索引，所以当你需要在schema中添加或删除文本索引字段时，往往不起作用。这时候你需要到数据库中，手动删除已经建立的文本索引。</p>
-<h3 id="文本搜索示例"><a href="#文本搜索示例" class="headerlink" title="文本搜索示例"></a>文本搜索示例</h3><p>文本搜索的语法为：<br><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">  $text:</div><div class="line">    &#123;</div><div class="line">      $search: &lt;string&gt;,</div><div class="line">      $language: &lt;string&gt;,</div><div class="line">      $caseSensitive: &lt;boolean&gt;,</div><div class="line">      $diacriticSensitive: &lt;boolean&gt;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>在mongoose中，我们可以通过以下语句进行文本搜索：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">var query = model.find(&#123; $text: &#123; $search: &quot;hello world&quot; &#125; &#125;)</div></pre></td></tr></table></figure></p>
-<p><code>$search</code>后面的关键词可以有多个，关键词之间的分隔符可以是多种字符，例如空格、下划线、逗号、加号等，但不能是<code>-</code>和<code>\&quot;</code>，因为这两个符号会有其他用途。搜索的多个关键字是<code>or</code>的关系，除非你的关键字包含<code>-</code>。例如<code>hello world</code>会包含所有匹配<code>hello</code>或<code>world</code>的文本，而<code>hello -world</code>只会匹配包含<code>hello</code>且不包含<code>world</code>的文本。</p>
-<p><code>$language</code>指示搜索的语言类型，在最新的Mongodb 3.2 enterprise版本中，已经增加了对中文文本的搜索。</p>
-<p><code>$caseSensitive</code>设置是否区分大小写。</p>
-<p><code>$diacriticSensitive</code>设置是否区别发音符号，<code>CAFÉ</code>于<code>Café</code>是同一语义，只是重音不一样。</p>
-<p>我们还可以对搜索的结果按匹配度进行排序：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">db.posts.find(</div><div class="line">   &#123; $text: &#123; $search: &quot;hello world&quot; &#125; &#125;,</div><div class="line">   &#123; score: &#123; $meta: &quot;textScore&quot; &#125; &#125;</div><div class="line">).sort( &#123; score: &#123; $meta: &quot;textScore&quot; &#125; &#125; )</div></pre></td></tr></table></figure></p>
-<h3 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h3><p>Mongodb建立文本索引时，会对提取所有文本的关键字建立索引，因而会造成一定的性能问题。所以对于结构化的字段，建议用普通的关系查询，如果需要对大段的文本进行搜索，才考虑用全文搜索。</p>
+          <p>在<a href="/2016/09/24/polylabel.html">上一篇</a>博文中，我讲了多边形注记点搜索算法的基本原理，本篇文章讲一讲如何用JS实现。</p>
+<p>建议读者阅读本篇博文之前，一定要先了解<a href="/2016/09/24/polylabel.html">上一篇</a>博文中提到的算法原理。</p>
+<h2 id="函数接口"><a href="#函数接口" class="headerlink" title="函数接口"></a>函数接口</h2><p>我们定义一个函数接口，接受一个多边形，计算其标注点：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">polylabel</span>(<span class="params">polygon</span>) </span>&#123;</div><div class="line">  <span class="comment">// TODO</span></div><div class="line">  <span class="keyword">return</span> [x, y]</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="built_in">module</span>.export = polylabel</div></pre></td></tr></table></figure></p>
+<p>使用时，我们可以这样调用：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">var polylabel = require(&apos;polylabel&apos;)</div><div class="line"></div><div class="line">var polygon = [[[0, 0], [0, 1], [1, 1], [1, 0], [0, 0]]]</div><div class="line">var point = polylabel(polygon)</div></pre></td></tr></table></figure></p>
+<p>对于polygon，我们采用geojson对多边形的坐标定义格式，即多边形由多个环组成，其中第一个环是外环，其他的为内环。所以<code>polygon[0]</code>表示第一个环，<code>ploygon[0][0]</code>表示起点坐标。</p>
+<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><p>在开始实现polylabel之前，需要一些辅助函数和库。</p>
+<p>首先，我们定义网格对象<code>Cell</code>：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">Cell</span>(<span class="params">x, y, h, polygon</span>) </span>&#123;</div><div class="line">  <span class="keyword">this</span>.x = x  <span class="comment">// 中心点x</span></div><div class="line">  <span class="keyword">this</span>.y = y  <span class="comment">// 中心点y</span></div><div class="line">  <span class="keyword">this</span>.h = h  <span class="comment">// 中心点到网格的距离，相当于格网大小的1/2</span></div><div class="line">  <span class="keyword">this</span>.d = pointToPolygonDist(x, y, polygon)  <span class="comment">// 中心点到多边形的距离</span></div><div class="line">  <span class="keyword">this</span>.max = <span class="keyword">this</span>.d + <span class="keyword">this</span>.h * <span class="built_in">Math</span>.SQRT2     <span class="comment">// 网格内部区域到多边形的最大距离</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>定义网格对象的主要目的是方便求取最大距离<code>this.max</code>，有了网格对象<code>Cell</code>之后，每当我们实例化一个cell对象，我们就可以知道这个网格区域的最大距离以及它所代表的区域。</p>
+<p><code>pointToPolygonDist</code>是计算点到多边形的距离的函数，其基本原理是计算点到多边形每条边的距离，取最短距离即为点到多边形的距离。详细的算法实现我考虑专门用一篇文章来讲。</p>
+<p><code>this.d + this.h * Math.SQRT2</code>即为我们之前在算法原理中求得的最大距离<code>dist + radius</code>，由于格网是一个正方形，其外接圆形的半径即为中心点到任意一个顶点的距离，即<code>this.h * Math.SQRT2</code>。</p>
+<p><img src="/assets/radius.png" alt="radius"></p>
+<p>另一个需要准备的是一个<a href="https://en.wikipedia.org/wiki/Priority_queue" target="_blank" rel="external">优先级队列</a>的数据结构，它与一般的队列不同在于，优先级队列中的元素都是经过排序的。每当push一个元素，并不是简单地将该元素放入队列末尾，而是会将该元素与队列中的元素进行比较，放到一个合适的位置上。</p>
+<p>我们可以定义一个优先级队列，队列里存储的是格网对象。每push入一个格网，根据最大距离<code>max</code>进行排序，大的在前，小的在后。由此，我们可以分裂格网时，只需从队首pop出一个格网进行操作。</p>
+<p>优先级队列的一个JS实现是<a href="https://github.com/mourner/tinyqueue" target="_blank" rel="external">tinyqueue</a>，同样是Vladimir Agafonkin的作品。</p>
+<h2 id="算法实现"><a href="#算法实现" class="headerlink" title="算法实现"></a>算法实现</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> Queue = <span class="built_in">require</span>(<span class="string">'tinyqueue'</span>)</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">polylabel</span>(<span class="params">polygon</span>) </span>&#123;</div><div class="line"></div><div class="line">  <span class="comment">// 计算bbox，为切分网格做准备</span></div><div class="line">  <span class="keyword">var</span> minX, minY, maxX, maxY</div><div class="line">  <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; polygon[<span class="number">0</span>].length; i++) &#123;</div><div class="line">    <span class="keyword">var</span> p = polygon[<span class="number">0</span>][i]</div><div class="line">    <span class="keyword">if</span> (!i || p[<span class="number">0</span>] &lt; minX) minX = p[<span class="number">0</span>]</div><div class="line">    <span class="keyword">if</span> (!i || p[<span class="number">1</span>] &lt; minY) minY = p[<span class="number">1</span>]</div><div class="line">    <span class="keyword">if</span> (!i || p[<span class="number">0</span>] &gt; maxX) maxX = p[<span class="number">0</span>]</div><div class="line">    <span class="keyword">if</span> (!i || p[<span class="number">1</span>] &gt; maxY) maxY = p[<span class="number">1</span>]</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="comment">// 计算长和宽，初始格网大小和高度</span></div><div class="line">  <span class="keyword">var</span> width = maxX - minX</div><div class="line">  <span class="keyword">var</span> height = maxY - minY</div><div class="line">  <span class="keyword">var</span> cellSize = <span class="built_in">Math</span>.min(width, height)</div><div class="line">  <span class="keyword">var</span> h = cellSize / <span class="number">2</span></div><div class="line"></div><div class="line">  <span class="comment">// 初始化一个存储Cell的优先级队列，按距离从大到小排列</span></div><div class="line">  <span class="keyword">var</span> cellQueue = <span class="keyword">new</span> Queue(<span class="literal">null</span>, <span class="function"><span class="keyword">function</span>(<span class="params">a, b</span>) </span>&#123;</div><div class="line">    <span class="keyword">return</span> b.max - a.max</div><div class="line">  &#125;)</div><div class="line"></div><div class="line">  <span class="comment">// 将多边形切分</span></div><div class="line">  <span class="keyword">for</span> (<span class="keyword">var</span> x = minX; x &lt; maxX; x += cellSize) &#123;</div><div class="line">    <span class="keyword">for</span> (<span class="keyword">var</span> y = minY; y &lt; maxY; y += cellSize) &#123;</div><div class="line">      cellQueue.push(<span class="keyword">new</span> Cell(x + h, y + h, h, polygon));</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="comment">// 取对首为最优格网</span></div><div class="line">  <span class="keyword">var</span> bestCell = cellQueue.peek()</div><div class="line"></div><div class="line">  <span class="keyword">while</span> (cellQueue.length) &#123;</div><div class="line">    <span class="keyword">var</span> cell = cellQueue.pop()</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (cell.d &gt; bestCell.d) bestCell = cell</div><div class="line"></div><div class="line">    <span class="comment">// 最大距离小于最优格网的距离，直接淘汰</span></div><div class="line">    <span class="keyword">if</span> (cell.max &lt;= bestCell.d) <span class="keyword">continue</span></div><div class="line"></div><div class="line">    <span class="comment">// 将格网裂为4个小格网</span></div><div class="line">    h = cell.h / <span class="number">2</span></div><div class="line">    cellQueue.push(<span class="keyword">new</span> Cell(cell.x - h, cell.y - h, h, polygon))</div><div class="line">    cellQueue.push(<span class="keyword">new</span> Cell(cell.x + h, cell.y - h, h, polygon))</div><div class="line">    cellQueue.push(<span class="keyword">new</span> Cell(cell.x - h, cell.y + h, h, polygon))</div><div class="line">    cellQueue.push(<span class="keyword">new</span> Cell(cell.x + h, cell.y + h, h, polygon))</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="keyword">return</span> [bestCell.x, bestCell.y]</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="算法优化"><a href="#算法优化" class="headerlink" title="算法优化"></a>算法优化</h2><p>上一节描述了多边形注记点搜寻算法的基本实现，我们还需要对其进行优化，提升算法效率。</p>
+<p>为了提升效率，我们可以增加一个容差参数，允许最后的注记点有一定的误差，以减少运算次数:<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// if (cell.max &lt;= bestCell.d) continue</span></div><div class="line"><span class="keyword">if</span> (cell.max - bestCell.d &lt;= precision) <span class="keyword">continue</span></div></pre></td></tr></table></figure></p>
+<p>另外，我们可以在初始时，用centroid作为初始最优点，因为大多数凸多边形的centroid就是最佳注记点：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// var bestCell = cellQueue.peek()</span></div><div class="line"><span class="keyword">var</span> bestCell = getCentroidCell(polygon)</div></pre></td></tr></table></figure></p>
+<p>当然，多变形的centeroid怎么求，估计又得用一篇博文来说了。</p>
+<p>感觉给自己挖了好多坑。</p>
 
         
       
@@ -348,24 +351,7 @@
 
 
     <script type="text/javascript" src="/js/src/even.js?v=2.5.0"></script>
-<script type="text/javascript" src="/js/src/bootstrap.js?v=2.5.0"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
-</script>
-
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Queue(function() {
-    var all = MathJax.Hub.getAllJax(), i;
-    for(i=0; i < all.length; i += 1) {
-      all[i].SourceElement().parentNode.className += ' has-jax';
-    }
-  });
-</script>
-
-<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-</script>
-<!-- End: Injected MathJax -->
-<!-- hexo-inject:end -->
+<script type="text/javascript" src="/js/src/bootstrap.js?v=2.5.0"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 
   </body>
 </html>
