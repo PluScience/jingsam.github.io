@@ -17,7 +17,7 @@
 
 
 
-  <meta name="description" content="GIS, mapping"/>
+  <meta name="description" content="Git内部原理之Git对象"/>
 
 
 
@@ -40,7 +40,7 @@
 
 
 
-<link rel="canonical" href="https://jingsam.github.io/"/>
+<link rel="canonical" href="https://jingsam.github.io/2018/06/03/git-objects.html"/>
 
 
 
@@ -83,7 +83,7 @@
   window.config = {"title":"jingsam","subtitle":null,"description":"GIS, mapping","author":"jingsam","language":"zh-Hans","timezone":null,"url":"https://jingsam.github.io","root":"/","permalink":":year/:month/:day/:title.html","permalink_defaults":null,"source_dir":"source","public_dir":"public","tag_dir":"tags","archive_dir":"archives","category_dir":"categories","code_dir":"downloads/code","i18n_dir":":lang","skip_render":null,"new_post_name":":year-:month-:day-:title.md","default_layout":"post","titlecase":false,"external_link":true,"filename_case":0,"render_drafts":false,"post_asset_folder":false,"relative_link":false,"future":true,"highlight":{"enable":true,"auto_detect":false,"line_number":true,"tab_replace":null},"default_category":"uncategorized","category_map":null,"tag_map":null,"date_format":"YYYY-MM-DD","time_format":"HH:mm:ss","per_page":1,"pagination_dir":"page","theme":{"color":"Default","toc":true,"fancybox":true,"pjax":true},"deploy":{"type":"git","repo":"git@github.com:jingsam/jingsam.github.io.git","branch":"master"},"ignore":[],"auto_spacing":true,"feed":{"type":"atom","limit":20,"hub":null,"content":true,"path":"atom.xml"},"archive_generator":{"per_page":0,"yearly":true,"monthly":false,"daily":false},"category_generator":{"per_page":1},"index_generator":{"per_page":1,"order_by":"-date"},"search":{"path":"search.xml","field":"post"},"tag_generator":{"per_page":1},"marked":{"gfm":true,"pedantic":false,"sanitize":false,"tables":true,"breaks":true,"smartLists":true,"smartypants":true},"server":{"log":false,"ip":"0.0.0.0"},"since":2015,"favicon":"/favicon.ico","rss":"default","menu":{"Home":"/","Archives":"/archives/","About":"/about"},"copyright":{"enable":true,"license":"<a rel=\"license\" href=\"http://creativecommons.org/licenses/by-nc/4.0/\" target=\"_blank\">知识共享署名-非商业性使用 4.0 国际许可协议</a>"},"reward":{"enable":false,"qrCode":{"wechat":null,"alipay":null}},"social":{"email":"jing-sam@qq.com","stack-overflow":null,"twitter":null,"facebook":null,"linkedin":null,"google":null,"github":"https://github.com/jingsam","weibo":"http://weibo.com/u/1902650267","zhihu":"https://www.zhihu.com/people/jingsam","douban":null,"pocket":null,"tumblr":null,"instagram":null},"leancloud":{"app_id":null,"app_key":null},"baidu_analytics":null,"baidu_verification":null,"google_analytics":null,"google_verification":null,"disqus_shortname":"jingsam","changyan":{"appid":null,"appkey":null},"livere_datauid":null,"version":"2.8.0"};
 </script>
 
-    <title> jingsam </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+    <title> Git内部原理之Git对象 - jingsam </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
   </head>
 
   <body><div id="mobile-navbar" class="mobile-navbar">
@@ -176,14 +176,12 @@
         <div class="content-wrapper">
           <div id="content" class="content">
             
-  <section id="posts" class="posts">
-    
-      
+  
   <article class="post">
     <header class="post-header">
       <h1 class="post-title">
         
-          <a class="post-link" href="/2018/06/03/git-objects.html">Git内部原理之Git对象</a>
+          Git内部原理之Git对象
         
       </h1>
 
@@ -202,11 +200,7 @@
 
     <div class="post-content">
       
-        
-        
-
-        
-          <p>最近在读《Pro Git》这本书，其中有一章讲Git的内部原理，写得非常好，读完之后对于Git的理解会提升到一个新的层次。今后，我会写一系列的关于Git内部原理的文章，以帮助读者加深对Git的认识。内容主要参考《Pro Git》这本书，但不同的是，我会对内容进行重新组织，以使大家更容易理解。</p>
+        <p>最近在读《Pro Git》这本书，其中有一章讲Git的内部原理，写得非常好，读完之后对于Git的理解会提升到一个新的层次。今后，我会写一系列的关于Git内部原理的文章，以帮助读者加深对Git的认识。内容主要参考《Pro Git》这本书，但不同的是，我会对内容进行重新组织，以使大家更容易理解。</p>
 <p>这篇文章的主题的Git对象。</p>
 <p><strong>从根本上来讲，Git是一个内容寻址的文件系统，其次才是一个版本控制系统。</strong>记住这点，对于理解Git的内部原理及其重要。所谓“内容寻址的文件系统”，意思是根据文件内容的hash码来定位文件。这就意味着同样内容的文件，在这个文件系统中会指向同一个位置，不会重复存储。</p>
 <p>Git对象包含三种：数据对象、树对象、提交对象。Git文件系统的设计思路与linux文件系统相似，即将文件的内容与文件的属性分开存储，文件内容以“装满字节的袋子”存储在文件系统中，文件名、所有者、权限等文件属性信息则另外开辟区域进行存储。在Git中，数据对象相当于文件内容，树对象相当于文件目录树，提交对象则是对文件系统的快照。</p>
@@ -253,33 +247,70 @@
 <p><img src="/assets/2018-06-03-2.png" alt="提交对象结构示意图"></p>
 <h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>Git中的数据对象解决了数据存储的问题，树对象解决了文件名存储问题，提交对象解决了提交信息的存储问题。从Git设计中可以看出，Linus对一个源代码版本控制系统做了很好的抽象和解耦，每种对象解决的问题都很明确，相比于使用一种数据结构，无疑更灵活和更易维护。每种Git对象都有一个hash值，这个值是怎么计算出来的？Git的各种对象是如何存储的？这些问题将在下一篇文章中讲解。</p>
 
-        
       
     </div>
 
     
+      
+      
 
+  <div class="post-copyright">
+    <p class="copyright-item">
+      <span>原文作者: </span>
+      <a href="https://jingsam.github.io">jingsam</a>
+    </p>
+    <p class="copyright-item">
+      <span>原文链接: </span>
+      <a href="https://jingsam.github.io/2018/06/03/git-objects.html">https://jingsam.github.io/2018/06/03/git-objects.html</a>
+    </p>
+    <p class="copyright-item">
+      <span>许可协议: </span>
+      
+      <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>
+    </p>
+  </div>
+
+
+
+      
+      
     
 
-  </article>
-
     
-  </section>
-
-  
-  <nav class="pagination">
+      <footer class="post-footer">
+        
+        
+        
+  <nav class="post-nav">
     
     
-      <a class="next" href="/page/2/">
-        <span class="next-text">下一页</span>
+      <a class="next" href="/2018/05/23/edit-a-brew-formula.html">
+        <span class="next-text nav-default">手动更新Homebrew formula</span>
+        <span class="prev-text nav-mobile">下一篇</span>
         <i class="iconfont icon-right"></i>
       </a>
     
   </nav>
 
+      </footer>
+    
+
+  </article>
+
 
           </div>
           
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
 
         </div>
       </main>
@@ -370,6 +401,27 @@
     </div>
 
     
+  
+  <script type="text/javascript">
+    var disqus_config = function () {
+        this.page.url = 'https://jingsam.github.io/2018/06/03/git-objects.html';
+        this.page.identifier = '2018/06/03/git-objects.html';
+        this.page.title = 'Git内部原理之Git对象';
+    };
+    (function() {
+    var d = document, s = d.createElement('script');
+
+    s.src = '//jingsam.disqus.com/embed.js';
+
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+    })();  
+  </script>
+
+  
+
+  
+
 
 
     
