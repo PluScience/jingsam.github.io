@@ -36,7 +36,7 @@
 
 
 
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.8.0" />
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.9.0" />
 
 
 
@@ -44,12 +44,16 @@
 
 
 
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css" />
 
 
 
 
+  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css" />
 
-<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.8.0" />
+
+
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.9.0" />
 
 
 
@@ -80,7 +84,7 @@
 
 
 <script>
-  window.config = {"title":"jingsam","subtitle":null,"description":"GIS, mapping","author":"jingsam","language":"zh-Hans","timezone":null,"url":"https://jingsam.github.io","root":"/","permalink":":year/:month/:day/:title.html","permalink_defaults":null,"source_dir":"source","public_dir":"public","tag_dir":"tags","archive_dir":"archives","category_dir":"categories","code_dir":"downloads/code","i18n_dir":":lang","skip_render":null,"new_post_name":":year-:month-:day-:title.md","default_layout":"post","titlecase":false,"external_link":true,"filename_case":0,"render_drafts":false,"post_asset_folder":false,"relative_link":false,"future":true,"highlight":{"enable":true,"auto_detect":false,"line_number":true,"tab_replace":null},"default_category":"uncategorized","category_map":null,"tag_map":null,"date_format":"YYYY-MM-DD","time_format":"HH:mm:ss","per_page":1,"pagination_dir":"page","theme":{"color":"Default","toc":true,"fancybox":true,"pjax":true},"deploy":{"type":"git","repo":"git@github.com:jingsam/jingsam.github.io.git","branch":"master"},"ignore":[],"auto_spacing":true,"feed":{"type":"atom","limit":20,"hub":null,"content":true,"path":"atom.xml"},"archive_generator":{"per_page":0,"yearly":true,"monthly":false,"daily":false},"category_generator":{"per_page":1},"index_generator":{"per_page":1,"order_by":"-date"},"search":{"path":"search.xml","field":"post"},"tag_generator":{"per_page":1},"marked":{"gfm":true,"pedantic":false,"sanitize":false,"tables":true,"breaks":true,"smartLists":true,"smartypants":true},"server":{"log":false,"ip":"0.0.0.0"},"since":2015,"favicon":"/favicon.ico","rss":"default","menu":{"Home":"/","Archives":"/archives/","About":"/about"},"copyright":{"enable":true,"license":"<a rel=\"license\" href=\"http://creativecommons.org/licenses/by-nc/4.0/\" target=\"_blank\">知识共享署名-非商业性使用 4.0 国际许可协议</a>"},"reward":{"enable":false,"qrCode":{"wechat":null,"alipay":null}},"social":{"email":"jing-sam@qq.com","stack-overflow":null,"twitter":null,"facebook":null,"linkedin":null,"google":null,"github":"https://github.com/jingsam","weibo":"http://weibo.com/u/1902650267","zhihu":"https://www.zhihu.com/people/jingsam","douban":null,"pocket":null,"tumblr":null,"instagram":null},"leancloud":{"app_id":null,"app_key":null},"baidu_analytics":null,"baidu_verification":null,"google_analytics":null,"google_verification":null,"disqus_shortname":"jingsam","changyan":{"appid":null,"appkey":null},"livere_datauid":null,"version":"2.8.0"};
+  window.config = {"title":"jingsam","subtitle":null,"description":"GIS, mapping","author":"jingsam","language":"zh-Hans","timezone":null,"url":"https://jingsam.github.io","root":"/","permalink":":year/:month/:day/:title.html","permalink_defaults":null,"source_dir":"source","public_dir":"public","tag_dir":"tags","archive_dir":"archives","category_dir":"categories","code_dir":"downloads/code","i18n_dir":":lang","skip_render":null,"new_post_name":":year-:month-:day-:title.md","default_layout":"post","titlecase":false,"external_link":true,"filename_case":0,"render_drafts":false,"post_asset_folder":false,"relative_link":false,"future":true,"highlight":{"enable":true,"auto_detect":false,"line_number":true,"tab_replace":null},"default_category":"uncategorized","category_map":null,"tag_map":null,"date_format":"YYYY-MM-DD","time_format":"HH:mm:ss","per_page":1,"pagination_dir":"page","theme":"even","deploy":{"type":"git","repo":"git@github.com:jingsam/jingsam.github.io.git","branch":"master"},"ignore":[],"auto_spacing":true,"feed":{"type":"atom","limit":20,"hub":null,"content":true,"path":"atom.xml"},"archive_generator":{"per_page":0,"yearly":true,"monthly":false,"daily":false},"category_generator":{"per_page":1},"index_generator":{"per_page":1,"order_by":"-date"},"search":{"path":"search.xml","field":"post"},"tag_generator":{"per_page":1},"marked":{"gfm":true,"pedantic":false,"sanitize":false,"tables":true,"breaks":true,"smartLists":true,"smartypants":true},"server":{"log":false,"ip":"0.0.0.0"},"since":2015,"favicon":"/favicon.ico","rss":"default","menu":{"Home":"/","Archives":"/archives/","About":"/about"},"color":"Default","toc":true,"fancybox":true,"pjax":true,"copyright":{"enable":true,"license":"<a rel=\"license\" href=\"http://creativecommons.org/licenses/by-nc/4.0/\" target=\"_blank\">知识共享署名-非商业性使用 4.0 国际许可协议</a>"},"reward":{"enable":false,"qrCode":{"wechat":null,"alipay":null}},"social":{"email":"jing-sam@qq.com","stack-overflow":null,"twitter":null,"facebook":null,"linkedin":null,"google":null,"github":"https://github.com/jingsam","weibo":"http://weibo.com/u/1902650267","zhihu":"https://www.zhihu.com/people/jingsam","douban":null,"pocket":null,"tumblr":null,"instagram":null},"leancloud":{"app_id":null,"app_key":null},"baidu_analytics":null,"baidu_verification":null,"google_analytics":null,"google_verification":null,"disqus_shortname":"jingsam","changyan":{"appid":null,"appkey":null},"livere_datauid":null,"version":"2.9.0"};
 </script>
 
     <title> CentOS 安装 Nodejs - jingsam </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
@@ -196,23 +200,30 @@
 
     
     
+  <div class="post-toc" id="post-toc">
+    <h2 class="post-toc-title">文章目录</h2>
+    <div class="post-toc-content">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#修复-yum-源"><span class="toc-text">修复 yum 源</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#添加-EPEL-源"><span class="toc-text">添加 EPEL 源</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结"><span class="toc-text">总结</span></a></li></ol>
+    </div>
+  </div>
+
 
 
     <div class="post-content">
       
         <p>最近实验室的一台服务器上需要安装 nodejs，记录下折腾的过程。如果没时间看我废话，直接跳到<strong>总结</strong>部分即可找到解决方案。</p>
-<h2 id="修复-yum-源"><a href="#修复-yum-源" class="headerlink" title="修复 yum 源"></a>修复 yum 源</h2><p>安装 nodejs，理所当然地认为只要执行下面的命令就好了。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">yum install nodejs</div></pre></td></tr></table></figure></p>
-<p>结果提示：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">Loaded plugins: fastestmirror, refresh-packagekit</div><div class="line">You need to be root to perform this <span class="built_in">command</span>.</div></pre></td></tr></table></figure></p>
-<p>这个简单，加上<code>sudo</code>执行：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo yum install nodejs</div></pre></td></tr></table></figure></p>
-<p>结果还是有错误，仔细一看，发现里面有一条关键提示：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">http://mirrors.163.com/centos/%24releasever/os/x86_64/repodata/repomd.xml: [Errno 14] PYCURL ERROR 22 - &quot;The requested URL returned error: 404 Not Found&quot;</div></pre></td></tr></table></figure></p>
+<h2 id="修复-yum-源"><a href="#修复-yum-源" class="headerlink" title="修复 yum 源"></a>修复 yum 源</h2><p>安装 nodejs，理所当然地认为只要执行下面的命令就好了。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install nodejs</span><br></pre></td></tr></table></figure></p>
+<p>结果提示：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Loaded plugins: fastestmirror, refresh-packagekit</span><br><span class="line">You need to be root to perform this <span class="built_in">command</span>.</span><br></pre></td></tr></table></figure></p>
+<p>这个简单，加上<code>sudo</code>执行：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo yum install nodejs</span><br></pre></td></tr></table></figure></p>
+<p>结果还是有错误，仔细一看，发现里面有一条关键提示：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://mirrors.163.com/centos/%24releasever/os/x86_64/repodata/repomd.xml: [Errno 14] PYCURL ERROR 22 - &quot;The requested URL returned error: 404 Not Found&quot;</span><br></pre></td></tr></table></figure></p>
 <p><code>%24releasever</code>是个什么鬼？Google 了一下发现是系统版本号变量<code>$releasever</code>。<code>$releasever</code>本应该被替换为 CentOS 的版本号 6.1 的，不知道为什么没有获取到。<code>$releasever</code>变量是从<code>/etc/yum.conf</code>的<code>distroverpkg</code>获取到, 我的<code>distroverpkg=centos-release</code>。改成<code>distroverpkg=redhat-release</code>后，<code>$releasever</code>变为<code>6Server</code>，再执行<code>yum install</code>仍然不行。</p>
-<p>看来该换一种思路，分析问题发生的原因，即是<code>repomd.xml</code>文件获取不到。通过到网站上查询，发现这个文件存在于<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">http://mirrors.163.com/centos/6/os/x86_64/repodata/repomd.xml</div></pre></td></tr></table></figure></p>
-<p>因此，我就直接更改<code>/etc/yum.repos.d/CentOS6-Base-163.repo</code>文件，将里面的<code>$releasever</code>替换为 6，然后执行：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">sudo yum clean all</div><div class="line">sudo yum makecache</div></pre></td></tr></table></figure></p>
+<p>看来该换一种思路，分析问题发生的原因，即是<code>repomd.xml</code>文件获取不到。通过到网站上查询，发现这个文件存在于<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://mirrors.163.com/centos/6/os/x86_64/repodata/repomd.xml</span><br></pre></td></tr></table></figure></p>
+<p>因此，我就直接更改<code>/etc/yum.repos.d/CentOS6-Base-163.repo</code>文件，将里面的<code>$releasever</code>替换为 6，然后执行：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo yum clean all</span><br><span class="line">sudo yum makecache</span><br></pre></td></tr></table></figure></p>
 <p>一切顺利，yum 源修复成功。虽然直接修改<code>$releasever</code>不是很优雅，只要能运行就行，不折腾了。</p>
-<h2 id="添加-EPEL-源"><a href="#添加-EPEL-源" class="headerlink" title="添加 EPEL 源"></a>添加 EPEL 源</h2><p>再次尝试<code>sudo yum install nodejs</code>，提示：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">No package node available.</div></pre></td></tr></table></figure></p>
-<p>原来 CentOS 的官方源并没有 Nodejs 的安装包，安装需要添加 EPEL 源，执行以下命令安装：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">sudo rpm -ivh http://download.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm</div><div class="line">sudo rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-6</div></pre></td></tr></table></figure></p>
-<p>最后执行以下命令，终于成功安装 Nodejs.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo yum -y install nodejs npm --enablerepo=epel</div></pre></td></tr></table></figure></p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>Nodejs 不存在官方的源中，所以安装需要添加 EPEL 源后再安装，完整的命令如下：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">sudo rpm -ivh http://download.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm</div><div class="line">sudo rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-6</div><div class="line">sudo yum -y install nodejs npm --enablerepo=epel</div></pre></td></tr></table></figure></p>
+<h2 id="添加-EPEL-源"><a href="#添加-EPEL-源" class="headerlink" title="添加 EPEL 源"></a>添加 EPEL 源</h2><p>再次尝试<code>sudo yum install nodejs</code>，提示：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">No package node available.</span><br></pre></td></tr></table></figure></p>
+<p>原来 CentOS 的官方源并没有 Nodejs 的安装包，安装需要添加 EPEL 源，执行以下命令安装：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo rpm -ivh http://download.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm</span><br><span class="line">sudo rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-6</span><br></pre></td></tr></table></figure></p>
+<p>最后执行以下命令，终于成功安装 Nodejs.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo yum -y install nodejs npm --enablerepo=epel</span><br></pre></td></tr></table></figure></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>Nodejs 不存在官方的源中，所以安装需要添加 EPEL 源后再安装，完整的命令如下：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo rpm -ivh http://download.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm</span><br><span class="line">sudo rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-6</span><br><span class="line">sudo yum -y install nodejs npm --enablerepo=epel</span><br></pre></td></tr></table></figure></p>
 
       
     </div>
@@ -398,7 +409,12 @@
 
 
     
+  
 
+
+
+  
+  
 
 
 
@@ -413,13 +429,19 @@
   
 
   
-
+    <script type="text/javascript" src="/lib/fancybox/jquery.fancybox.pack.js"></script>
   
 
   
+    <script type="text/javascript" src="/lib/pjax/jquery.pjax.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/nprogress/nprogress.min.js"></script>
+  
 
 
-    <script type="text/javascript" src="/js/src/even.js?v=2.8.0"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+    <script type="text/javascript" src="/js/src/even.js?v=2.9.0"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
 <script type="text/x-mathjax-config">
   MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
 </script>

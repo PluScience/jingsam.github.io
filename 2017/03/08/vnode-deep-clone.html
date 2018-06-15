@@ -36,7 +36,7 @@
 
 
 
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.8.0" />
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.9.0" />
 
 
 
@@ -44,12 +44,16 @@
 
 
 
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css" />
 
 
 
 
+  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css" />
 
-<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.8.0" />
+
+
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.9.0" />
 
 
 
@@ -80,7 +84,7 @@
 
 
 <script>
-  window.config = {"title":"jingsam","subtitle":null,"description":"GIS, mapping","author":"jingsam","language":"zh-Hans","timezone":null,"url":"https://jingsam.github.io","root":"/","permalink":":year/:month/:day/:title.html","permalink_defaults":null,"source_dir":"source","public_dir":"public","tag_dir":"tags","archive_dir":"archives","category_dir":"categories","code_dir":"downloads/code","i18n_dir":":lang","skip_render":null,"new_post_name":":year-:month-:day-:title.md","default_layout":"post","titlecase":false,"external_link":true,"filename_case":0,"render_drafts":false,"post_asset_folder":false,"relative_link":false,"future":true,"highlight":{"enable":true,"auto_detect":false,"line_number":true,"tab_replace":null},"default_category":"uncategorized","category_map":null,"tag_map":null,"date_format":"YYYY-MM-DD","time_format":"HH:mm:ss","per_page":1,"pagination_dir":"page","theme":{"color":"Default","toc":true,"fancybox":true,"pjax":true},"deploy":{"type":"git","repo":"git@github.com:jingsam/jingsam.github.io.git","branch":"master"},"ignore":[],"auto_spacing":true,"feed":{"type":"atom","limit":20,"hub":null,"content":true,"path":"atom.xml"},"archive_generator":{"per_page":0,"yearly":true,"monthly":false,"daily":false},"category_generator":{"per_page":1},"index_generator":{"per_page":1,"order_by":"-date"},"search":{"path":"search.xml","field":"post"},"tag_generator":{"per_page":1},"marked":{"gfm":true,"pedantic":false,"sanitize":false,"tables":true,"breaks":true,"smartLists":true,"smartypants":true},"server":{"log":false,"ip":"0.0.0.0"},"since":2015,"favicon":"/favicon.ico","rss":"default","menu":{"Home":"/","Archives":"/archives/","About":"/about"},"copyright":{"enable":true,"license":"<a rel=\"license\" href=\"http://creativecommons.org/licenses/by-nc/4.0/\" target=\"_blank\">知识共享署名-非商业性使用 4.0 国际许可协议</a>"},"reward":{"enable":false,"qrCode":{"wechat":null,"alipay":null}},"social":{"email":"jing-sam@qq.com","stack-overflow":null,"twitter":null,"facebook":null,"linkedin":null,"google":null,"github":"https://github.com/jingsam","weibo":"http://weibo.com/u/1902650267","zhihu":"https://www.zhihu.com/people/jingsam","douban":null,"pocket":null,"tumblr":null,"instagram":null},"leancloud":{"app_id":null,"app_key":null},"baidu_analytics":null,"baidu_verification":null,"google_analytics":null,"google_verification":null,"disqus_shortname":"jingsam","changyan":{"appid":null,"appkey":null},"livere_datauid":null,"version":"2.8.0"};
+  window.config = {"title":"jingsam","subtitle":null,"description":"GIS, mapping","author":"jingsam","language":"zh-Hans","timezone":null,"url":"https://jingsam.github.io","root":"/","permalink":":year/:month/:day/:title.html","permalink_defaults":null,"source_dir":"source","public_dir":"public","tag_dir":"tags","archive_dir":"archives","category_dir":"categories","code_dir":"downloads/code","i18n_dir":":lang","skip_render":null,"new_post_name":":year-:month-:day-:title.md","default_layout":"post","titlecase":false,"external_link":true,"filename_case":0,"render_drafts":false,"post_asset_folder":false,"relative_link":false,"future":true,"highlight":{"enable":true,"auto_detect":false,"line_number":true,"tab_replace":null},"default_category":"uncategorized","category_map":null,"tag_map":null,"date_format":"YYYY-MM-DD","time_format":"HH:mm:ss","per_page":1,"pagination_dir":"page","theme":"even","deploy":{"type":"git","repo":"git@github.com:jingsam/jingsam.github.io.git","branch":"master"},"ignore":[],"auto_spacing":true,"feed":{"type":"atom","limit":20,"hub":null,"content":true,"path":"atom.xml"},"archive_generator":{"per_page":0,"yearly":true,"monthly":false,"daily":false},"category_generator":{"per_page":1},"index_generator":{"per_page":1,"order_by":"-date"},"search":{"path":"search.xml","field":"post"},"tag_generator":{"per_page":1},"marked":{"gfm":true,"pedantic":false,"sanitize":false,"tables":true,"breaks":true,"smartLists":true,"smartypants":true},"server":{"log":false,"ip":"0.0.0.0"},"since":2015,"favicon":"/favicon.ico","rss":"default","menu":{"Home":"/","Archives":"/archives/","About":"/about"},"color":"Default","toc":true,"fancybox":true,"pjax":true,"copyright":{"enable":true,"license":"<a rel=\"license\" href=\"http://creativecommons.org/licenses/by-nc/4.0/\" target=\"_blank\">知识共享署名-非商业性使用 4.0 国际许可协议</a>"},"reward":{"enable":false,"qrCode":{"wechat":null,"alipay":null}},"social":{"email":"jing-sam@qq.com","stack-overflow":null,"twitter":null,"facebook":null,"linkedin":null,"google":null,"github":"https://github.com/jingsam","weibo":"http://weibo.com/u/1902650267","zhihu":"https://www.zhihu.com/people/jingsam","douban":null,"pocket":null,"tumblr":null,"instagram":null},"leancloud":{"app_id":null,"app_key":null},"baidu_analytics":null,"baidu_verification":null,"google_analytics":null,"google_verification":null,"disqus_shortname":"jingsam","changyan":{"appid":null,"appkey":null},"livere_datauid":null,"version":"2.9.0"};
 </script>
 
     <title> Vue之slot深度复制 - jingsam </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
@@ -196,33 +200,40 @@
 
     
     
+  <div class="post-toc" id="post-toc">
+    <h2 class="post-toc-title">文章目录</h2>
+    <div class="post-toc-content">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#总结"><span class="toc-text">总结</span></a></li></ol>
+    </div>
+  </div>
+
 
 
     <div class="post-content">
       
         <p>在Vue中，<code>slot</code>是一个很有用的特性，可以用来向组件内部插入一些内容。<code>slot</code>就是“插槽”的意思，用大白话说就是：定义组件的时候留几个口子，由用户来决定插入的内容。</p>
-<p>例如我们定义一个组件<code>MyComponent</code>，其包含一个<code>slot</code>:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">Vue.component(&apos;MyComponent&apos;, &#123;</div><div class="line">  template: `</div><div class="line">    &lt;div&gt;</div><div class="line">      &lt;slot&gt;&lt;/slot&gt;</div><div class="line">    &lt;/div&gt;</div><div class="line">  `</div><div class="line">&#125;)</div></pre></td></tr></table></figure></p>
-<p>当调用<code>&lt;MyComponent&gt;123&lt;/MyComponent&gt;</code>时，会渲染为如下DOM结构：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&lt;div&gt;</div><div class="line">  123</div><div class="line">&lt;/div&gt;</div></pre></td></tr></table></figure></p>
-<p>现在又有新需求了，我们希望调用<code>&lt;MyComponent&gt;123&lt;/MyComponent&gt;</code>时，渲染出这样的DOM结构：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&lt;div&gt;</div><div class="line">  123</div><div class="line">  123</div><div class="line">&lt;/div&gt;</div></pre></td></tr></table></figure></p>
-<p>看起来很容易实现，即再为<code>MyComponent</code>添加一个<code>slot</code>:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">Vue.component(&apos;MyComponent&apos;, &#123;</div><div class="line">  template: `</div><div class="line">    &lt;div&gt;</div><div class="line">      &lt;slot&gt;&lt;/slot&gt;</div><div class="line">      &lt;slot&gt;&lt;/slot&gt;</div><div class="line">    &lt;/div&gt;</div><div class="line">  `</div><div class="line">&#125;)</div></pre></td></tr></table></figure></p>
-<p>渲染出的结构也确实如你所愿，唯一美中不足的是控制台有一个小小的Warning：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Duplicate presence of slot &quot;default&quot; found in the same render tree</div></pre></td></tr></table></figure></p>
+<p>例如我们定义一个组件<code>MyComponent</code>，其包含一个<code>slot</code>:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Vue.component(&apos;MyComponent&apos;, &#123;</span><br><span class="line">  template: `</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">      &lt;slot&gt;&lt;/slot&gt;</span><br><span class="line">    &lt;/div&gt;</span><br><span class="line">  `</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure></p>
+<p>当调用<code>&lt;MyComponent&gt;123&lt;/MyComponent&gt;</code>时，会渲染为如下DOM结构：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;div&gt;</span><br><span class="line">  123</span><br><span class="line">&lt;/div&gt;</span><br></pre></td></tr></table></figure></p>
+<p>现在又有新需求了，我们希望调用<code>&lt;MyComponent&gt;123&lt;/MyComponent&gt;</code>时，渲染出这样的DOM结构：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;div&gt;</span><br><span class="line">  123</span><br><span class="line">  123</span><br><span class="line">&lt;/div&gt;</span><br></pre></td></tr></table></figure></p>
+<p>看起来很容易实现，即再为<code>MyComponent</code>添加一个<code>slot</code>:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Vue.component(&apos;MyComponent&apos;, &#123;</span><br><span class="line">  template: `</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">      &lt;slot&gt;&lt;/slot&gt;</span><br><span class="line">      &lt;slot&gt;&lt;/slot&gt;</span><br><span class="line">    &lt;/div&gt;</span><br><span class="line">  `</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure></p>
+<p>渲染出的结构也确实如你所愿，唯一美中不足的是控制台有一个小小的Warning：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Duplicate presence of slot &quot;default&quot; found in the same render tree</span><br></pre></td></tr></table></figure></p>
 <p>如果你不是强迫症患者，这时候你可以收工安心回家睡觉了。直到有一天你的同事向你抱怨，为什么向<code>MyComponent</code>插入一个自定义组件会渲染不出来？</p>
-<p>例如有一自定义组件<code>MyComponent2</code>：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">Vue.component(&apos;MyComponent2&apos;, &#123;</div><div class="line">  template: `</div><div class="line">    &lt;div&gt;456&lt;/div&gt;</div><div class="line">  `</div><div class="line">&#125;)</div></pre></td></tr></table></figure></p>
-<p>当调用<code>&lt;MyComponent&gt;&lt;MyComponent2&gt;&lt;/MyComponent2&gt;&lt;/MyComponent&gt;</code>时，预期渲染为如下DOM结构：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&lt;div&gt;</div><div class="line">  &lt;div&gt;456&lt;/div&gt;</div><div class="line">  &lt;div&gt;456&lt;/div&gt;</div><div class="line">&lt;/div&gt;</div></pre></td></tr></table></figure></p>
+<p>例如有一自定义组件<code>MyComponent2</code>：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Vue.component(&apos;MyComponent2&apos;, &#123;</span><br><span class="line">  template: `</span><br><span class="line">    &lt;div&gt;456&lt;/div&gt;</span><br><span class="line">  `</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure></p>
+<p>当调用<code>&lt;MyComponent&gt;&lt;MyComponent2&gt;&lt;/MyComponent2&gt;&lt;/MyComponent&gt;</code>时，预期渲染为如下DOM结构：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;div&gt;</span><br><span class="line">  &lt;div&gt;456&lt;/div&gt;</span><br><span class="line">  &lt;div&gt;456&lt;/div&gt;</span><br><span class="line">&lt;/div&gt;</span><br></pre></td></tr></table></figure></p>
 <p>为什么不能正常工作呢？估计是前面的那个Warning搞得鬼，通过查询发现在Vue 2.0中不允许有重名的<code>slot</code>:</p>
 <blockquote>
 <p>重名的 Slots 移除<br>同一模板中的重名 <slot> 已经弃用。当一个 slot 已经被渲染过了，那么就不能在同一模板其它地方被再次渲染了。如果要在不同位置渲染同一内容，可一用 prop 来传递。</slot></p>
 </blockquote>
 <p>文档中提示可以用<code>props</code>来实现，然而在我的用例中显然是不合适的。经过搜索后，最靠谱的方法是手写render函数，将<code>slot</code>中的内容复制到其他的位置。</p>
-<p>将之前的<code>MyComponent</code>改为render函数的方式定义：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">Vue.component(&apos;MyComponent&apos;, &#123;</div><div class="line">  render (createElement) &#123;</div><div class="line">    return createElement(&apos;div&apos;, [</div><div class="line">      ...this.$slots.default,</div><div class="line">      ...this.$slots.default</div><div class="line">    ])</div><div class="line">  &#125;</div><div class="line">&#125;)</div></pre></td></tr></table></figure></p>
+<p>将之前的<code>MyComponent</code>改为render函数的方式定义：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Vue.component(&apos;MyComponent&apos;, &#123;</span><br><span class="line">  render (createElement) &#123;</span><br><span class="line">    return createElement(&apos;div&apos;, [</span><br><span class="line">      ...this.$slots.default,</span><br><span class="line">      ...this.$slots.default</span><br><span class="line">    ])</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure></p>
 <p>在上面的定义中我们插入了两个<code>this.$slots.default</code>，测试下能不能正常工作。然而并没有什么卵用，Vue文档在render函数这一章有以下说明：</p>
 <blockquote>
 <p>VNodes 必须唯一<br>所有组件树中的 VNodes 必须唯一</p>
 </blockquote>
-<p>这意味着我们不能简单地在不同位置引用<code>this.$slots.default</code>，必须对<code>slot</code>进行深度复制。深度复制的函数如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">function deepClone(vnodes, createElement) &#123;</div><div class="line"></div><div class="line">  function cloneVNode (vnode) &#123;</div><div class="line">    const clonedChildren = vnode.children &amp;&amp; vnode.children.map(vnode =&gt; cloneVNode(vnode));</div><div class="line">    const cloned = createElement(vnode.tag, vnode.data, clonedChildren);</div><div class="line">    cloned.text = vnode.text;</div><div class="line">    cloned.isComment = vnode.isComment;</div><div class="line">    cloned.componentOptions = vnode.componentOptions;</div><div class="line">    cloned.elm = vnode.elm;</div><div class="line">    cloned.context = vnode.context;</div><div class="line">    cloned.ns = vnode.ns;</div><div class="line">    cloned.isStatic = vnode.isStatic;</div><div class="line">    cloned.key = vnode.key;</div><div class="line"></div><div class="line">    return cloned;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  const clonedVNodes = vnodes.map(vnode =&gt; cloneVNode(vnode))</div><div class="line">  return clonedVNodes;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>这意味着我们不能简单地在不同位置引用<code>this.$slots.default</code>，必须对<code>slot</code>进行深度复制。深度复制的函数如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">function deepClone(vnodes, createElement) &#123;</span><br><span class="line"></span><br><span class="line">  function cloneVNode (vnode) &#123;</span><br><span class="line">    const clonedChildren = vnode.children &amp;&amp; vnode.children.map(vnode =&gt; cloneVNode(vnode));</span><br><span class="line">    const cloned = createElement(vnode.tag, vnode.data, clonedChildren);</span><br><span class="line">    cloned.text = vnode.text;</span><br><span class="line">    cloned.isComment = vnode.isComment;</span><br><span class="line">    cloned.componentOptions = vnode.componentOptions;</span><br><span class="line">    cloned.elm = vnode.elm;</span><br><span class="line">    cloned.context = vnode.context;</span><br><span class="line">    cloned.ns = vnode.ns;</span><br><span class="line">    cloned.isStatic = vnode.isStatic;</span><br><span class="line">    cloned.key = vnode.key;</span><br><span class="line"></span><br><span class="line">    return cloned;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  const clonedVNodes = vnodes.map(vnode =&gt; cloneVNode(vnode))</span><br><span class="line">  return clonedVNodes;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p>上面的核心函数就是<code>cloneVNode()</code>，它递归地创建VNode，实现深度复制。VNode的属性很多，我并不了解哪些是关键属性，只是参照着Vue的源码一并地复制过来。</p>
 <p>基于以上函数，我们更改<code>MyComponent</code>的定义：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">Vue.component(&apos;MyComponent&apos;, &#123;</div><div class="line">  render (createElement) &#123;</div><div class="line">    return createElement(&apos;div&apos;, [</div><div class="line">      ...this.$slots.default,</div><div class="line">      ...deepClone(this.$slots.default, createElement)</div><div class="line">    ])</div><div class="line">  &#125;</div><div class="line">&#125;)</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Vue.component(&apos;MyComponent&apos;, &#123;</span><br><span class="line">  render (createElement) &#123;</span><br><span class="line">    return createElement(&apos;div&apos;, [</span><br><span class="line">      ...this.$slots.default,</span><br><span class="line">      ...deepClone(this.$slots.default, createElement)</span><br><span class="line">    ])</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
 <p>经测试，一切正常。</p>
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>在Vue 1.0中重名的slots并不会出现什么问题，不知道为什么在2.0中取消了这个功能。我听说React提供了复制Element的标准函数，希望Vue也能提供这个函数，免得大家踩坑。</p>
 
@@ -410,7 +421,12 @@
 
 
     
+  
 
+
+
+  
+  
 
 
 
@@ -425,13 +441,19 @@
   
 
   
-
+    <script type="text/javascript" src="/lib/fancybox/jquery.fancybox.pack.js"></script>
   
 
   
+    <script type="text/javascript" src="/lib/pjax/jquery.pjax.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/nprogress/nprogress.min.js"></script>
+  
 
 
-    <script type="text/javascript" src="/js/src/even.js?v=2.8.0"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+    <script type="text/javascript" src="/js/src/even.js?v=2.9.0"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
 <script type="text/x-mathjax-config">
   MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
 </script>
