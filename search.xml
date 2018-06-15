@@ -5,7 +5,7 @@
     
     <entry>
       <title><![CDATA[Git内部原理之Git对象哈希]]></title>
-      <url>https://jingsam.github.io/2018/06/10/git-storage.html</url>
+      <url>https://jingsam.github.io/2018/06/10/git-hash.html</url>
       <content type="html"><![CDATA[<p>在上一篇<a href="1">文章</a>中，将了数据对象、树对象和提交对象三种Git对象，每种对象会计算出一个hash值。那么，Git是如何计算出Git对象的hash值？本文的内容就是来解答这个问题。</p>
 <h1 id="Git对象的hash方法"><a href="#Git对象的hash方法" class="headerlink" title="Git对象的hash方法"></a>Git对象的hash方法</h1><p>Git中的数据对象、树对象和提交对象的hash方法原理是一样的，可以描述为：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">header = &quot;&lt;type&gt; &quot; + content.length + &quot;\0&quot;</div><div class="line">hash = sha1(header + content)</div></pre></td></tr></table></figure>
