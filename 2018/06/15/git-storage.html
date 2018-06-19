@@ -17,7 +17,7 @@
 
 
 
-  <meta name="description" content="《Mapbox 地图样式规范》中文版上线啦"/>
+  <meta name="description" content="Git内部原理之Git对象存储"/>
 
 
 
@@ -40,7 +40,7 @@
 
 
 
-<link rel="canonical" href="https://jingsam.github.io/2016/10/19/mapbox-gl-style-spec.html"/>
+<link rel="canonical" href="https://jingsam.github.io/2018/06/15/git-storage.html"/>
 
 
 
@@ -87,7 +87,7 @@
   window.config = {"title":"jingsam","subtitle":null,"description":"GIS, mapping","author":"jingsam","language":"zh-Hans","timezone":null,"url":"https://jingsam.github.io","root":"/","permalink":":year/:month/:day/:title.html","permalink_defaults":null,"source_dir":"source","public_dir":"public","tag_dir":"tags","archive_dir":"archives","category_dir":"categories","code_dir":"downloads/code","i18n_dir":":lang","skip_render":null,"new_post_name":":year-:month-:day-:title.md","default_layout":"post","titlecase":false,"external_link":true,"filename_case":0,"render_drafts":false,"post_asset_folder":false,"relative_link":false,"future":true,"highlight":{"enable":true,"auto_detect":false,"line_number":true,"tab_replace":null},"default_category":"uncategorized","category_map":null,"tag_map":null,"date_format":"YYYY-MM-DD","time_format":"HH:mm:ss","per_page":1,"pagination_dir":"page","theme":"even","deploy":{"type":"git","repo":"git@github.com:jingsam/jingsam.github.io.git","branch":"master"},"ignore":[],"auto_spacing":true,"feed":{"type":"atom","limit":20,"hub":null,"content":true,"path":"atom.xml"},"archive_generator":{"per_page":0,"yearly":true,"monthly":false,"daily":false},"category_generator":{"per_page":1},"index_generator":{"per_page":1,"order_by":"-date"},"tag_generator":{"per_page":1},"search":{"path":"search.xml","field":"post"},"marked":{"gfm":true,"pedantic":false,"sanitize":false,"tables":true,"breaks":true,"smartLists":true,"smartypants":true},"server":{"log":false,"ip":"0.0.0.0"},"since":2015,"favicon":"/favicon.ico","rss":"default","menu":{"Home":"/","Archives":"/archives/","About":"/about"},"color":"Default","toc":true,"fancybox":true,"pjax":true,"copyright":{"enable":true,"license":"<a rel=\"license\" href=\"http://creativecommons.org/licenses/by-nc/4.0/\" target=\"_blank\">知识共享署名-非商业性使用 4.0 国际许可协议</a>"},"reward":{"enable":false,"qrCode":{"wechat":null,"alipay":null}},"social":{"email":"jing-sam@qq.com","stack-overflow":null,"twitter":null,"facebook":null,"linkedin":null,"google":null,"github":"https://github.com/jingsam","weibo":"http://weibo.com/u/1902650267","zhihu":"https://www.zhihu.com/people/jingsam","douban":null,"pocket":null,"tumblr":null,"instagram":null},"leancloud":{"app_id":null,"app_key":null},"baidu_analytics":null,"baidu_verification":null,"google_analytics":null,"google_verification":null,"disqus_shortname":"jingsam","changyan":{"appid":null,"appkey":null},"livere_datauid":null,"version":"2.9.0"};
 </script>
 
-    <title> 《Mapbox 地图样式规范》中文版上线啦 - jingsam </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+    <title> Git内部原理之Git对象存储 - jingsam </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
   </head>
 
   <body><div id="mobile-navbar" class="mobile-navbar">
@@ -185,13 +185,13 @@
     <header class="post-header">
       <h1 class="post-title">
         
-          《Mapbox 地图样式规范》中文版上线啦
+          Git内部原理之Git对象存储
         
       </h1>
 
       <div class="post-meta">
         <span class="post-time">
-          2016-10-19
+          2018-06-15
         </span>
         
         
@@ -200,14 +200,36 @@
 
     
     
+  <div class="post-toc" id="post-toc">
+    <h2 class="post-toc-title">文章目录</h2>
+    <div class="post-toc-content">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#原理"><span class="toc-text">原理</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Nodejs实现"><span class="toc-text">Nodejs实现</span></a></li></ol>
+    </div>
+  </div>
+
 
 
     <div class="post-content">
       
-        <p>最近逮空翻译了下《Mapbox 地图样式规范》，对于英文不好或者懒得看英文的朋友们可能会有用。</p>
-<p>页面托管到了 <a href="https://jingsam.github.io/mapbox-gl-style-spec">Github</a> 上，现在也正在和 Mapbox 沟通，看能不能发布到 <a href="http://www.mapbox.cn/" target="_blank" rel="external">mapbox.cn</a> 上，服务下广大中国 Mapboxer。</p>
-<p>当然，如果有什么翻译不到位或者错误的地方，欢迎给我发 <a href="https://github.com/jingsam/mapbox-gl-style-spec/issues" target="_blank" rel="external">issue</a>。</p>
-<p><img src="/assets/mapbox-gl-style-spec.png" alt=""></p>
+        <p>在<a href="1">Git内部原理之Git对象哈希</a>中，讲解了Git对象hash的原理，接下来的这篇文章讲一讲Git对象如何存储。</p>
+<h1 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h1><p>数据对象、树对象和提交对象都是存储在<code>.git/objects</code>目录下，目录的结构如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">.git</div><div class="line">|-- objects</div><div class="line">    |-- 01</div><div class="line">    |   |-- 55eb4229851634a0f03eb265b69f5a2d56f341</div><div class="line">    |-- 1f</div><div class="line">    |   |-- 7a7a472abf3dd9643fd615f6da379c4acb3e3a</div><div class="line">    |-- 83</div><div class="line">        |-- baae61804e65cc73a7201a7252750c76066a30</div></pre></td></tr></table></figure>
+<p>从上面的目录结构可以看出，Git对象的40位hash分为两部分：头两位作为文件夹，后38位作为对象文件名。所以一个Git对象的存储路径规则为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">.git/objects/hash[0, 2]/hash[2, 40]</div></pre></td></tr></table></figure>
+<p>这里就产生了一个疑问：为什么Git要这么设计目录结构，而不直接用Git对象的40位hash作为文件名？原因是有两点：</p>
+<p>1.有些文件系统对目录下的文件数量有限制。例如，FAT32限制单目录下的最大文件数量是65535个，如果使用U盘拷贝Git文件就可能出现问题。<br>2.有些文件系统访问文件是一个线性查找的过程，目录下的文件越多，访问越慢。</p>
+<p>在在<a href="1">Git内部原理之Git对象哈希</a>中，我们知道Git对象会在原内容前加个一个头部：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">store = header + content</div></pre></td></tr></table></figure>
+<p>Git对象在存储前，会使用zlib的deflate算法进行压缩，即简要描述为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">zlib_store = zlib.deflate(store)</div></pre></td></tr></table></figure>
+<p>压缩后的<code>zlib_store</code>按照Git对象的路径规则存储到<code>.git/objects</code>目录下。</p>
+<p>总结下Git对象存储的算法步骤：</p>
+<p>1.计算<code>content</code>长度，构造<code>header</code>;<br>2.将<code>header</code>添加到<code>content</code>前面，构造Git对象；<br>3.使用sha1算法计算Git对象的40位hash码；<br>4.使用zlib的deflate算法压缩Git对象；<br>5.将压缩后的Git对象存储到<code>.git/objects/hash[0, 2]/hash[2, 40]</code>路径下;</p>
+<h1 id="Nodejs实现"><a href="#Nodejs实现" class="headerlink" title="Nodejs实现"></a>Nodejs实现</h1><p>接下来，我们使用Nodejs来实现<code>git hash-object -w</code>的功能，即计算Git对象的hash值并存储到Git文件系统中：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line">const fs = require(&apos;fs&apos;)</div><div class="line">const crypto = require(&apos;crypto&apos;)</div><div class="line">const zlib = require(&apos;zlib&apos;)</div><div class="line"></div><div class="line">function gitHashObject(content, type) &#123;</div><div class="line">  // 构造header</div><div class="line">  const header = `$&#123;type&#125; $&#123;Buffer.from(content).length&#125;\0`</div><div class="line"></div><div class="line">  // 构造Git对象</div><div class="line">  const store = Buffer.concat([Buffer.from(header), Buffer.from(content)])</div><div class="line"></div><div class="line">  // 计算hash</div><div class="line">  const sha1 = crypto.createHash(&apos;sha1&apos;)</div><div class="line">  sha1.update(store)</div><div class="line">  const hash = sha1.digest(&apos;hex&apos;)</div><div class="line"></div><div class="line">  // 压缩Git对象</div><div class="line">  const zlib_store = zlib.deflateSync(store)</div><div class="line"></div><div class="line">  // 存储Git对象</div><div class="line">  fs.mkdirSync(`.git/objects/$&#123;hash.substring(0, 2)&#125;`)</div><div class="line">  fs.writeFileSync(`.git/objects/$&#123;hash.substring(0, 2)&#125;/$&#123;hash.substring(2, 40)&#125;`, zlib_store)</div><div class="line"></div><div class="line">  console.log(hash)</div><div class="line">&#125;</div><div class="line"></div><div class="line">// 调用入口</div><div class="line">gitHashObject(process.argv[2], process.argv[3])</div></pre></td></tr></table></figure>
+<p>最后，测试下能否正确存储Git对象：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">$ node index.js &apos;hello, world&apos; blob</div><div class="line">8c01d89ae06311834ee4b1fab2f0414d35f01102</div><div class="line">$ git cat-file -p 8c01d89ae06311834ee4b1fab2f0414d35f01102</div><div class="line">hello, world</div></pre></td></tr></table></figure>
+<p>由此可见，我们生成了一个合法的Git数据对象，证明算法是正确的。</p>
 
       
     </div>
@@ -223,7 +245,7 @@
     </p>
     <p class="copyright-item">
       <span>原文链接: </span>
-      <a href="https://jingsam.github.io/2016/10/19/mapbox-gl-style-spec.html">https://jingsam.github.io/2016/10/19/mapbox-gl-style-spec.html</a>
+      <a href="https://jingsam.github.io/2018/06/15/git-storage.html">https://jingsam.github.io/2018/06/15/git-storage.html</a>
     </p>
     <p class="copyright-item">
       <span>许可协议: </span>
@@ -245,15 +267,9 @@
         
   <nav class="post-nav">
     
-      <a class="prev" href="/2016/10/23/standalone-vs-runtime-only-build-in-vuejs2.html">
-        <i class="iconfont icon-left"></i>
-        <span class="prev-text nav-default">Vue.js 2.0 独立构建和运行时构建的区别</span>
-        <span class="prev-text nav-mobile">上一篇</span>
-      </a>
     
-    
-      <a class="next" href="/2016/10/05/centroid.html">
-        <span class="next-text nav-default">多边形centroid的计算方法</span>
+      <a class="next" href="/2018/06/10/git-hash.html">
+        <span class="next-text nav-default">Git内部原理之Git对象哈希</span>
         <span class="prev-text nav-mobile">下一篇</span>
         <i class="iconfont icon-right"></i>
       </a>
@@ -372,9 +388,9 @@
   
   <script type="text/javascript">
     var disqus_config = function () {
-        this.page.url = 'https://jingsam.github.io/2016/10/19/mapbox-gl-style-spec.html';
-        this.page.identifier = '2016/10/19/mapbox-gl-style-spec.html';
-        this.page.title = '《Mapbox 地图样式规范》中文版上线啦';
+        this.page.url = 'https://jingsam.github.io/2018/06/15/git-storage.html';
+        this.page.identifier = '2018/06/15/git-storage.html';
+        this.page.title = 'Git内部原理之Git对象存储';
     };
     (function() {
     var d = document, s = d.createElement('script');
@@ -425,7 +441,24 @@
   
 
 
-    <script type="text/javascript" src="/js/src/even.js?v=2.9.0"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+    <script type="text/javascript" src="/js/src/even.js?v=2.9.0"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
 
   </body>
 </html>

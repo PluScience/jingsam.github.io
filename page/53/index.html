@@ -17,7 +17,7 @@
 
 
 
-  <meta name="description" content="《Mapbox 地图样式规范》中文版上线啦"/>
+  <meta name="description" content="GIS, mapping"/>
 
 
 
@@ -40,7 +40,7 @@
 
 
 
-<link rel="canonical" href="https://jingsam.github.io/2016/10/19/mapbox-gl-style-spec.html"/>
+<link rel="canonical" href="https://jingsam.github.io/page/53/"/>
 
 
 
@@ -87,7 +87,7 @@
   window.config = {"title":"jingsam","subtitle":null,"description":"GIS, mapping","author":"jingsam","language":"zh-Hans","timezone":null,"url":"https://jingsam.github.io","root":"/","permalink":":year/:month/:day/:title.html","permalink_defaults":null,"source_dir":"source","public_dir":"public","tag_dir":"tags","archive_dir":"archives","category_dir":"categories","code_dir":"downloads/code","i18n_dir":":lang","skip_render":null,"new_post_name":":year-:month-:day-:title.md","default_layout":"post","titlecase":false,"external_link":true,"filename_case":0,"render_drafts":false,"post_asset_folder":false,"relative_link":false,"future":true,"highlight":{"enable":true,"auto_detect":false,"line_number":true,"tab_replace":null},"default_category":"uncategorized","category_map":null,"tag_map":null,"date_format":"YYYY-MM-DD","time_format":"HH:mm:ss","per_page":1,"pagination_dir":"page","theme":"even","deploy":{"type":"git","repo":"git@github.com:jingsam/jingsam.github.io.git","branch":"master"},"ignore":[],"auto_spacing":true,"feed":{"type":"atom","limit":20,"hub":null,"content":true,"path":"atom.xml"},"archive_generator":{"per_page":0,"yearly":true,"monthly":false,"daily":false},"category_generator":{"per_page":1},"index_generator":{"per_page":1,"order_by":"-date"},"tag_generator":{"per_page":1},"search":{"path":"search.xml","field":"post"},"marked":{"gfm":true,"pedantic":false,"sanitize":false,"tables":true,"breaks":true,"smartLists":true,"smartypants":true},"server":{"log":false,"ip":"0.0.0.0"},"since":2015,"favicon":"/favicon.ico","rss":"default","menu":{"Home":"/","Archives":"/archives/","About":"/about"},"color":"Default","toc":true,"fancybox":true,"pjax":true,"copyright":{"enable":true,"license":"<a rel=\"license\" href=\"http://creativecommons.org/licenses/by-nc/4.0/\" target=\"_blank\">知识共享署名-非商业性使用 4.0 国际许可协议</a>"},"reward":{"enable":false,"qrCode":{"wechat":null,"alipay":null}},"social":{"email":"jing-sam@qq.com","stack-overflow":null,"twitter":null,"facebook":null,"linkedin":null,"google":null,"github":"https://github.com/jingsam","weibo":"http://weibo.com/u/1902650267","zhihu":"https://www.zhihu.com/people/jingsam","douban":null,"pocket":null,"tumblr":null,"instagram":null},"leancloud":{"app_id":null,"app_key":null},"baidu_analytics":null,"baidu_verification":null,"google_analytics":null,"google_verification":null,"disqus_shortname":"jingsam","changyan":{"appid":null,"appkey":null},"livere_datauid":null,"version":"2.9.0"};
 </script>
 
-    <title> 《Mapbox 地图样式规范》中文版上线啦 - jingsam </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+    <title> jingsam </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
   </head>
 
   <body><div id="mobile-navbar" class="mobile-navbar">
@@ -180,18 +180,20 @@
         <div class="content-wrapper">
           <div id="content" class="content">
             
-  
+  <section id="posts" class="posts">
+    
+      
   <article class="post">
     <header class="post-header">
       <h1 class="post-title">
         
-          《Mapbox 地图样式规范》中文版上线啦
+          <a class="post-link" href="/2015/08/03/how-to-load-gis-data-in-netlogo.html">Netlogo读写GIS数据的方法</a>
         
       </h1>
 
       <div class="post-meta">
         <span class="post-time">
-          2016-10-19
+          2015-08-03
         </span>
         
         
@@ -204,81 +206,49 @@
 
     <div class="post-content">
       
-        <p>最近逮空翻译了下《Mapbox 地图样式规范》，对于英文不好或者懒得看英文的朋友们可能会有用。</p>
-<p>页面托管到了 <a href="https://jingsam.github.io/mapbox-gl-style-spec">Github</a> 上，现在也正在和 Mapbox 沟通，看能不能发布到 <a href="http://www.mapbox.cn/" target="_blank" rel="external">mapbox.cn</a> 上，服务下广大中国 Mapboxer。</p>
-<p>当然，如果有什么翻译不到位或者错误的地方，欢迎给我发 <a href="https://github.com/jingsam/mapbox-gl-style-spec/issues" target="_blank" rel="external">issue</a>。</p>
-<p><img src="/assets/mapbox-gl-style-spec.png" alt=""></p>
+        
+        
 
+        
+          <p>使用NetLogo进行地理过程模拟时，不可避免地要对GIS数据进行读写，本文主要讲栅格数据的读写，矢量数据留待以后再讲。</p>
+<p>Netlogo目前只支持ESRI ASCII Grid(后缀通常为.asc或.grd)格式的栅格数据，所以其他格式的数据请先使用ArcGIS里面的“Raster to ASCII”工具进行转换。</p>
+<p>NetLogo读写GIS数据需要gis扩展支持，因此需要代码页前部声明：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">extensions [gis]</div></pre></td></tr></table></figure></p>
+<p>读取数据前，首先需要设置坐标系，但并不是必须的。NetLogo支持地理坐标系和投影坐标系，以WKT格式描述坐标系，需提供坐标系文件(后缀通常为.prj)，代码如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">gis:load-coordinate-system &quot;Transverse_Mercator.prj&quot;</div></pre></td></tr></table></figure></p>
+<p>对于投影坐标系，NetLogo目前只支持有限的几种坐标系：</p>
+<p>|Albers_Conic_Equal_Area      |Lambert_Conformal_Conic_2SP |Polyconic          |<br>|Lambert_Azimuthal_Equal_Area |Mercator_1SP                |Robinson           |<br>|Azimuthal_Equidistant        |Miller                      |Stereographic      |<br>|Cylindrical_Equal_Area       |Oblique_Mercator            |Transverse_Mercator|<br>|Equidistant_Conic            |hotine_oblique_mercator<br>|Gnomonic                     |Orthographic</p>
+<p>设置完坐标系后，即可利用函数<code>gis:load-dataset</code>读取数据：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">let data gis:load-dataset dem.asc</div></pre></td></tr></table></figure></p>
+<p>将数据读取至变量<code>data</code>之后，一般还需要将数据写入瓦片：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">gis:set-world-envelope (gis:envelope-of data)</div><div class="line">gis:apply-raster data patch-own-variable</div></pre></td></tr></table></figure></p>
+<p>目前NetLogo仅仅支持栅格数据的保存，代码如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">gis:store-dataset data mydata.asc</div></pre></td></tr></table></figure></p>
+<p>最后附上完整代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">extensions [gis]      ;读写GIS数据需要用到gis扩展</div><div class="line"></div><div class="line">patches-own [patch-own-variable]</div><div class="line"></div><div class="line">;读取</div><div class="line">to import-data [file]</div><div class="line">  gis:load-coordinate-system (word projection &quot;.prj&quot;)    ;设置坐标系（非必须）</div><div class="line">  let data gis:load-dataset file</div><div class="line"></div><div class="line">  gis:set-world-envelope (gis:envelope-of data)          ;将窗口范围设置为数据框范围</div><div class="line">  gis:apply-raster data patch-own-variable               ;将数据读取至patch-own-variable变量</div><div class="line">end</div><div class="line"></div><div class="line">;保存</div><div class="line">to save-data [data file]</div><div class="line">  gis:store-dataset data file</div><div class="line">end</div></pre></td></tr></table></figure>
+
+        
       
     </div>
 
     
-      
-      
 
-  <div class="post-copyright">
-    <p class="copyright-item">
-      <span>原文作者: </span>
-      <a href="https://jingsam.github.io">jingsam</a>
-    </p>
-    <p class="copyright-item">
-      <span>原文链接: </span>
-      <a href="https://jingsam.github.io/2016/10/19/mapbox-gl-style-spec.html">https://jingsam.github.io/2016/10/19/mapbox-gl-style-spec.html</a>
-    </p>
-    <p class="copyright-item">
-      <span>许可协议: </span>
-      
-      <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>
-    </p>
-  </div>
-
-
-
-      
-      
-    
-
-    
-      <footer class="post-footer">
-        
-        
-        
-  <nav class="post-nav">
-    
-      <a class="prev" href="/2016/10/23/standalone-vs-runtime-only-build-in-vuejs2.html">
-        <i class="iconfont icon-left"></i>
-        <span class="prev-text nav-default">Vue.js 2.0 独立构建和运行时构建的区别</span>
-        <span class="prev-text nav-mobile">上一篇</span>
-      </a>
-    
-    
-      <a class="next" href="/2016/10/05/centroid.html">
-        <span class="next-text nav-default">多边形centroid的计算方法</span>
-        <span class="prev-text nav-mobile">下一篇</span>
-        <i class="iconfont icon-right"></i>
-      </a>
-    
-  </nav>
-
-      </footer>
     
 
   </article>
 
+    
+  </section>
+
+  
+  <nav class="pagination">
+    
+      <a class="prev" href="/page/52/">
+        <i class="iconfont icon-left"></i>
+        <span class="prev-text">上一页</span>
+      </a>
+    
+    
+  </nav>
+
 
           </div>
           
-  <div class="comments" id="comments">
-    
-      <div id="disqus_thread">
-        <noscript>
-          Please enable JavaScript to view the
-          <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a>
-        </noscript>
-      </div>
-    
-  </div>
-
 
         </div>
       </main>
@@ -369,27 +339,6 @@
     </div>
 
     
-  
-  <script type="text/javascript">
-    var disqus_config = function () {
-        this.page.url = 'https://jingsam.github.io/2016/10/19/mapbox-gl-style-spec.html';
-        this.page.identifier = '2016/10/19/mapbox-gl-style-spec.html';
-        this.page.title = '《Mapbox 地图样式规范》中文版上线啦';
-    };
-    (function() {
-    var d = document, s = d.createElement('script');
-
-    s.src = '//jingsam.disqus.com/embed.js';
-
-    s.setAttribute('data-timestamp', +new Date());
-    (d.head || d.body).appendChild(s);
-    })();  
-  </script>
-
-  
-
-  
-
 
 
     
