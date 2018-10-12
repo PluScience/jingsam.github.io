@@ -36,7 +36,7 @@
 
 
 
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.9.0" />
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1" />
 
 
 
@@ -53,7 +53,7 @@
 
 
 
-<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.9.0" />
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1" />
 
 
 
@@ -84,7 +84,7 @@
 
 
 <script>
-  window.config = {"title":"jingsam","subtitle":null,"description":"GIS, mapping","author":"jingsam","language":"zh-Hans","timezone":null,"url":"https://jingsam.github.io","root":"/","permalink":":year/:month/:day/:title.html","permalink_defaults":null,"source_dir":"source","public_dir":"public","tag_dir":"tags","archive_dir":"archives","category_dir":"categories","code_dir":"downloads/code","i18n_dir":":lang","skip_render":null,"new_post_name":":year-:month-:day-:title.md","default_layout":"post","titlecase":false,"external_link":true,"filename_case":0,"render_drafts":false,"post_asset_folder":false,"relative_link":false,"future":true,"highlight":{"enable":true,"auto_detect":false,"line_number":true,"tab_replace":null},"default_category":"uncategorized","category_map":null,"tag_map":null,"date_format":"YYYY-MM-DD","time_format":"HH:mm:ss","per_page":1,"pagination_dir":"page","theme":"even","deploy":{"type":"git","repo":"git@github.com:jingsam/jingsam.github.io.git","branch":"master"},"ignore":[],"auto_spacing":true,"feed":{"type":"atom","limit":20,"hub":null,"content":true,"path":"atom.xml"},"archive_generator":{"per_page":0,"yearly":true,"monthly":false,"daily":false},"category_generator":{"per_page":1},"index_generator":{"per_page":1,"order_by":"-date"},"tag_generator":{"per_page":1},"search":{"path":"search.xml","field":"post"},"marked":{"gfm":true,"pedantic":false,"sanitize":false,"tables":true,"breaks":true,"smartLists":true,"smartypants":true},"server":{"log":false,"ip":"0.0.0.0"},"since":2015,"favicon":"/favicon.ico","rss":"default","menu":{"Home":"/","Archives":"/archives/","About":"/about"},"color":"Default","toc":true,"fancybox":true,"pjax":true,"copyright":{"enable":true,"license":"<a rel=\"license\" href=\"http://creativecommons.org/licenses/by-nc/4.0/\" target=\"_blank\">知识共享署名-非商业性使用 4.0 国际许可协议</a>"},"reward":{"enable":false,"qrCode":{"wechat":null,"alipay":null}},"social":{"email":"jing-sam@qq.com","stack-overflow":null,"twitter":null,"facebook":null,"linkedin":null,"google":null,"github":"https://github.com/jingsam","weibo":"http://weibo.com/u/1902650267","zhihu":"https://www.zhihu.com/people/jingsam","douban":null,"pocket":null,"tumblr":null,"instagram":null},"leancloud":{"app_id":null,"app_key":null},"baidu_analytics":null,"baidu_verification":null,"google_analytics":null,"google_verification":null,"disqus_shortname":"jingsam","changyan":{"appid":null,"appkey":null},"livere_datauid":null,"version":"2.9.0"};
+  window.config = {"title":"jingsam","subtitle":null,"description":"GIS, mapping","author":"jingsam","language":"zh-Hans","timezone":null,"url":"https://jingsam.github.io","root":"/","permalink":":year/:month/:day/:title.html","permalink_defaults":null,"source_dir":"source","public_dir":"public","tag_dir":"tags","archive_dir":"archives","category_dir":"categories","code_dir":"downloads/code","i18n_dir":":lang","skip_render":null,"new_post_name":":year-:month-:day-:title.md","default_layout":"post","titlecase":false,"external_link":true,"filename_case":0,"render_drafts":false,"post_asset_folder":false,"relative_link":false,"future":true,"highlight":{"enable":true,"auto_detect":false,"line_number":true,"tab_replace":null},"default_category":"uncategorized","category_map":null,"tag_map":null,"date_format":"YYYY-MM-DD","time_format":"HH:mm:ss","per_page":1,"pagination_dir":"page","theme":"even","deploy":{"type":"git","repo":"git@github.com:jingsam/jingsam.github.io.git","branch":"master"},"ignore":[],"auto_spacing":true,"feed":{"type":"atom","limit":20,"hub":null,"content":true,"content_limit":140,"content_limit_delim":"","path":"atom.xml"},"archive_generator":{"per_page":0,"yearly":true,"monthly":false,"daily":false},"category_generator":{"per_page":1},"index_generator":{"per_page":1,"order_by":"-date"},"tag_generator":{"per_page":1},"search":{"path":"search.xml","field":"post"},"marked":{"gfm":true,"pedantic":false,"sanitize":false,"tables":true,"breaks":true,"smartLists":true,"smartypants":true},"server":{"log":false,"ip":"0.0.0.0"},"since":2015,"favicon":"/favicon.ico","rss":"default","menu":{"Home":"/","Archives":"/archives/","About":"/about"},"color":"Default","mode":"default","toc":true,"fancybox":true,"pjax":true,"copyright":{"enable":true,"license":"<a rel=\"license\" href=\"http://creativecommons.org/licenses/by-nc/4.0/\" target=\"_blank\">知识共享署名-非商业性使用 4.0 国际许可协议</a>"},"reward":{"enable":false,"qrCode":{"wechat":null,"alipay":null}},"social":{"email":"jing-sam@qq.com","stack-overflow":null,"twitter":null,"facebook":null,"linkedin":null,"google":null,"github":"https://github.com/jingsam","weibo":"http://weibo.com/u/1902650267","zhihu":"https://www.zhihu.com/people/jingsam","douban":null,"pocket":null,"tumblr":null,"instagram":null},"leancloud":{"app_id":null,"app_key":null},"baidu_analytics":null,"baidu_verification":null,"google_analytics":null,"google_verification":null,"disqus_shortname":"jingsam","changyan":{"appid":null,"appkey":null},"livere_datauid":null,"version":"2.10.1"};
 </script>
 
     <title> mapbox-gl-js接入GeoJSON大文件的优化策略 - jingsam </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
@@ -244,11 +244,11 @@
 </ol>
 <h1 id="预先切片"><a href="#预先切片" class="headerlink" title="预先切片"></a>预先切片</h1><p>如果GeoJSON数据太大了，比如100M，以上的种种优化方法都不可行。GeoJSON没办法增量加载，必须将完整的GeoJSON数据请求过来，才能开始处理。大的GeoJSON数据，光网络请求就会占用大量时间，所以必须预先切片，分块加载。</p>
 <p>预先切片有诸多好处，如减少网络请求时间、渲染效率高。但是，预先切片需要工具切片、瓦片服务器发布服务，而且数据更新有点麻烦。到底切不切片，是动态切片还是预先切片，需要根据数据的情况来确定。</p>
-<p>你可以将数据上传到Mapbox Studio进行自动切片，也可以使用开源工具<a href="https://github.com/mapbox/tippecanoe" target="_blank" rel="external">tippecanoe</a>对GeoJSON数据自行切片。</p>
+<p>你可以将数据上传到Mapbox Studio进行自动切片，也可以使用开源工具<a href="https://github.com/mapbox/tippecanoe" target="_blank" rel="noopener">tippecanoe</a>对GeoJSON数据自行切片。</p>
 <h1 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h1><ol>
-<li><a href="https://blog.mapbox.com/rendering-big-geodata-on-the-fly-with-geojson-vt-4e4d2a5dd1f2" target="_blank" rel="external">https://blog.mapbox.com/rendering-big-geodata-on-the-fly-with-geojson-vt-4e4d2a5dd1f2</a></li>
-<li><a href="https://blog.mapbox.com/clustering-millions-of-points-on-a-map-with-supercluster-272046ec5c97" target="_blank" rel="external">https://blog.mapbox.com/clustering-millions-of-points-on-a-map-with-supercluster-272046ec5c97</a></li>
-<li><a href="https://gist.github.com/ryanbaumann/2d5c851aebf46e4ef5702ee29ead6bdb" target="_blank" rel="external">https://gist.github.com/ryanbaumann/2d5c851aebf46e4ef5702ee29ead6bdb</a></li>
+<li><a href="https://blog.mapbox.com/rendering-big-geodata-on-the-fly-with-geojson-vt-4e4d2a5dd1f2" target="_blank" rel="noopener">https://blog.mapbox.com/rendering-big-geodata-on-the-fly-with-geojson-vt-4e4d2a5dd1f2</a></li>
+<li><a href="https://blog.mapbox.com/clustering-millions-of-points-on-a-map-with-supercluster-272046ec5c97" target="_blank" rel="noopener">https://blog.mapbox.com/clustering-millions-of-points-on-a-map-with-supercluster-272046ec5c97</a></li>
+<li><a href="https://gist.github.com/ryanbaumann/2d5c851aebf46e4ef5702ee29ead6bdb" target="_blank" rel="noopener">https://gist.github.com/ryanbaumann/2d5c851aebf46e4ef5702ee29ead6bdb</a></li>
 </ol>
 
       
@@ -301,6 +301,7 @@
       </a>
     
   </nav>
+
 
       </footer>
     
@@ -371,11 +372,12 @@
     
       
     
-    
+
     
       <a href="/atom.xml" class="iconfont icon-rss" title="rss"></a>
     
   </div>
+
 
 
 <div class="copyright">
@@ -467,7 +469,7 @@
   
 
 
-    <script type="text/javascript" src="/js/src/even.js?v=2.9.0"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+    <script type="text/javascript" src="/js/src/even.js?v=2.10.1"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 
   </body>
 </html>

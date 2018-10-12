@@ -36,7 +36,7 @@
 
 
 
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.9.0" />
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1" />
 
 
 
@@ -53,7 +53,7 @@
 
 
 
-<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.9.0" />
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1" />
 
 
 
@@ -84,7 +84,7 @@
 
 
 <script>
-  window.config = {"title":"jingsam","subtitle":null,"description":"GIS, mapping","author":"jingsam","language":"zh-Hans","timezone":null,"url":"https://jingsam.github.io","root":"/","permalink":":year/:month/:day/:title.html","permalink_defaults":null,"source_dir":"source","public_dir":"public","tag_dir":"tags","archive_dir":"archives","category_dir":"categories","code_dir":"downloads/code","i18n_dir":":lang","skip_render":null,"new_post_name":":year-:month-:day-:title.md","default_layout":"post","titlecase":false,"external_link":true,"filename_case":0,"render_drafts":false,"post_asset_folder":false,"relative_link":false,"future":true,"highlight":{"enable":true,"auto_detect":false,"line_number":true,"tab_replace":null},"default_category":"uncategorized","category_map":null,"tag_map":null,"date_format":"YYYY-MM-DD","time_format":"HH:mm:ss","per_page":1,"pagination_dir":"page","theme":"even","deploy":{"type":"git","repo":"git@github.com:jingsam/jingsam.github.io.git","branch":"master"},"ignore":[],"auto_spacing":true,"feed":{"type":"atom","limit":20,"hub":null,"content":true,"path":"atom.xml"},"archive_generator":{"per_page":0,"yearly":true,"monthly":false,"daily":false},"category_generator":{"per_page":1},"index_generator":{"per_page":1,"order_by":"-date"},"tag_generator":{"per_page":1},"search":{"path":"search.xml","field":"post"},"marked":{"gfm":true,"pedantic":false,"sanitize":false,"tables":true,"breaks":true,"smartLists":true,"smartypants":true},"server":{"log":false,"ip":"0.0.0.0"},"since":2015,"favicon":"/favicon.ico","rss":"default","menu":{"Home":"/","Archives":"/archives/","About":"/about"},"color":"Default","toc":true,"fancybox":true,"pjax":true,"copyright":{"enable":true,"license":"<a rel=\"license\" href=\"http://creativecommons.org/licenses/by-nc/4.0/\" target=\"_blank\">知识共享署名-非商业性使用 4.0 国际许可协议</a>"},"reward":{"enable":false,"qrCode":{"wechat":null,"alipay":null}},"social":{"email":"jing-sam@qq.com","stack-overflow":null,"twitter":null,"facebook":null,"linkedin":null,"google":null,"github":"https://github.com/jingsam","weibo":"http://weibo.com/u/1902650267","zhihu":"https://www.zhihu.com/people/jingsam","douban":null,"pocket":null,"tumblr":null,"instagram":null},"leancloud":{"app_id":null,"app_key":null},"baidu_analytics":null,"baidu_verification":null,"google_analytics":null,"google_verification":null,"disqus_shortname":"jingsam","changyan":{"appid":null,"appkey":null},"livere_datauid":null,"version":"2.9.0"};
+  window.config = {"title":"jingsam","subtitle":null,"description":"GIS, mapping","author":"jingsam","language":"zh-Hans","timezone":null,"url":"https://jingsam.github.io","root":"/","permalink":":year/:month/:day/:title.html","permalink_defaults":null,"source_dir":"source","public_dir":"public","tag_dir":"tags","archive_dir":"archives","category_dir":"categories","code_dir":"downloads/code","i18n_dir":":lang","skip_render":null,"new_post_name":":year-:month-:day-:title.md","default_layout":"post","titlecase":false,"external_link":true,"filename_case":0,"render_drafts":false,"post_asset_folder":false,"relative_link":false,"future":true,"highlight":{"enable":true,"auto_detect":false,"line_number":true,"tab_replace":null},"default_category":"uncategorized","category_map":null,"tag_map":null,"date_format":"YYYY-MM-DD","time_format":"HH:mm:ss","per_page":1,"pagination_dir":"page","theme":"even","deploy":{"type":"git","repo":"git@github.com:jingsam/jingsam.github.io.git","branch":"master"},"ignore":[],"auto_spacing":true,"feed":{"type":"atom","limit":20,"hub":null,"content":true,"content_limit":140,"content_limit_delim":"","path":"atom.xml"},"archive_generator":{"per_page":0,"yearly":true,"monthly":false,"daily":false},"category_generator":{"per_page":1},"index_generator":{"per_page":1,"order_by":"-date"},"tag_generator":{"per_page":1},"search":{"path":"search.xml","field":"post"},"marked":{"gfm":true,"pedantic":false,"sanitize":false,"tables":true,"breaks":true,"smartLists":true,"smartypants":true},"server":{"log":false,"ip":"0.0.0.0"},"since":2015,"favicon":"/favicon.ico","rss":"default","menu":{"Home":"/","Archives":"/archives/","About":"/about"},"color":"Default","mode":"default","toc":true,"fancybox":true,"pjax":true,"copyright":{"enable":true,"license":"<a rel=\"license\" href=\"http://creativecommons.org/licenses/by-nc/4.0/\" target=\"_blank\">知识共享署名-非商业性使用 4.0 国际许可协议</a>"},"reward":{"enable":false,"qrCode":{"wechat":null,"alipay":null}},"social":{"email":"jing-sam@qq.com","stack-overflow":null,"twitter":null,"facebook":null,"linkedin":null,"google":null,"github":"https://github.com/jingsam","weibo":"http://weibo.com/u/1902650267","zhihu":"https://www.zhihu.com/people/jingsam","douban":null,"pocket":null,"tumblr":null,"instagram":null},"leancloud":{"app_id":null,"app_key":null},"baidu_analytics":null,"baidu_verification":null,"google_analytics":null,"google_verification":null,"disqus_shortname":"jingsam","changyan":{"appid":null,"appkey":null},"livere_datauid":null,"version":"2.10.1"};
 </script>
 
     <title> linux进程后台运行 - jingsam </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
@@ -214,27 +214,27 @@
         <p>在linux上启动Web服务，当退出终端后，Web服务进程也会随着关闭。产生这种问题的原因在于，当用户注销或者网络断开后，终端后收到挂断信号（SIGHUP）,并向子进程广播SIGHUP信号，子进程收到SIGHUP信号而关闭。因此，让linux后台持续运行的方法有以下几种：</p>
 <p>1.改变子进程的所属的父进程，只要父进程不关闭，子进程也不会关闭；<br>2.让子进程忽略挂断信号，即使收到SIGHUP信号，也任性地继续运行；<br>3.不向子进程广播SIGHUP信号，子进程收不到SIGHUP信号，因而不会关闭。</p>
 <h1 id="第一种方式"><a href="#第一种方式" class="headerlink" title="第一种方式"></a>第一种方式</h1><p>使用<code>setsid</code>可以新开一个session运行进程，此session不从属于当前终端，因此终端关闭时进程也不会退出。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&gt;setsid ping www.baidu.com</div><div class="line">&gt;ps -ef | grep www.baidu.com</div><div class="line">501 57697     1   0  5:55下午 ttys000    0:00.01 ping www.baidu.com</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt;setsid ping www.baidu.com</span><br><span class="line">&gt;ps -ef | grep www.baidu.com</span><br><span class="line">501 57697     1   0  5:55下午 ttys000    0:00.01 ping www.baidu.com</span><br></pre></td></tr></table></figure>
 <p>从上面可以看出，ping进程的父进程是1，即init进程，因此只要电脑不关机，ping进程就不会停止。</p>
 <p>linux下自带<code>setsid</code>这个命令，但是macOS上并没有这个命令。此时，可以结合使用<code>()</code>和<code>&amp;</code>达到同样的效果。<code>()</code>可以新开一个subshell，<code>&amp;</code>让命令后台运行。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&gt;(ping www.baidu.com &amp;)</div><div class="line">&gt;ps -ef | grep www.baidu.com</div><div class="line">501 57781     1   0  6:01下午 ttys000    0:00.00 ping www.baidu.com</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt;(ping www.baidu.com &amp;)</span><br><span class="line">&gt;ps -ef | grep www.baidu.com</span><br><span class="line">501 57781     1   0  6:01下午 ttys000    0:00.00 ping www.baidu.com</span><br></pre></td></tr></table></figure>
 <p>可以看到，效果与<code>setsid</code>是一样的。</p>
 <h1 id="第二种方式"><a href="#第二种方式" class="headerlink" title="第二种方式"></a>第二种方式</h1><p>使用<code>nohup</code>可以使进程忽略SIGHUP信号，这种方式也是最常用的。例如：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&gt;nohup ping www.baidu.com &amp;</div><div class="line">[1]  + 59193 exit 127   nohup www.baidu.com</div><div class="line"></div><div class="line">&gt;ps -ef | grep www.baidu.com</div><div class="line">501 59193 39100   0  6:05下午 ttys000    0:00.01 ping www.baidu.com</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&gt;nohup ping www.baidu.com &amp;</span><br><span class="line">[1]  + 59193 exit 127   nohup www.baidu.com</span><br><span class="line"></span><br><span class="line">&gt;ps -ef | grep www.baidu.com</span><br><span class="line">501 59193 39100   0  6:05下午 ttys000    0:00.01 ping www.baidu.com</span><br></pre></td></tr></table></figure>
 <p>可以看到，ping进程的父进程并不为1，nohup是让进程忽略SIGHUP信号实现进程不退出的。</p>
 <p>需要注意的是，当在<code>zsh</code>中使用<code>nohup</code>时，退出终端时会提示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">zsh: you have running jobs.</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">zsh: you have running jobs.</span><br></pre></td></tr></table></figure>
 <p>再次强行退出，那么进程仍然会被干掉。这时候，采用以下命令：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">nohup ping www.baidu.com &amp;!</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nohup ping www.baidu.com &amp;!</span><br></pre></td></tr></table></figure>
 <h1 id="第三种方式"><a href="#第三种方式" class="headerlink" title="第三种方式"></a>第三种方式</h1><p>使用nohup的前提是，进程以nohup来启动。但是，如果启动时忘记了以nohup启动，有什么方法在不停止进程的情况，让它继续后台运行呢？接下来就要将另外一个命令：<code>disown</code>。<code>disown</code>的原理是，将子进程从终端任务队列中移除，所以即使终端挂断，子进程也收不到SIGHUP信号。</p>
 <p>假设现在使用ping命令：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&gt;ping www.baidu.com</div><div class="line">64 bytes from 14.215.177.38: icmp_seq=0 ttl=51 time=19.642 ms</div><div class="line">64 bytes from 14.215.177.38: icmp_seq=1 ttl=51 time=97.976 ms</div><div class="line">64 bytes from 14.215.177.38: icmp_seq=2 ttl=51 time=88.996 ms</div><div class="line">...</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&gt;ping www.baidu.com</span><br><span class="line">64 bytes from 14.215.177.38: icmp_seq=0 ttl=51 time=19.642 ms</span><br><span class="line">64 bytes from 14.215.177.38: icmp_seq=1 ttl=51 time=97.976 ms</span><br><span class="line">64 bytes from 14.215.177.38: icmp_seq=2 ttl=51 time=88.996 ms</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
 <p>这时采用<code>Ctrl + z</code>使它进入后台，使用<code>jobs</code>查看后台进程：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt;jobs</div><div class="line">[1]  + suspended  ping www.baidu.com</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt;jobs</span><br><span class="line">[1]  + suspended  ping www.baidu.com</span><br></pre></td></tr></table></figure>
 <p>可以看到虽然ping进程进入后台，但是进程被挂起了，没有继续运行。使用<code>bg</code>命令可以使他在后台继续运行：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&gt;bg %1</div><div class="line">[1]  + 58174 continued  ping www.baidu.com</div><div class="line">&gt;jobs</div><div class="line">[1]  + running    ping www.baidu.com</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt;bg %1</span><br><span class="line">[1]  + 58174 continued  ping www.baidu.com</span><br><span class="line">&gt;jobs</span><br><span class="line">[1]  + running    ping www.baidu.com</span><br></pre></td></tr></table></figure>
 <p>通过组合<code>Ctrl + z</code>和<code>bg</code>，成功地将前台进程变为了后台进程。为了让进程不随终端关闭而终止，还差最后一步：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt;disown %1</div><div class="line">&gt;jobs</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt;disown %1</span><br><span class="line">&gt;jobs</span><br></pre></td></tr></table></figure>
 <p>上面使用<code>jobs</code>命令查看任务队列，发现ping进程不在任务队列中，意味着进程不会收到SIGHUP信号。</p>
 <h1 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h1><p>以上我们通过三种方式，避免进程随着终端关闭而被杀掉：</p>
 <ol>
@@ -243,9 +243,9 @@
 <li><code>disown</code>将进程从任务队列中移除，保证进程收不到SIGHUP信号。</li>
 </ol>
 <p>但是，以上种种方法只是避免了进程受到SIGHUP信号的影响，进程的持续运行还需要一些其他环境，例如stdin、stdout以及stderr。通常从终端启动的进程，会继承终端的stdin、stdout和stderr。当终端断掉之后，stdin、stdout和stderr也会随着消失，若此时后台进程需要读写stdin、stdout、stderr，该进程将会暂停或者挂住。所以，为保证进程正常后台运行，最好启动时对输入输出重定向：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&gt;ping www.baidu.com &gt; a.log 2&gt;&amp;1 &amp;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt;ping www.baidu.com &gt; a.log 2&gt;&amp;1 &amp;</span><br></pre></td></tr></table></figure>
 <p>此时，将stdout和stderr重定向到文件<code>a.log</code>中，文件<code>a.log</code>不受终端关闭的影响。如果进程依赖于stdin，意思是进程需要由于键盘输入，那就说明这是个交互式程序，交互式程序后台运行就没多大意义了。</p>
-<h1 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h1><p><a href="https://www.ibm.com/developerworks/cn/linux/l-cn-nohup/index.html" target="_blank" rel="external">Linux 技巧：让进程在后台可靠运行的几种方法</a><br><a href="https://unix.stackexchange.com/questions/3886/difference-between-nohup-disown-and" target="_blank" rel="external">Difference between nohup, disown and &amp;</a></p>
+<h1 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h1><p><a href="https://www.ibm.com/developerworks/cn/linux/l-cn-nohup/index.html" target="_blank" rel="noopener">Linux 技巧：让进程在后台可靠运行的几种方法</a><br><a href="https://unix.stackexchange.com/questions/3886/difference-between-nohup-disown-and" target="_blank" rel="noopener">Difference between nohup, disown and &amp;</a></p>
 
       
     </div>
@@ -297,6 +297,7 @@
       </a>
     
   </nav>
+
 
       </footer>
     
@@ -367,11 +368,12 @@
     
       
     
-    
+
     
       <a href="/atom.xml" class="iconfont icon-rss" title="rss"></a>
     
   </div>
+
 
 
 <div class="copyright">
@@ -463,7 +465,7 @@
   
 
 
-    <script type="text/javascript" src="/js/src/even.js?v=2.9.0"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+    <script type="text/javascript" src="/js/src/even.js?v=2.10.1"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 
   </body>
 </html>

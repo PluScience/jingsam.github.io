@@ -402,7 +402,7 @@ a {
   text-decoration: none; }
 
 h1 {
-  font-size: 28px;
+  font-size: 26px;
   font-family: Athelas, STHeiti, Microsoft Yahei, serif; }
 
 h2 {
@@ -512,8 +512,7 @@ h6 {
     text-align: center; } }
 
 .posts {
-  margin-bottom: 20px;
-  border-bottom: 1px solid #e6e6e6; }
+  margin-bottom: 20px; }
 
 .post {
   padding: 1.5em 0; }
@@ -523,7 +522,7 @@ h6 {
     margin-bottom: 20px; }
     .post .post-header .post-title {
       margin: 0;
-      font-size: 30px;
+      font-size: 27px;
       font-weight: 400;
       font-family: Athelas, STHeiti, Microsoft Yahei, serif; }
     .post .post-header .post-link {

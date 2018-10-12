@@ -36,7 +36,7 @@
 
 
 
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.9.0" />
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1" />
 
 
 
@@ -53,7 +53,7 @@
 
 
 
-<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.9.0" />
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1" />
 
 
 
@@ -84,7 +84,7 @@
 
 
 <script>
-  window.config = {"title":"jingsam","subtitle":null,"description":"GIS, mapping","author":"jingsam","language":"zh-Hans","timezone":null,"url":"https://jingsam.github.io","root":"/","permalink":":year/:month/:day/:title.html","permalink_defaults":null,"source_dir":"source","public_dir":"public","tag_dir":"tags","archive_dir":"archives","category_dir":"categories","code_dir":"downloads/code","i18n_dir":":lang","skip_render":null,"new_post_name":":year-:month-:day-:title.md","default_layout":"post","titlecase":false,"external_link":true,"filename_case":0,"render_drafts":false,"post_asset_folder":false,"relative_link":false,"future":true,"highlight":{"enable":true,"auto_detect":false,"line_number":true,"tab_replace":null},"default_category":"uncategorized","category_map":null,"tag_map":null,"date_format":"YYYY-MM-DD","time_format":"HH:mm:ss","per_page":1,"pagination_dir":"page","theme":"even","deploy":{"type":"git","repo":"git@github.com:jingsam/jingsam.github.io.git","branch":"master"},"ignore":[],"auto_spacing":true,"feed":{"type":"atom","limit":20,"hub":null,"content":true,"path":"atom.xml"},"archive_generator":{"per_page":0,"yearly":true,"monthly":false,"daily":false},"category_generator":{"per_page":1},"index_generator":{"per_page":1,"order_by":"-date"},"tag_generator":{"per_page":1},"search":{"path":"search.xml","field":"post"},"marked":{"gfm":true,"pedantic":false,"sanitize":false,"tables":true,"breaks":true,"smartLists":true,"smartypants":true},"server":{"log":false,"ip":"0.0.0.0"},"since":2015,"favicon":"/favicon.ico","rss":"default","menu":{"Home":"/","Archives":"/archives/","About":"/about"},"color":"Default","toc":true,"fancybox":true,"pjax":true,"copyright":{"enable":true,"license":"<a rel=\"license\" href=\"http://creativecommons.org/licenses/by-nc/4.0/\" target=\"_blank\">知识共享署名-非商业性使用 4.0 国际许可协议</a>"},"reward":{"enable":false,"qrCode":{"wechat":null,"alipay":null}},"social":{"email":"jing-sam@qq.com","stack-overflow":null,"twitter":null,"facebook":null,"linkedin":null,"google":null,"github":"https://github.com/jingsam","weibo":"http://weibo.com/u/1902650267","zhihu":"https://www.zhihu.com/people/jingsam","douban":null,"pocket":null,"tumblr":null,"instagram":null},"leancloud":{"app_id":null,"app_key":null},"baidu_analytics":null,"baidu_verification":null,"google_analytics":null,"google_verification":null,"disqus_shortname":"jingsam","changyan":{"appid":null,"appkey":null},"livere_datauid":null,"version":"2.9.0"};
+  window.config = {"title":"jingsam","subtitle":null,"description":"GIS, mapping","author":"jingsam","language":"zh-Hans","timezone":null,"url":"https://jingsam.github.io","root":"/","permalink":":year/:month/:day/:title.html","permalink_defaults":null,"source_dir":"source","public_dir":"public","tag_dir":"tags","archive_dir":"archives","category_dir":"categories","code_dir":"downloads/code","i18n_dir":":lang","skip_render":null,"new_post_name":":year-:month-:day-:title.md","default_layout":"post","titlecase":false,"external_link":true,"filename_case":0,"render_drafts":false,"post_asset_folder":false,"relative_link":false,"future":true,"highlight":{"enable":true,"auto_detect":false,"line_number":true,"tab_replace":null},"default_category":"uncategorized","category_map":null,"tag_map":null,"date_format":"YYYY-MM-DD","time_format":"HH:mm:ss","per_page":1,"pagination_dir":"page","theme":"even","deploy":{"type":"git","repo":"git@github.com:jingsam/jingsam.github.io.git","branch":"master"},"ignore":[],"auto_spacing":true,"feed":{"type":"atom","limit":20,"hub":null,"content":true,"content_limit":140,"content_limit_delim":"","path":"atom.xml"},"archive_generator":{"per_page":0,"yearly":true,"monthly":false,"daily":false},"category_generator":{"per_page":1},"index_generator":{"per_page":1,"order_by":"-date"},"tag_generator":{"per_page":1},"search":{"path":"search.xml","field":"post"},"marked":{"gfm":true,"pedantic":false,"sanitize":false,"tables":true,"breaks":true,"smartLists":true,"smartypants":true},"server":{"log":false,"ip":"0.0.0.0"},"since":2015,"favicon":"/favicon.ico","rss":"default","menu":{"Home":"/","Archives":"/archives/","About":"/about"},"color":"Default","mode":"default","toc":true,"fancybox":true,"pjax":true,"copyright":{"enable":true,"license":"<a rel=\"license\" href=\"http://creativecommons.org/licenses/by-nc/4.0/\" target=\"_blank\">知识共享署名-非商业性使用 4.0 国际许可协议</a>"},"reward":{"enable":false,"qrCode":{"wechat":null,"alipay":null}},"social":{"email":"jing-sam@qq.com","stack-overflow":null,"twitter":null,"facebook":null,"linkedin":null,"google":null,"github":"https://github.com/jingsam","weibo":"http://weibo.com/u/1902650267","zhihu":"https://www.zhihu.com/people/jingsam","douban":null,"pocket":null,"tumblr":null,"instagram":null},"leancloud":{"app_id":null,"app_key":null},"baidu_analytics":null,"baidu_verification":null,"google_analytics":null,"google_verification":null,"disqus_shortname":"jingsam","changyan":{"appid":null,"appkey":null},"livere_datauid":null,"version":"2.10.1"};
 </script>
 
     <title> 关于package.json中main字段的指向问题 - jingsam </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
@@ -223,12 +223,12 @@
 <p>开发版本主要通过以下手段来方便调试，提升开发体验：</p>
 <p>1.预先进行依赖收集和babel转译，即使用者不再需要对library进行这两步工作了，提高编译打包的效率；<br>2.尽量保留源代码的格式，保证开发版本里面的源代码基本可读；<br>3.保留警告信息，对开发者对库的错误或不合理调用进行提示。</p>
 <p>其中第3点是通过库代码中添加如下类似代码实现的：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">if (process.env.NODE_ENV === &apos;development&apos;) &#123;</div><div class="line">  console.warn(&apos;Some useful warnings.&apos;)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">if (process.env.NODE_ENV === &apos;development&apos;) &#123;</span><br><span class="line">  console.warn(&apos;Some useful warnings.&apos;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>生成开发版本的似乎，webpack的DefinePlugin会将<code>process.env.NODE_ENV</code>替换为<code>development</code>，所以以上代码变为：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">if (&apos;development&apos; === &apos;development&apos;) &#123;</div><div class="line">  console.warn(&apos;Some useful warnings.&apos;)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">if (&apos;development&apos; === &apos;development&apos;) &#123;</span><br><span class="line">  console.warn(&apos;Some useful warnings.&apos;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>这就表示上述条件一直成立，warning信息会显示出来。</p>
 <p>最近和iview的开发者争论一件事，即在生成library的开发版本的时候，<code>NODE_ENV</code>应该设置为<code>development</code>还是<code>production</code>。他们认为应该设置为<code>production</code>，理由是可以减小开发版本的体积。假设DefinePlugin将<code>process.env.NODE_ENV</code>替换为<code>production</code>，之前的示例代码会变为：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">if (&apos;production&apos; === &apos;development&apos;) &#123;</div><div class="line">  console.warn(&apos;Some useful warnings.&apos;)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">if (&apos;production&apos; === &apos;development&apos;) &#123;</span><br><span class="line">  console.warn(&apos;Some useful warnings.&apos;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>这就意味着你使用库开发应用时，不会看到任何警告信息，这不利于提前发现错误。可能有的人会说，我的源代码中没有<code>if (process.env.NODE_ENV === &#39;development&#39;) {}</code>这类代码，所以设置为<code>production</code>也不会有任何问题呀。殊不知，虽然你的源代码中这种没有这类提示代码，但是你的devependencies里面可能会有啊，这样做就会关闭依赖中的warning信息。</p>
 <p>可能又有疑问：“引用开发版本的包体积很大，岂不是让我的应用打包上线版本很大？”其实完全不用担心，因为应用打包为上线版本时，会经过两个额外的工作：</p>
 <p>1.使用DefinePlugin将<code>process.env.NODE_ENV</code>替换为<code>production</code>，关闭所有警告信息；<br>2.使用UglifyJsPlugin对应用代码进行minify，减小应用体积。同时会删除<code>if (&#39;production&#39; === &#39;development&#39;) {}</code>这类永远不会执行的代码，进一步减小应用体积。</p>
@@ -289,6 +289,7 @@
       </a>
     
   </nav>
+
 
       </footer>
     
@@ -359,11 +360,12 @@
     
       
     
-    
+
     
       <a href="/atom.xml" class="iconfont icon-rss" title="rss"></a>
     
   </div>
+
 
 
 <div class="copyright">
@@ -455,7 +457,7 @@
   
 
 
-    <script type="text/javascript" src="/js/src/even.js?v=2.9.0"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+    <script type="text/javascript" src="/js/src/even.js?v=2.10.1"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 
   </body>
 </html>
