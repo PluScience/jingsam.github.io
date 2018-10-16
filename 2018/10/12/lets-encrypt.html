@@ -17,7 +17,7 @@
 
 
 
-  <meta name="description" content="GIS, mapping"/>
+  <meta name="description" content="手动挡模式申请Let's Encrypt通配符证书"/>
 
 
 
@@ -40,7 +40,7 @@
 
 
 
-<link rel="canonical" href="https://jingsam.github.io/"/>
+<link rel="canonical" href="https://jingsam.github.io/2018/10/12/lets-encrypt.html"/>
 
 
 
@@ -87,7 +87,7 @@
   window.config = {"title":"jingsam","subtitle":null,"description":"GIS, mapping","author":"jingsam","language":"zh-Hans","timezone":null,"url":"https://jingsam.github.io","root":"/","permalink":":year/:month/:day/:title.html","permalink_defaults":null,"source_dir":"source","public_dir":"public","tag_dir":"tags","archive_dir":"archives","category_dir":"categories","code_dir":"downloads/code","i18n_dir":":lang","skip_render":null,"new_post_name":":year-:month-:day-:title.md","default_layout":"post","titlecase":false,"external_link":true,"filename_case":0,"render_drafts":false,"post_asset_folder":false,"relative_link":false,"future":true,"highlight":{"enable":true,"auto_detect":false,"line_number":true,"tab_replace":null},"default_category":"uncategorized","category_map":null,"tag_map":null,"date_format":"YYYY-MM-DD","time_format":"HH:mm:ss","per_page":1,"pagination_dir":"page","theme":"even","deploy":{"type":"git","repo":"git@github.com:jingsam/jingsam.github.io.git","branch":"master"},"ignore":[],"auto_spacing":true,"feed":{"type":"atom","limit":20,"hub":null,"content":true,"content_limit":140,"content_limit_delim":"","path":"atom.xml"},"archive_generator":{"per_page":0,"yearly":true,"monthly":false,"daily":false},"category_generator":{"per_page":1},"search":{"path":"search.xml","field":"post"},"tag_generator":{"per_page":1},"index_generator":{"per_page":1,"order_by":"-date"},"marked":{"gfm":true,"pedantic":false,"sanitize":false,"tables":true,"breaks":true,"smartLists":true,"smartypants":true},"server":{"log":false,"ip":"0.0.0.0"},"since":2015,"favicon":"/favicon.ico","rss":"default","menu":{"Home":"/","Archives":"/archives/","About":"/about"},"color":"Default","mode":"default","toc":true,"fancybox":true,"pjax":true,"copyright":{"enable":true,"license":"<a rel=\"license\" href=\"http://creativecommons.org/licenses/by-nc/4.0/\" target=\"_blank\">知识共享署名-非商业性使用 4.0 国际许可协议</a>"},"reward":{"enable":false,"qrCode":{"wechat":null,"alipay":null}},"social":{"email":"jing-sam@qq.com","stack-overflow":null,"twitter":null,"facebook":null,"linkedin":null,"google":null,"github":"https://github.com/jingsam","weibo":"http://weibo.com/u/1902650267","zhihu":"https://www.zhihu.com/people/jingsam","douban":null,"pocket":null,"tumblr":null,"instagram":null},"leancloud":{"app_id":null,"app_key":null},"baidu_analytics":null,"baidu_verification":null,"google_analytics":null,"google_verification":null,"disqus_shortname":"jingsam","changyan":{"appid":null,"appkey":null},"livere_datauid":null,"version":"2.10.1"};
 </script>
 
-    <title> jingsam </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+    <title> 手动挡模式申请Let's Encrypt通配符证书 - jingsam </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
   </head>
 
   <body><div id="mobile-navbar" class="mobile-navbar">
@@ -181,15 +181,11 @@
           <div id="content" class="content">
             
   
-  <section id="posts" class="posts">
-    
-      
-        
   <article class="post">
     <header class="post-header">
       <h1 class="post-title">
         
-          <a class="post-link" href="/2018/10/12/lets-encrypt.html">手动挡模式申请Let's Encrypt通配符证书</a>
+          手动挡模式申请Let's Encrypt通配符证书
         
       </h1>
 
@@ -204,15 +200,18 @@
 
     
     
+  <div class="post-toc" id="post-toc">
+    <h2 class="post-toc-title">文章目录</h2>
+    <div class="post-toc-content">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#验证域名的三种模式"><span class="toc-text">验证域名的三种模式</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#申请域名的步骤"><span class="toc-text">申请域名的步骤</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#总结"><span class="toc-text">总结</span></a></li></ol>
+    </div>
+  </div>
+
 
 
     <div class="post-content">
       
-        
-        
-
-        
-          <p>本篇文章要讲的内容是申请Let’s Encrypt通配符证书，但是标题中加一个“手动挡”模式是什么意思呢？我们拿学车为例，当我们学会了开手动挡，开自动挡自然不在话下。同理，如果我们弄明白了手动申请Let’s Encrypt证书的步骤，以后使用自动化工具自然也是手到擒来。</p>
+        <p>本篇文章要讲的内容是申请Let’s Encrypt通配符证书，但是标题中加一个“手动挡”模式是什么意思呢？我们拿学车为例，当我们学会了开手动挡，开自动挡自然不在话下。同理，如果我们弄明白了手动申请Let’s Encrypt证书的步骤，以后使用自动化工具自然也是手到擒来。</p>
 <p>网上关于申请Let’s Encrypt证书的文章多如牛毛，本篇文章的不同在于以下几点：</p>
 <ol>
 <li>使用手动模式申请证书；</li>
@@ -250,34 +249,71 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ docker run -it --rm --name certbot \</span><br><span class="line">    -v $PWD:/etc/letsencrypt \</span><br><span class="line">    certbot/certbot:v0.27.1 \</span><br><span class="line">    renew</span><br></pre></td></tr></table></figure>
 <h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>本文通过手动模式一步一步操作，完成了通配符域名的申请。只要理解了let’s encrypt验证域名的http模式和dns模式的原理，申请域名就能做到心中有数。下一篇将讲一讲在nginx环境下，如何使用申请到的证书配置https。</p>
 
-        
       
     </div>
 
     
+      
+      
 
-    
+  <div class="post-copyright">
+    <p class="copyright-item">
+      <span>原文作者: </span>
+      <a href="https://jingsam.github.io">jingsam</a>
+    </p>
+    <p class="copyright-item">
+      <span>原文链接: </span>
+      <a href="https://jingsam.github.io/2018/10/12/lets-encrypt.html">https://jingsam.github.io/2018/10/12/lets-encrypt.html</a>
+    </p>
+    <p class="copyright-item">
+      <span>许可协议: </span>
+      
+      <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>
+    </p>
+  </div>
 
-  </article>
+
 
       
       
-  <nav class="pagination">
+    
+
+    
+      <footer class="post-footer">
+        
+        
+        
+  <nav class="post-nav">
     
     
-      <a class="next" href="/page/2/">
-        <span class="next-text">下一页</span>
+      <a class="next" href="/2018/10/12/git-reference.html">
+        <span class="next-text nav-default">Git内部原理之Git引用</span>
+        <span class="prev-text nav-mobile">下一篇</span>
         <i class="iconfont icon-right"></i>
       </a>
     
   </nav>
 
 
+      </footer>
     
-  </section>
+
+  </article>
+
 
           </div>
           
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
 
         </div>
       </main>
@@ -369,6 +405,27 @@
     </div>
 
     
+  
+  <script type="text/javascript">
+    var disqus_config = function () {
+        this.page.url = 'https://jingsam.github.io/2018/10/12/lets-encrypt.html';
+        this.page.identifier = '2018/10/12/lets-encrypt.html';
+        this.page.title = '手动挡模式申请Let's Encrypt通配符证书';
+    };
+    (function() {
+    var d = document, s = d.createElement('script');
+
+    s.src = '//jingsam.disqus.com/embed.js';
+
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+    })();  
+  </script>
+
+  
+
+  
+
 
 
     
