@@ -4,6 +4,33 @@
   
     
     <entry>
+      <title><![CDATA[Docker容器访问宿主机网络]]></title>
+      <url>https://jingsam.github.io/2018/10/16/host-in-docker.html</url>
+      <content type="html"><![CDATA[<h1 id="缘起"><a href="#缘起" class="headerlink" title="缘起"></a>缘起</h1><p>最近部署一套系统，使用nginx作反向代理，其中nginx是使用docker方式运行：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ docker run -d --name nginx $PWD:/etc/nginx -p 80:80 -p 443:443 nginx:1.15</span><br></pre></td></tr></table></figure>
+<p>需要代理的API服务运行在宿主机的<code>1234</code>端口，<code>nginx.conf</code>相关配置如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">  ...</span><br><span class="line"></span><br><span class="line">  location /api &#123;</span><br><span class="line">    proxy_pass http://localhost:1234</span><br><span class="line">  &#125;</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>结果访问的时候发现老是报<code>502 Bad Gateway</code>错误，错误日志显示无法连接到upstream。</p>
+<p>仔细想一想，<code>nginx.conf</code>中的<code>localhost</code>似乎有问题。由于nginx是运行在docker容器中的，这个<code>localhost</code>是容器的localhost，而不是宿主机的localhost。</p>
+<p>到这里，就出现了本文要解决的问题：如何从容器中访问到宿主机的网络？通过搜索网络，有如下几种方法：</p>
+<h1 id="使用宿主机IP"><a href="#使用宿主机IP" class="headerlink" title="使用宿主机IP"></a>使用宿主机IP</h1><p>在安装Docker的时候，会在宿主机安装一个虚拟网关<code>docker0</code>，我们可以使用宿主机在<code>docker0</code>上的IP地址来代替<code>localhost</code>。</p>
+<p>首先，使用如下命令查询宿主机IP地址：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ ip addr show docker0</span><br><span class="line">3: docker0: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc noqueue state UP group default</span><br><span class="line">    link/ether 02:42:d5:4c:f2:1e brd ff:ff:ff:ff:ff:ff</span><br><span class="line">    inet 172.17.0.1/16 scope global docker0</span><br><span class="line">       valid_lft forever preferred_lft forever</span><br><span class="line">    inet6 fe80::42:d5ff:fe4c:f21e/64 scope link</span><br><span class="line">       valid_lft forever preferred_lft forever</span><br></pre></td></tr></table></figure>
+<p>可以发现宿主机的IP是<code>172.17.0.1</code>，那么将<code>proxy_pass http://localhost:1234</code>改为<code>proxy_pass http://172.17.0.1:1234</code>就可以解决<code>502 Bad Gateway</code>错误。</p>
+<p>但是，不同系统下宿主机的IP是不同的，例如Linux下一般是<code>172.17.0.1</code>, macOS下一般是<code>192.168.65.1</code>，并且这个IP还可以更改。所以使用IP配置<code>nginx.conf</code>，不能跨环境通用。</p>
+<h1 id="使用host网络"><a href="#使用host网络" class="headerlink" title="使用host网络"></a>使用host网络</h1><p>Docker容器运行的时候有<code>host</code>、<code>bridge</code>、<code>none</code>三种网络可供配置。默认是<code>bridge</code>，即桥接网络，以桥接模式连接到宿主机；<code>host</code>是宿主网络，即与宿主机共用网络；<code>none</code>则表示无网络，容器将无法联网。</p>
+<p>当容器使用<code>host</code>网络时，容器与宿主共用网络，这样就能在容器中访问宿主机网络，那么容器的<code>localhost</code>就是宿主机的<code>localhost</code>。</p>
+<p>在docker中使用<code>--network host</code>来为容器配置<code>host</code>网络：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ docker run -d --name nginx --network host nginx</span><br></pre></td></tr></table></figure>
+<p>上面的命令中，没有必要像前面一样使用<code>-p 80:80 -p 443:443</code>来映射端口，是因为本身与宿主机共用了网络，容器中暴露端口等同于宿主机暴露端口。</p>
+<p>使用host网络不需要修改<code>nginx.conf</code>，仍然可以使用<code>localhost</code>，因而通用性比上一种方法好。但是，由于<code>host</code>网络没有<code>bridge</code>网络的隔离性好，使用<code>host</code>网络安全性不如<code>bridge</code>高。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>本文提出了使用宿主机IP和使用host网络两种方法，来实现从容器中访问宿主机的网络。两种方法各有优劣，使用宿主机IP隔离性更好，但通用性不好；使用host网络，通用性好，但带来了暴露宿主网络的风险。</p>
+]]></content>
+      
+        
+    </entry>
+    
+    <entry>
       <title><![CDATA[手动挡模式申请Let's Encrypt通配符证书]]></title>
       <url>https://jingsam.github.io/2018/10/12/lets-encrypt.html</url>
       <content type="html"><![CDATA[<p>本篇文章要讲的内容是申请Let’s Encrypt通配符证书，但是标题中加一个“手动挡”模式是什么意思呢？我们拿学车为例，当我们学会了开手动挡，开自动挡自然不在话下。同理，如果我们弄明白了手动申请Let’s Encrypt证书的步骤，以后使用自动化工具自然也是手到擒来。</p>
