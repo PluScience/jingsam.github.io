@@ -17,7 +17,7 @@
 
 
 
-  <meta name="description" content="Netlogo读写GIS数据的方法">
+  <meta name="description" content="Ubuntu离线部署snap软件包">
 
 
 
@@ -40,7 +40,7 @@
 
 
 
-<link rel="canonical" href="https://jingsam.github.io/2015/08/03/how-to-load-gis-data-in-netlogo.html">
+<link rel="canonical" href="https://jingsam.github.io/2018/11/22/install-snaps-offline.html">
 
 
 
@@ -87,7 +87,7 @@
   window.config = {"title":"jingsam","subtitle":null,"description":"GIS, mapping","author":"jingsam","language":"zh-Hans","timezone":null,"url":"https://jingsam.github.io","root":"/","permalink":":year/:month/:day/:title.html","permalink_defaults":null,"source_dir":"source","public_dir":"public","tag_dir":"tags","archive_dir":"archives","category_dir":"categories","code_dir":"downloads/code","i18n_dir":":lang","skip_render":null,"new_post_name":":year-:month-:day-:title.md","default_layout":"post","titlecase":false,"external_link":true,"filename_case":0,"render_drafts":false,"post_asset_folder":false,"relative_link":false,"future":true,"highlight":{"enable":true,"auto_detect":false,"line_number":true,"tab_replace":null},"default_category":"uncategorized","category_map":null,"tag_map":null,"date_format":"YYYY-MM-DD","time_format":"HH:mm:ss","per_page":1,"pagination_dir":"page","theme":"even","deploy":{"type":"git","repo":"git@github.com:jingsam/jingsam.github.io.git","branch":"master"},"ignore":[],"auto_spacing":true,"feed":{"type":"atom","limit":20,"hub":null,"content":true,"content_limit":140,"content_limit_delim":"","path":"atom.xml"},"archive_generator":{"per_page":0,"yearly":true,"monthly":false,"daily":false},"index_generator":{"per_page":1,"order_by":"-date"},"marked":{"gfm":true,"pedantic":false,"sanitize":false,"tables":true,"breaks":true,"smartLists":true,"smartypants":true,"modifyAnchors":"","autolink":true},"server":{"port":4000,"log":false,"compress":false,"header":true},"since":2015,"favicon":"/favicon.ico","rss":"default","menu":{"Home":"/","Archives":"/archives/","About":"/about"},"color":"Default","mode":"default","toc":true,"fancybox":true,"pjax":true,"copyright":{"enable":true,"license":"<a rel=\"license\" href=\"http://creativecommons.org/licenses/by-nc/4.0/\" target=\"_blank\">知识共享署名-非商业性使用 4.0 国际许可协议</a>"},"reward":{"enable":false,"qrCode":{"wechat":null,"alipay":null}},"social":{"email":"jing-sam@qq.com","stack-overflow":null,"twitter":null,"facebook":null,"linkedin":null,"google":null,"github":"https://github.com/jingsam","weibo":"http://weibo.com/u/1902650267","zhihu":"https://www.zhihu.com/people/jingsam","douban":null,"pocket":null,"tumblr":null,"instagram":null},"leancloud":{"app_id":null,"app_key":null},"baidu_analytics":null,"baidu_verification":null,"google_analytics":null,"google_verification":null,"disqus_shortname":"jingsam","changyan":{"appid":null,"appkey":null},"livere_datauid":null,"version":"2.10.1"};
 </script>
 
-    <title> Netlogo读写GIS数据的方法 - jingsam </title>
+    <title> Ubuntu离线部署snap软件包 - jingsam </title>
   </head>
 
   <body><div id="mobile-navbar" class="mobile-navbar">
@@ -185,13 +185,13 @@
     <header class="post-header">
       <h1 class="post-title">
         
-          Netlogo读写GIS数据的方法
+          Ubuntu离线部署snap软件包
         
       </h1>
 
       <div class="post-meta">
         <span class="post-time">
-          2015-08-03
+          2018-11-22
         </span>
         
         
@@ -200,21 +200,32 @@
 
     
     
+  <div class="post-toc" id="post-toc">
+    <h2 class="post-toc-title">文章目录</h2>
+    <div class="post-toc-content">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#下载"><span class="toc-text">下载</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#安装"><span class="toc-text">安装</span></a></li></ol>
+    </div>
+  </div>
+
 
 
     <div class="post-content">
       
-        <p>使用NetLogo进行地理过程模拟时，不可避免地要对GIS数据进行读写，本文主要讲栅格数据的读写，矢量数据留待以后再讲。</p>
-<p>Netlogo目前只支持ESRI ASCII Grid(后缀通常为.asc或.grd)格式的栅格数据，所以其他格式的数据请先使用ArcGIS里面的“Raster to ASCII”工具进行转换。</p>
-<p>NetLogo读写GIS数据需要gis扩展支持，因此需要代码页前部声明：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">extensions [gis]</span><br></pre></td></tr></table></figure></p>
-<p>读取数据前，首先需要设置坐标系，但并不是必须的。NetLogo支持地理坐标系和投影坐标系，以WKT格式描述坐标系，需提供坐标系文件(后缀通常为.prj)，代码如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gis:load-coordinate-system &quot;Transverse_Mercator.prj&quot;</span><br></pre></td></tr></table></figure></p>
-<p>对于投影坐标系，NetLogo目前只支持有限的几种坐标系：</p>
-<p>|Albers_Conic_Equal_Area      |Lambert_Conformal_Conic_2SP |Polyconic          |<br>|Lambert_Azimuthal_Equal_Area |Mercator_1SP                |Robinson           |<br>|Azimuthal_Equidistant        |Miller                      |Stereographic      |<br>|Cylindrical_Equal_Area       |Oblique_Mercator            |Transverse_Mercator|<br>|Equidistant_Conic            |hotine_oblique_mercator<br>|Gnomonic                     |Orthographic</p>
-<p>设置完坐标系后，即可利用函数<code>gis:load-dataset</code>读取数据：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">let data gis:load-dataset dem.asc</span><br></pre></td></tr></table></figure></p>
-<p>将数据读取至变量<code>data</code>之后，一般还需要将数据写入瓦片：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">gis:set-world-envelope (gis:envelope-of data)</span><br><span class="line">gis:apply-raster data patch-own-variable</span><br></pre></td></tr></table></figure></p>
-<p>目前NetLogo仅仅支持栅格数据的保存，代码如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gis:store-dataset data mydata.asc</span><br></pre></td></tr></table></figure></p>
-<p>最后附上完整代码：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">extensions [gis]      ;读写GIS数据需要用到gis扩展</span><br><span class="line"></span><br><span class="line">patches-own [patch-own-variable]</span><br><span class="line"></span><br><span class="line">;读取</span><br><span class="line">to import-data [file]</span><br><span class="line">  gis:load-coordinate-system (word projection &quot;.prj&quot;)    ;设置坐标系（非必须）</span><br><span class="line">  let data gis:load-dataset file</span><br><span class="line"></span><br><span class="line">  gis:set-world-envelope (gis:envelope-of data)          ;将窗口范围设置为数据框范围</span><br><span class="line">  gis:apply-raster data patch-own-variable               ;将数据读取至patch-own-variable变量</span><br><span class="line">end</span><br><span class="line"></span><br><span class="line">;保存</span><br><span class="line">to save-data [data file]</span><br><span class="line">  gis:store-dataset data file</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+        <p>Ubuntu借助包管理器apt-get安装软件包很方便，前提是服务器要能够联网。政府或企业内网的服务器，通常是不与互联网连通的，这时候部署软件只能借助文件拷贝的方式，感觉回到了原始时代。更大的问题是，要部署的软件包需要先安装很多依赖，依赖自己可能还有依赖，并且各种依赖还有版本要求。如果通过手动下载各个依赖包的方法部署，对于复杂的软件，变成了不可能的任务。</p>
+<p>在离线部署方面，Windows明显比Linux做得好，Windows软件包通常会将软件所需的依赖打包，部署时只需拷贝一个软件安装包即可。那Linux有没有类似Windows软件安装包的东西呢？幸运的是，Ubuntu提供了snap软件包机制，可以用来简化离线部署。</p>
+<p>snap软件包类似于windows的软件安装包，将所需的依赖都统一打包到软件包中，部署时只需拷贝snap文件。另外，snap也加强了安全隔离机制，通过注册软件包的签名和权限控制信息，使得snap软件运行在“沙盒”环境中。</p>
+<p>从Ubuntu 16.04起，snap环境是自带的，可以直接使用。如果是早于16.04的版本且服务器不能联网，安装snap环境很困难，你只能自求多福了。下面以安装docker为例，来说明离线安装snap包的方法。</p>
+<h1 id="下载"><a href="#下载" class="headerlink" title="下载"></a>下载</h1><p>首先，我们需要在能联网的机器上将相关的snap包下载下来。不仅要下载docker软件包，还需要下载core软件包。core软件包是snap的核心运行时，几乎所有的snap包都依赖core运行时，Ubuntu 16.04自带了snap环境却没安装core运行时，实在是让人有些搞不懂。</p>
+<p>下载有snap包两种方式。一种方法是在能联网的Ubuntu上使用<code>snap download</code>命令下载：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">$ snap download core</span><br><span class="line">Fetching snap &quot;core&quot;</span><br><span class="line">Fetching assertions for &quot;core&quot;</span><br><span class="line">Install the snap with:</span><br><span class="line">   snap ack core_5897.assert</span><br><span class="line">   snap install core_5897.snap</span><br><span class="line">$ snap download docker</span><br><span class="line">Fetching snap &quot;docker&quot;</span><br><span class="line">Fetching assertions for &quot;docker&quot;</span><br><span class="line">Install the snap with:</span><br><span class="line">   snap ack docker_321.assert</span><br><span class="line">   snap install docker_321.snap</span><br></pre></td></tr></table></figure>
+<p>以上命令将会得到<code>.assert</code>和<code>.snap</code>两类文件，其中<code>.assert</code>是软件包的元数据信息，包括签名和权限控制信息，<code>.snap</code>是实际的安装文件。</p>
+<p>另外一种方法是到<a href="https://uappexplorer.com/snaps" target="_blank" rel="noopener">uApp Explorer</a>网站上下载，好处是不需要有Ubuntu环境，缺点是只能下载<code>.snap</code>文件，无法下载<code>.assert</code>文件。</p>
+<h1 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h1><p>安装snap包的方法很简单：将软件包拷贝到服务器上，安装时首先注册<code>.assert</code>，然后再安装<code>.assert</code>。对于首次安装，需要安装core和docker两个软件包：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ sudo snap ack core_5897.assert</span><br><span class="line">$ sudo snap install core_5897.snap</span><br><span class="line">$ sudo snap ack docker_321.assert</span><br><span class="line">$ sudo snap install docker_321.snap</span><br></pre></td></tr></table></figure>
+<p>这样就完成了docker的安装。</p>
+<p>要是我们是从<a href="https://uappexplorer.com/snaps" target="_blank" rel="noopener">uApp Explorer</a>网站上下载的软件包，缺少<code>.assert</code>文件怎么办？其实我们可以使用<code>snap install --dangerous</code>方式安装：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ sudo snap install core.snap --dangerous</span><br><span class="line">$ sudo snap install docker.snap --dangerous</span><br></pre></td></tr></table></figure>
+<p>如<code>--dangerous</code>所提示的是，这种模式有些“危险”。这是因为缺少<code>.assert</code>文件所描述的签名信息和权限控制信息，意味着软件不是在“沙盒”环境下执行的，运行过程不受控。其实，大可不必紧张，只要snap包来源可信，一般没什么问题，毕竟以前咱们没有snap包的时候不都是这么干的么。</p>
 
       
     </div>
@@ -230,7 +241,7 @@
     </p>
     <p class="copyright-item">
       <span>原文链接: </span>
-      <a href="https://jingsam.github.io/2015/08/03/how-to-load-gis-data-in-netlogo.html">https://jingsam.github.io/2015/08/03/how-to-load-gis-data-in-netlogo.html</a>
+      <a href="https://jingsam.github.io/2018/11/22/install-snaps-offline.html">https://jingsam.github.io/2018/11/22/install-snaps-offline.html</a>
     </p>
     <p class="copyright-item">
       <span>许可协议: </span>
@@ -252,12 +263,12 @@
         
   <nav class="post-nav">
     
-      <a class="prev" href="/2015/08/12/simpe-and-usable.html">
-        <i class="iconfont icon-left"></i>
-        <span class="prev-text nav-default">简约至上</span>
-        <span class="prev-text nav-mobile">上一篇</span>
-      </a>
     
+      <a class="next" href="/2018/10/16/host-in-docker.html">
+        <span class="next-text nav-default">Docker容器访问宿主机网络</span>
+        <span class="prev-text nav-mobile">下一篇</span>
+        <i class="iconfont icon-right"></i>
+      </a>
     
   </nav>
 
@@ -375,9 +386,9 @@
   
   <script type="text/javascript">
     var disqus_config = function () {
-        this.page.url = 'https://jingsam.github.io/2015/08/03/how-to-load-gis-data-in-netlogo.html';
-        this.page.identifier = '2015/08/03/how-to-load-gis-data-in-netlogo.html';
-        this.page.title = 'Netlogo读写GIS数据的方法';
+        this.page.url = 'https://jingsam.github.io/2018/11/22/install-snaps-offline.html';
+        this.page.identifier = '2018/11/22/install-snaps-offline.html';
+        this.page.title = 'Ubuntu离线部署snap软件包';
     };
     (function() {
     var d = document, s = d.createElement('script');

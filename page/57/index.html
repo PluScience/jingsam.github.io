@@ -17,7 +17,7 @@
 
 
 
-  <meta name="description" content="Netlogo读写GIS数据的方法">
+  <meta name="description" content="GIS, mapping">
 
 
 
@@ -40,7 +40,7 @@
 
 
 
-<link rel="canonical" href="https://jingsam.github.io/2015/08/03/how-to-load-gis-data-in-netlogo.html">
+<link rel="canonical" href="https://jingsam.github.io/page/57/">
 
 
 
@@ -87,7 +87,7 @@
   window.config = {"title":"jingsam","subtitle":null,"description":"GIS, mapping","author":"jingsam","language":"zh-Hans","timezone":null,"url":"https://jingsam.github.io","root":"/","permalink":":year/:month/:day/:title.html","permalink_defaults":null,"source_dir":"source","public_dir":"public","tag_dir":"tags","archive_dir":"archives","category_dir":"categories","code_dir":"downloads/code","i18n_dir":":lang","skip_render":null,"new_post_name":":year-:month-:day-:title.md","default_layout":"post","titlecase":false,"external_link":true,"filename_case":0,"render_drafts":false,"post_asset_folder":false,"relative_link":false,"future":true,"highlight":{"enable":true,"auto_detect":false,"line_number":true,"tab_replace":null},"default_category":"uncategorized","category_map":null,"tag_map":null,"date_format":"YYYY-MM-DD","time_format":"HH:mm:ss","per_page":1,"pagination_dir":"page","theme":"even","deploy":{"type":"git","repo":"git@github.com:jingsam/jingsam.github.io.git","branch":"master"},"ignore":[],"auto_spacing":true,"feed":{"type":"atom","limit":20,"hub":null,"content":true,"content_limit":140,"content_limit_delim":"","path":"atom.xml"},"archive_generator":{"per_page":0,"yearly":true,"monthly":false,"daily":false},"index_generator":{"per_page":1,"order_by":"-date"},"marked":{"gfm":true,"pedantic":false,"sanitize":false,"tables":true,"breaks":true,"smartLists":true,"smartypants":true,"modifyAnchors":"","autolink":true},"server":{"port":4000,"log":false,"compress":false,"header":true},"since":2015,"favicon":"/favicon.ico","rss":"default","menu":{"Home":"/","Archives":"/archives/","About":"/about"},"color":"Default","mode":"default","toc":true,"fancybox":true,"pjax":true,"copyright":{"enable":true,"license":"<a rel=\"license\" href=\"http://creativecommons.org/licenses/by-nc/4.0/\" target=\"_blank\">知识共享署名-非商业性使用 4.0 国际许可协议</a>"},"reward":{"enable":false,"qrCode":{"wechat":null,"alipay":null}},"social":{"email":"jing-sam@qq.com","stack-overflow":null,"twitter":null,"facebook":null,"linkedin":null,"google":null,"github":"https://github.com/jingsam","weibo":"http://weibo.com/u/1902650267","zhihu":"https://www.zhihu.com/people/jingsam","douban":null,"pocket":null,"tumblr":null,"instagram":null},"leancloud":{"app_id":null,"app_key":null},"baidu_analytics":null,"baidu_verification":null,"google_analytics":null,"google_verification":null,"disqus_shortname":"jingsam","changyan":{"appid":null,"appkey":null},"livere_datauid":null,"version":"2.10.1"};
 </script>
 
-    <title> Netlogo读写GIS数据的方法 - jingsam </title>
+    <title> jingsam </title>
   </head>
 
   <body><div id="mobile-navbar" class="mobile-navbar">
@@ -181,11 +181,15 @@
           <div id="content" class="content">
             
   
+  <section id="posts" class="posts">
+    
+      
+        
   <article class="post">
     <header class="post-header">
       <h1 class="post-title">
         
-          Netlogo读写GIS数据的方法
+          <a class="post-link" href="/2015/08/03/how-to-load-gis-data-in-netlogo.html">Netlogo读写GIS数据的方法</a>
         
       </h1>
 
@@ -204,7 +208,11 @@
 
     <div class="post-content">
       
-        <p>使用NetLogo进行地理过程模拟时，不可避免地要对GIS数据进行读写，本文主要讲栅格数据的读写，矢量数据留待以后再讲。</p>
+        
+        
+
+        
+          <p>使用NetLogo进行地理过程模拟时，不可避免地要对GIS数据进行读写，本文主要讲栅格数据的读写，矢量数据留待以后再讲。</p>
 <p>Netlogo目前只支持ESRI ASCII Grid(后缀通常为.asc或.grd)格式的栅格数据，所以其他格式的数据请先使用ArcGIS里面的“Raster to ASCII”工具进行转换。</p>
 <p>NetLogo读写GIS数据需要gis扩展支持，因此需要代码页前部声明：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">extensions [gis]</span><br></pre></td></tr></table></figure></p>
 <p>读取数据前，首先需要设置坐标系，但并不是必须的。NetLogo支持地理坐标系和投影坐标系，以WKT格式描述坐标系，需提供坐标系文件(后缀通常为.prj)，代码如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gis:load-coordinate-system &quot;Transverse_Mercator.prj&quot;</span><br></pre></td></tr></table></figure></p>
@@ -216,71 +224,34 @@
 <p>最后附上完整代码：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">extensions [gis]      ;读写GIS数据需要用到gis扩展</span><br><span class="line"></span><br><span class="line">patches-own [patch-own-variable]</span><br><span class="line"></span><br><span class="line">;读取</span><br><span class="line">to import-data [file]</span><br><span class="line">  gis:load-coordinate-system (word projection &quot;.prj&quot;)    ;设置坐标系（非必须）</span><br><span class="line">  let data gis:load-dataset file</span><br><span class="line"></span><br><span class="line">  gis:set-world-envelope (gis:envelope-of data)          ;将窗口范围设置为数据框范围</span><br><span class="line">  gis:apply-raster data patch-own-variable               ;将数据读取至patch-own-variable变量</span><br><span class="line">end</span><br><span class="line"></span><br><span class="line">;保存</span><br><span class="line">to save-data [data file]</span><br><span class="line">  gis:store-dataset data file</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
 
+        
       
     </div>
 
     
-      
-      
-
-  <div class="post-copyright">
-    <p class="copyright-item">
-      <span>原文作者: </span>
-      <a href="https://jingsam.github.io">jingsam</a>
-    </p>
-    <p class="copyright-item">
-      <span>原文链接: </span>
-      <a href="https://jingsam.github.io/2015/08/03/how-to-load-gis-data-in-netlogo.html">https://jingsam.github.io/2015/08/03/how-to-load-gis-data-in-netlogo.html</a>
-    </p>
-    <p class="copyright-item">
-      <span>许可协议: </span>
-      
-      <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>
-    </p>
-  </div>
-
-
-
-      
-      
-    
 
     
-      <footer class="post-footer">
-        
-        
-        
-  <nav class="post-nav">
+
+  </article>
+
+      
+      
+  <nav class="pagination">
     
-      <a class="prev" href="/2015/08/12/simpe-and-usable.html">
+      <a class="prev" href="/page/56/">
         <i class="iconfont icon-left"></i>
-        <span class="prev-text nav-default">简约至上</span>
-        <span class="prev-text nav-mobile">上一篇</span>
+        <span class="prev-text">上一页</span>
       </a>
     
     
   </nav>
 
 
-      </footer>
     
-
-  </article>
-
+  </section>
 
           </div>
           
-  <div class="comments" id="comments">
-    
-      <div id="disqus_thread">
-        <noscript>
-          Please enable JavaScript to view the
-          <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a>
-        </noscript>
-      </div>
-    
-  </div>
-
 
         </div>
       </main>
@@ -372,27 +343,6 @@
     </div>
 
     
-  
-  <script type="text/javascript">
-    var disqus_config = function () {
-        this.page.url = 'https://jingsam.github.io/2015/08/03/how-to-load-gis-data-in-netlogo.html';
-        this.page.identifier = '2015/08/03/how-to-load-gis-data-in-netlogo.html';
-        this.page.title = 'Netlogo读写GIS数据的方法';
-    };
-    (function() {
-    var d = document, s = d.createElement('script');
-
-    s.src = '//jingsam.disqus.com/embed.js';
-
-    s.setAttribute('data-timestamp', +new Date());
-    (d.head || d.body).appendChild(s);
-    })();  
-  </script>
-
-  
-
-  
-
 
 
     
