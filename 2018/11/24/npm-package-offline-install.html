@@ -17,7 +17,7 @@
 
 
 
-  <meta name="description" content="GIS, mapping">
+  <meta name="description" content="离线安装npm包的几种方法">
 
 
 
@@ -40,7 +40,7 @@
 
 
 
-<link rel="canonical" href="https://jingsam.github.io/page/40/">
+<link rel="canonical" href="https://jingsam.github.io/2018/11/24/npm-package-offline-install.html">
 
 
 
@@ -87,7 +87,7 @@
   window.config = {"title":"jingsam","subtitle":null,"description":"GIS, mapping","author":"jingsam","language":"zh-Hans","timezone":null,"url":"https://jingsam.github.io","root":"/","permalink":":year/:month/:day/:title.html","permalink_defaults":null,"source_dir":"source","public_dir":"public","tag_dir":"tags","archive_dir":"archives","category_dir":"categories","code_dir":"downloads/code","i18n_dir":":lang","skip_render":null,"new_post_name":":year-:month-:day-:title.md","default_layout":"post","titlecase":false,"external_link":true,"filename_case":0,"render_drafts":false,"post_asset_folder":false,"relative_link":false,"future":true,"highlight":{"enable":true,"auto_detect":false,"line_number":true,"tab_replace":null},"default_category":"uncategorized","category_map":null,"tag_map":null,"date_format":"YYYY-MM-DD","time_format":"HH:mm:ss","per_page":1,"pagination_dir":"page","theme":"even","deploy":{"type":"git","repo":"git@github.com:jingsam/jingsam.github.io.git","branch":"master"},"ignore":[],"auto_spacing":true,"feed":{"type":"atom","limit":20,"hub":null,"content":true,"content_limit":140,"content_limit_delim":"","path":"atom.xml"},"archive_generator":{"per_page":0,"yearly":true,"monthly":false,"daily":false},"index_generator":{"per_page":1,"order_by":"-date"},"marked":{"gfm":true,"pedantic":false,"sanitize":false,"tables":true,"breaks":true,"smartLists":true,"smartypants":true,"modifyAnchors":"","autolink":true},"server":{"port":4000,"log":false,"compress":false,"header":true},"since":2015,"favicon":"/favicon.ico","rss":"default","menu":{"Home":"/","Archives":"/archives/","About":"/about"},"color":"Default","mode":"default","toc":true,"fancybox":true,"pjax":true,"copyright":{"enable":true,"license":"<a rel=\"license\" href=\"http://creativecommons.org/licenses/by-nc/4.0/\" target=\"_blank\">知识共享署名-非商业性使用 4.0 国际许可协议</a>"},"reward":{"enable":false,"qrCode":{"wechat":null,"alipay":null}},"social":{"email":"jing-sam@qq.com","stack-overflow":null,"twitter":null,"facebook":null,"linkedin":null,"google":null,"github":"https://github.com/jingsam","weibo":"http://weibo.com/u/1902650267","zhihu":"https://www.zhihu.com/people/jingsam","douban":null,"pocket":null,"tumblr":null,"instagram":null},"leancloud":{"app_id":null,"app_key":null},"baidu_analytics":null,"baidu_verification":null,"google_analytics":null,"google_verification":null,"disqus_shortname":"jingsam","changyan":{"appid":null,"appkey":null},"livere_datauid":null,"version":"2.10.1"};
 </script>
 
-    <title> jingsam </title>
+    <title> 离线安装npm包的几种方法 - jingsam </title>
   </head>
 
   <body><div id="mobile-navbar" class="mobile-navbar">
@@ -181,21 +181,17 @@
           <div id="content" class="content">
             
   
-  <section id="posts" class="posts">
-    
-      
-        
   <article class="post">
     <header class="post-header">
       <h1 class="post-title">
         
-          <a class="post-link" href="/2016/04/14/traps-with-nodejs.html">Nodejs开发工具遇到的坑</a>
+          离线安装npm包的几种方法
         
       </h1>
 
       <div class="post-meta">
         <span class="post-time">
-          2016-04-14
+          2018-11-24
         </span>
         
         
@@ -204,56 +200,101 @@
 
     
     
+  <div class="post-toc" id="post-toc">
+    <h2 class="post-toc-title">文章目录</h2>
+    <div class="post-toc-content">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#使用npm-link"><span class="toc-text">使用npm link</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#使用npm-install-lt-folder-gt"><span class="toc-text">使用npm install &lt;folder&gt;</span></a></li></ol>
+    </div>
+  </div>
+
 
 
     <div class="post-content">
       
-        
-        
+        <p>这段时间的工作主题就是Linux<br>下的“离线部署”，包括mongo、mysql、postgresql、nodejs、nginx等软件的离线部署。平常在服务器上借助apt-get就能轻松搞定的事情，在离线环境下就变得异常艰难。<a href="1">上一篇文章</a>讲了使用snap离线安装软件的方式，但对于npm包怎么离线部署，snap是无能为力的。本篇文章就来讲一讲离线安装npm包的几种方法。</p>
+<p>接下来的部分，我将以离线安装pm2为例来进行说明。pm2是一个进程守护程序，用于启动node集群和服务进程出错时自动重启，在生产环境下部署nodejs应用一般都会使用到。</p>
+<h1 id="使用npm-link"><a href="#使用npm-link" class="headerlink" title="使用npm link"></a>使用<code>npm link</code></h1><p>使用<code>npm link</code>的方式是最常用的方法，具体做法是在联网机器上下载pm2的源码并安装好依赖，拷贝到离线服务器上，最后借助<code>npm link</code>将pm2链接到全局区域。</p>
+<p>首先，将pm2的源代码克隆下来：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git clone https://github.com/Unitech/pm2.git</span><br></pre></td></tr></table></figure>
+<p>然后进入到pm2项目中，安装好所有的依赖：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ cd pm2</span><br><span class="line">$ npm install</span><br></pre></td></tr></table></figure>
+<p>将安装好依赖的pm2文件夹拷贝到目标服务器上，进入pm2目录链接到全局区域：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ cd pm2</span><br><span class="line">$ npm link</span><br></pre></td></tr></table></figure>
+<p>这种方式最关键的是借助<code>npm link</code>完成链接，但<code>npm link</code>这条命令本意是设计给开发人员调试用的。但开发人员开发某个全局命令工具的时候，通过将命令从本地工程目录链接到全局，这样调试的时候，可以实时查看本地代码在全局环境下的执行情况。所以，<code>npm link</code>的项目需要安装所有的依赖，包括<code>dependencies</code>以及<code>devDependencies</code>，而我们如果只是使用而不是开发某个包的话，正常情况下不应该安装<code>devDependencies</code>。</p>
+<p>总而言之，这种方式优点是比较简单，缺点是安装了不需要的<code>devDependencies</code>，对于有“洁癖”的人是难以忍受的。</p>
+<h1 id="使用npm-install-lt-folder-gt"><a href="#使用npm-install-lt-folder-gt" class="headerlink" title="使用npm install &lt;folder&gt;"></a>使用<code>npm install &lt;folder&gt;</code></h1><p>那有什么方法相比于上一种方法更干净呢？答案是<code>npm install &lt;folder&gt;</code>直接从文件夹安装。</p>
+<p>同样以pm2为例，首先我们需要准备pm2包，可以在联网的机器上执行：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ npm install pm2 --global-style</span><br></pre></td></tr></table></figure>
+<p>上面的<code>--global-style</code>很关键，表示将pm2安装到node_modules中一个单独的pm2文件夹中，这样我们可以方便地将pm2及其所有相关依赖都拷贝出来。也可以使用<code>npm install pm2 -g</code>安装到全局的node_modules，其文件布局是一样。</p>
+<p>然后，将pm2文件拷贝到目标机器上，使用以下命令安装：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ npm install pm2/ -g</span><br></pre></td></tr></table></figure>
+<p>这种方式不需要安装多余的<code>devDependencies</code>，并且不需要克隆pm2的源码，比第一种方法更干净环保。</p>
 
-        
-          <p>最近在开发一个在线制图平台，开发语言为Javascript，前端用Vuejs + Material Design Lite做界面，后端用Express做地图服务。</p>
-<p>开发主要在Windows上进行。看过我博客的人，应该知道我对Cygwin的爱，因此采用Cygwin作为终端，而不是常用的cmd。Cywin是一个在Windows运行的Unix环境，是典型的身在曹营心在汉。Cygwin的用户还是比较小众的，很多跨平台软件开发时往往是忽视Cygwin的兼容性，造成很多问题。这些问题大部分发生于Cywin中执行Windows命令，例如nodejs不提供Cygwin版本，因此只能调用Windows下安装的Nodejs。大部分npm安装的包都能够在Cygwin中执行，但是有些工具没有考虑到Cygwin的兼容性，导致执行出错。</p>
-<p>以下是我在开发中遇到的一些坑，在此记录一下，以后会持续更新：</p>
-<p><del>1. nodemon无法在Cygwin下运行，只能在cmd下运行。</del></p>
-<ol>
-<li>nodemon在windows下运行需要调用cmd.exe, 所以在Cygwin下运行要将<code>/cygdrive/c/Windows/system32</code>添加到PATH环境变量中;</li>
-<li>istanbul和mocha集成的时候，在Windows运行的时候命令要写成<code>istanbul cover ./node_modules/mocha/bin/_mocha</code>，直接用<code>istanbul cover _mocha</code>是不行的。</li>
-</ol>
-
-        
       
     </div>
 
     
+      
+      
 
-    
+  <div class="post-copyright">
+    <p class="copyright-item">
+      <span>原文作者: </span>
+      <a href="https://jingsam.github.io">jingsam</a>
+    </p>
+    <p class="copyright-item">
+      <span>原文链接: </span>
+      <a href="https://jingsam.github.io/2018/11/24/npm-package-offline-install.html">https://jingsam.github.io/2018/11/24/npm-package-offline-install.html</a>
+    </p>
+    <p class="copyright-item">
+      <span>许可协议: </span>
+      
+      <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>
+    </p>
+  </div>
 
-  </article>
+
 
       
       
-  <nav class="pagination">
     
-      <a class="prev" href="/page/39/">
-        <i class="iconfont icon-left"></i>
-        <span class="prev-text">上一页</span>
-      </a>
+
+    
+      <footer class="post-footer">
+        
+        
+        
+  <nav class="post-nav">
     
     
-      <a class="next" href="/page/41/">
-        <span class="next-text">下一页</span>
+      <a class="next" href="/2018/11/22/install-snaps-offline.html">
+        <span class="next-text nav-default">Ubuntu离线部署snap软件包</span>
+        <span class="prev-text nav-mobile">下一篇</span>
         <i class="iconfont icon-right"></i>
       </a>
     
   </nav>
 
 
+      </footer>
     
-  </section>
+
+  </article>
+
 
           </div>
           
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
 
         </div>
       </main>
@@ -345,6 +386,27 @@
     </div>
 
     
+  
+  <script type="text/javascript">
+    var disqus_config = function () {
+        this.page.url = 'https://jingsam.github.io/2018/11/24/npm-package-offline-install.html';
+        this.page.identifier = '2018/11/24/npm-package-offline-install.html';
+        this.page.title = '离线安装npm包的几种方法';
+    };
+    (function() {
+    var d = document, s = d.createElement('script');
+
+    s.src = '//jingsam.disqus.com/embed.js';
+
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+    })();  
+  </script>
+
+  
+
+  
+
 
 
     

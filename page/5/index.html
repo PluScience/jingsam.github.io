@@ -189,13 +189,13 @@
     <header class="post-header">
       <h1 class="post-title">
         
-          <a class="post-link" href="/2018/06/15/git-storage.html">Git内部原理之Git对象存储</a>
+          <a class="post-link" href="/2018/10/12/git-reference.html">Git内部原理之Git引用</a>
         
       </h1>
 
       <div class="post-meta">
         <span class="post-time">
-          2018-06-15
+          2018-10-12
         </span>
         
         
@@ -212,25 +212,52 @@
         
 
         
-          <p>在<a href="1">Git内部原理之Git对象哈希</a>中，讲解了Git对象hash的原理，接下来的这篇文章讲一讲Git对象如何存储。</p>
-<h1 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h1><p>数据对象、树对象和提交对象都是存储在<code>.git/objects</code>目录下，目录的结构如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">.git</span><br><span class="line">|-- objects</span><br><span class="line">    |-- 01</span><br><span class="line">    |   |-- 55eb4229851634a0f03eb265b69f5a2d56f341</span><br><span class="line">    |-- 1f</span><br><span class="line">    |   |-- 7a7a472abf3dd9643fd615f6da379c4acb3e3a</span><br><span class="line">    |-- 83</span><br><span class="line">        |-- baae61804e65cc73a7201a7252750c76066a30</span><br></pre></td></tr></table></figure>
-<p>从上面的目录结构可以看出，Git对象的40位hash分为两部分：头两位作为文件夹，后38位作为对象文件名。所以一个Git对象的存储路径规则为：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.git/objects/hash[0, 2]/hash[2, 40]</span><br></pre></td></tr></table></figure>
-<p>这里就产生了一个疑问：为什么Git要这么设计目录结构，而不直接用Git对象的40位hash作为文件名？原因是有两点：</p>
-<p>1.有些文件系统对目录下的文件数量有限制。例如，FAT32限制单目录下的最大文件数量是65535个，如果使用U盘拷贝Git文件就可能出现问题。<br>2.有些文件系统访问文件是一个线性查找的过程，目录下的文件越多，访问越慢。</p>
-<p>在在<a href="1">Git内部原理之Git对象哈希</a>中，我们知道Git对象会在原内容前加个一个头部：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">store = header + content</span><br></pre></td></tr></table></figure>
-<p>Git对象在存储前，会使用zlib的deflate算法进行压缩，即简要描述为：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">zlib_store = zlib.deflate(store)</span><br></pre></td></tr></table></figure>
-<p>压缩后的<code>zlib_store</code>按照Git对象的路径规则存储到<code>.git/objects</code>目录下。</p>
-<p>总结下Git对象存储的算法步骤：</p>
-<p>1.计算<code>content</code>长度，构造<code>header</code>;<br>2.将<code>header</code>添加到<code>content</code>前面，构造Git对象；<br>3.使用sha1算法计算Git对象的40位hash码；<br>4.使用zlib的deflate算法压缩Git对象；<br>5.将压缩后的Git对象存储到<code>.git/objects/hash[0, 2]/hash[2, 40]</code>路径下;</p>
-<h1 id="Nodejs实现"><a href="#Nodejs实现" class="headerlink" title="Nodejs实现"></a>Nodejs实现</h1><p>接下来，我们使用Nodejs来实现<code>git hash-object -w</code>的功能，即计算Git对象的hash值并存储到Git文件系统中：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">const fs = require(&apos;fs&apos;)</span><br><span class="line">const crypto = require(&apos;crypto&apos;)</span><br><span class="line">const zlib = require(&apos;zlib&apos;)</span><br><span class="line"></span><br><span class="line">function gitHashObject(content, type) &#123;</span><br><span class="line">  // 构造header</span><br><span class="line">  const header = `$&#123;type&#125; $&#123;Buffer.from(content).length&#125;\0`</span><br><span class="line"></span><br><span class="line">  // 构造Git对象</span><br><span class="line">  const store = Buffer.concat([Buffer.from(header), Buffer.from(content)])</span><br><span class="line"></span><br><span class="line">  // 计算hash</span><br><span class="line">  const sha1 = crypto.createHash(&apos;sha1&apos;)</span><br><span class="line">  sha1.update(store)</span><br><span class="line">  const hash = sha1.digest(&apos;hex&apos;)</span><br><span class="line"></span><br><span class="line">  // 压缩Git对象</span><br><span class="line">  const zlib_store = zlib.deflateSync(store)</span><br><span class="line"></span><br><span class="line">  // 存储Git对象</span><br><span class="line">  fs.mkdirSync(`.git/objects/$&#123;hash.substring(0, 2)&#125;`)</span><br><span class="line">  fs.writeFileSync(`.git/objects/$&#123;hash.substring(0, 2)&#125;/$&#123;hash.substring(2, 40)&#125;`, zlib_store)</span><br><span class="line"></span><br><span class="line">  console.log(hash)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 调用入口</span><br><span class="line">gitHashObject(process.argv[2], process.argv[3])</span><br></pre></td></tr></table></figure>
-<p>最后，测试下能否正确存储Git对象：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ node index.js &apos;hello, world&apos; blob</span><br><span class="line">8c01d89ae06311834ee4b1fab2f0414d35f01102</span><br><span class="line">$ git cat-file -p 8c01d89ae06311834ee4b1fab2f0414d35f01102</span><br><span class="line">hello, world</span><br></pre></td></tr></table></figure>
-<p>由此可见，我们生成了一个合法的Git数据对象，证明算法是正确的。</p>
+          <p>这篇文章本应该在6月份就完成，拖了4个月之后，终于鼓起勇气捡起来，实在惭愧。坚持写文章就像长跑，途中跑起来基本是靠惯性，如果停下来再起跑就很累很困难。</p>
+<p>闲话不多说，本篇继续承接前文讲一讲Git内部原理，本篇的主题是Git引用的原理。</p>
+<p>首先来搞清楚什么是Git引用，前文讲了Git提交对象的哈希、存储原理，理论上我们只要知道该对象的hash值，就能往前推出整个提交历史，例如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ git log --pretty=oneline 3ac728ac62f0a7b5ac201fd3ed1f69165df8be31</span><br><span class="line">3ac728ac62f0a7b5ac201fd3ed1f69165df8be31 third commit</span><br><span class="line">d4d2c6cffb408d978cb6f1eb6cfc70e977378a5c second commit</span><br><span class="line">db1d6f137952f2b24e3c85724ebd7528587a067a first commit</span><br></pre></td></tr></table></figure>
+<p>现在问题来了，提交对象的这40位hash值不好记忆，Git引用相当于给40位hash值取一个别名，便于识别和读取。Git引用对象都存储在<code>.git/refs</code>目录下，该目录下有3个子文件夹<code>heads</code>、<code>tags</code>和<code>remotes</code>，分别对应于HEAD引用、标签引用和远程引用，下面分别讲一讲每种引用的原理。</p>
+<h1 id="HEAD引用"><a href="#HEAD引用" class="headerlink" title="HEAD引用"></a>HEAD引用</h1><p>HEAD引用是用来指向每个分支的最后一次提交对象，这样切换到一个分支之后，才能知道分支的“尾巴”在哪里。HEAD引用存储在<code>.git/refs/heads</code>目录下，有多少个分支，就有相应的同名HEAD引用对象。例如代码库里面有<code>master</code>和<code>test</code>两个分支，那么<code>.git/refs/heads</code>目录下就存在<code>master</code>和<code>test</code>两个文件，分别记录了分支的最后一次提交。</p>
+<p>HEAD引用的内容就是提交对象的hash值，理论上我们可以手动地构造一个HEAD引用：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ echo &quot;3ac728ac62f0a7b5ac201fd3ed1f69165df8be31&quot; &gt; .git/refs/heads/master</span><br></pre></td></tr></table></figure>
+<p>Git提供了一个专有命令<code>update-ref</code>，用来查看和修改Git引用对象，当然也包括HEAD引用：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ git update-ref refs/heads/master 3ac728ac62f0a7b5ac201fd3ed1f69165df8be31</span><br><span class="line">$ git update-ref refs/heads/master</span><br><span class="line">3ac728ac62f0a7b5ac201fd3ed1f69165df8be31</span><br></pre></td></tr></table></figure>
+<p>上面的命令我们将<code>master</code>分支的HEAD指向了<code>3ac728ac62f0a7b5ac201fd3ed1f69165df8be31</code>，现在用<code>git log</code>查看下<code>master</code>的提交历史，可以发现最后一次提交就是所更新的hash值：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ git log --pretty=oneline master</span><br><span class="line">3ac728ac62f0a7b5ac201fd3ed1f69165df8be31 (HEAD -&gt; master) third commit</span><br><span class="line">d4d2c6cffb408d978cb6f1eb6cfc70e977378a5c second commit</span><br><span class="line">db1d6f137952f2b24e3c85724ebd7528587a067a first commit</span><br></pre></td></tr></table></figure>
+<p>同理，可以使用同样的方法更新<code>test</code>分支的HEAD：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ git update-ref refs/heads/test d4d2c6cffb408d978cb6f1eb6cfc70e977378a5c</span><br><span class="line">$ git log --pretty=oneline test</span><br><span class="line">d4d2c6cffb408d978cb6f1eb6cfc70e977378a5c (test) second commit</span><br><span class="line">db1d6f137952f2b24e3c85724ebd7528587a067a first commit</span><br></pre></td></tr></table></figure>
+<p><code>.git/refs/heads</code>目录下存储了每个分支的HEAD，那怎么知道代码库当前处于哪个分支呢？这就需要一个代码库级别的HEAD引用。<code>.git/HEAD</code>这个文件就是整个代码库级别的HEAD引用。我们先查看一下<code>.git/HEAD</code>文件的内容：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ cat .git/HEAD</span><br><span class="line">ref: refs/heads/master</span><br></pre></td></tr></table></figure>
+<p>我们发现<code>.git/HEAD</code>文件的内容不是40位hash值，而像是指向<code>.git/refs/heads/master</code>。尝试切换到<code>test</code>：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ git checkout test</span><br><span class="line">$ cat .git/HEAD</span><br><span class="line">ref: refs/heads/test</span><br></pre></td></tr></table></figure>
+<p>切换分支后，<code>.git/HEAD</code>文件的内容也跟着指向<code>.git/refs/heads/test</code>。<code>.git/HEAD</code>也是HEAD引用对象，与一般引用不同的是，它是“符号引用”。符号引用类似于文件的快捷方式，链接到要引用的对象上。</p>
+<p>Git提供专门的命令<code>git symbolic-ref</code>，用来查看和更新符号引用：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ git symbolic-ref HEAD refs/heads/master</span><br><span class="line">$ git symbolic-ref HEAD refs/heads/test</span><br></pre></td></tr></table></figure>
+<p>至此，我们分析了两种HEAD引用，一种是分支级别的HEAD引用，用来记录各分支的最后一次提交，存储在<code>.git/refs/heads</code>目录下，使用<code>git update-ref</code>来维护；一种是代码库级别的HEAD引用，用来记录代码库所处的分支，存储在<code>.git/HEAD</code>文件，使用<code>git symbolic-ref</code>来维护。</p>
+<h1 id="标签引用"><a href="#标签引用" class="headerlink" title="标签引用"></a>标签引用</h1><p>标签引用，顾名思义就是给Git对象打标签，便于记忆。例如，我们可以将某个提交对象打v1.0标签，表示是1.0版本。标签引用都存储在<code>.git/refs/tags</code>里面。</p>
+<p>标签引用和HEAD引用本质是Git引用对象，同样使用<code>git update-ref</code>来查看和修改：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ git update-ref refs/tags/v1.0 d4d2c6cffb408d978cb6f1eb6cfc70e977378a5c</span><br><span class="line">$ cat .git/refs/tags/v1.0</span><br><span class="line">d4d2c6cffb408d978cb6f1eb6cfc70e977378a5c</span><br></pre></td></tr></table></figure>
+<p>还有一种标签引用称为“附注引用”，可以为标签添加说明信息。上面的标签引用打了一个<code>v1.0</code>的标签表示发布1.0版本，有时候发布软件的时候除了版本号信息，还要写更新说明。附注引用就是用来实现打标签的同时，也可以附带说明信息。</p>
+<p>附注引用是怎么实现的呢？与常规标签引用不同的是，它不直接指向提交对象，而是新建一个Git对象存储到<code>.git/objects</code>中，用来记录附注信息，然后附注标签指向这个Git对象。</p>
+<p>使用<code>git tag</code>建立一个附注标签：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ git tag -a v1.1 3ac728ac62f0a7b5ac201fd3ed1f69165df8be31 -m &quot;test tag&quot;</span><br><span class="line">$ cat .git/refs/tags/v1.1</span><br><span class="line">8be4d8e4e8e80711dd7bae304ccfa63b35a6eb8c</span><br></pre></td></tr></table></figure>
+<p>使用<code>git cat-file</code>来查看附注标签所指向的Git对象：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ git cat-file -p 8be4d8e4e8e80711dd7bae304ccfa63b35a6eb8c</span><br><span class="line">object 3ac728ac62f0a7b5ac201fd3ed1f69165df8be31</span><br><span class="line">type commit</span><br><span class="line">tag v1.1</span><br><span class="line">tagger jingsam &lt;jing-sam@qq.com&gt; 1529481368 +0800</span><br><span class="line"></span><br><span class="line">test tag</span><br></pre></td></tr></table></figure>
+<p>可以看到，上面的Git对象存储了我们填写的附注信息。</p>
+<p>总之，普通的标签引用和附注引用同样都是存储的是40位hash值，指向一个Git对象，所不同的是普通的标签引用是直接指向提交对象，而附注标签是指向一个附注对象，附注对象再指向具体的提交对象。</p>
+<p>另外，本质上标签引用并不是只可以指向提交对象，实际上可以指向任何Git对象，即可以给任何Git对象打标签。</p>
+<h1 id="远程引用"><a href="#远程引用" class="headerlink" title="远程引用"></a>远程引用</h1><p>远程引用，类似于<code>.git/refs/heads</code>中存储的本地仓库各分支的最后一次提交，在<code>.git/refs/remotes</code>是用来记录多个远程仓库各分支的最后一次提交。</p>
+<p>我们可以使用<code>git remote</code>来管理远程分支：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git remote add origin git@github.com:jingsam/git-test.git</span><br></pre></td></tr></table></figure>
+<p>上面添加了一个<code>origin</code>远程分支，接下来我们把本地仓库的<code>master</code>推送到远程仓库上：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ git push origin master</span><br><span class="line">Counting objects: 9, done.</span><br><span class="line">Delta compression using up to 4 threads.</span><br><span class="line">Compressing objects: 100% (5/5), done.</span><br><span class="line">Writing objects: 100% (9/9), 720 bytes | 360.00 KiB/s, done.</span><br><span class="line">Total 9 (delta 0), reused 0 (delta 0)</span><br><span class="line">To github.com:jingsam/git-test.git</span><br><span class="line"> * [new branch]      master -&gt; master</span><br></pre></td></tr></table></figure>
+<p>这时候在<code>.git/refs/remotes</code>中的远程引用就会更新：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ cat .git/refs/remotes/origin/master</span><br><span class="line">3ac728ac62f0a7b5ac201fd3ed1f69165df8be31</span><br></pre></td></tr></table></figure>
+<p>和本地仓库的<code>master</code>比较一下，发现是一模一样的，表示远程分支和本地分支是同步的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ cat .git/refs/heads/master</span><br><span class="line">3ac728ac62f0a7b5ac201fd3ed1f69165df8be31</span><br></pre></td></tr></table></figure>
+<p>由于远程引用也是Git引用对象，所以理论上也可以使用<code>git update-ref</code>来手动维护。但是，我们需要先把代码与远程仓库进行同步，在远程仓库中找到对应分支的HEAD，然后使用<code>git update-ref</code>进行更新，过程比较麻烦。而我们在执行<code>git pull</code>或<code>git push</code>这样的高层命令的时候，远程引用会自动更新。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>到这里，三种Git引用都已分析完毕。总的来说，三种Git引用都统一存储到<code>.git/refs</code>目录下，Git引用中的内容都是40位的hash值，指向某个Git对象，这个对象可以是任意的Git对象，可以是数据对象、树对象、提交对象。三种Git引用都可以使用<code>git update-ref</code>来手动维护。</p>
+<p>三种Git引用对象所不同的是，分别存储于<code>.git/refs/heads</code>、<code>.git/refs/tags</code>、<code>.git/refs/remotes</code>,存储的文件夹不同，赋予了引用对象不同的功能。HEAD引用用来记录本地分支的最后一次提交，标签引用用来给任意Git对象打标签，远程引用正式用来记录远程分支的最后一次提交。</p>
 
         
       
