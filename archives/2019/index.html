@@ -40,7 +40,7 @@
 
 
 
-<link rel="canonical" href="https://jingsam.github.io/page/46/">
+<link rel="canonical" href="https://jingsam.github.io/archives/2019/">
 
 
 
@@ -88,7 +88,11 @@
   window.config = {"leancloud":{"app_id":null,"app_key":null},"toc":true,"fancybox":true,"pjax":true};
 </script>
 
-    <title> jingsam </title>
+    <title>
+  
+    归档 - jingsam
+  
+</title>
   </head>
 
   <body><div id="mobile-navbar" class="mobile-navbar">
@@ -182,79 +186,56 @@
           <div id="content" class="content">
             
   
-  <section id="posts" class="posts">
+  
+  
+
+  <section id="archive" class="archive">
+    
+      
+        <div class="archive-title">
+          <span class="archive-post-counter">
+            目前共计 59 篇日志
+          </span>
+        </div>
+      
+    
+
     
       
         
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
         
-          <a class="post-link" href="/2016/01/16/compiling-gdal-on-cygwin.html">在 Cygwin 上编译 GDAL</a>
-        
-      </h1>
 
-      <div class="post-meta">
-        <span class="post-time">
-          2016-01-16
+        
+          
+          <div class="collection-title">
+            <h2 class="archive-year">2019</h2>
+          </div>
+        
+      
+
+      <div class="archive-post">
+        <span class="archive-post-time">
+          
+            01-15
+          
         </span>
-        
-        
+        <span class="archive-post-title">
+          <a href="/2019/01/15/nginx-access-log.html" class="archive-post-link">
+            简单搞定Nginx日志分割
+          </a>
+        </span>
       </div>
-    </header>
-
     
-    
+  </section>
 
-
-    <div class="post-content">
-      
-        
-        
-
-        
-          <p>GDAL (Geospatial Data Abstraction Library) 是最广泛使用的空间数据操作库，包括栅格数据和矢量数据的读写。</p>
-<p>Cygwin 的官方源中并没有 GDAL 的二进制发行包，所以要在 Cygwin 上使用 GDAL 必须自行编译。</p>
-<p>编译的第一步，需要到 GDAL 的<a href="http://trac.osgeo.org/gdal/wiki/DownloadSource" target="_blank" rel="noopener">官网</a>上下载源代码。</p>
-<p>源代码解压后，进入到解压后的目录，使用 Linux 常用的三条命令进行编译安装：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">./configure</span><br><span class="line">make</span><br><span class="line">make install</span><br></pre></td></tr></table></figure>
-<p>我在编译的过程中，出现如下错误：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">/home/Sam/download/gdal-2.0.1/frmts/o/.libs/dgif_lib.o: In <span class="keyword">function</span> `DGifOpenFileHandle<span class="string">':</span></span><br><span class="line"><span class="string">/cygdrive/d/Download/gdal-2.0.1/frmts/gif/giflib/dgif_lib.c:111: undefined reference to `setmode'</span></span><br><span class="line">/cygdrive/d/Download/gdal-2.0.1/frmts/gif/giflib/dgif_lib.c:111:(.text+0x8e1): relocation truncated to fit: R_X86_64_PC32 against undefined symbol `setmode<span class="string">'</span></span><br><span class="line"><span class="string">/home/Sam/download/gdal-2.0.1/frmts/o/.libs/egif_lib.o: In function `EGifOpenFileHandle'</span>:</span><br><span class="line">/cygdrive/d/Download/gdal-2.0.1/frmts/gif/giflib/egif_lib.c:137: undefined reference to `setmode<span class="string">'</span></span><br><span class="line"><span class="string">/cygdrive/d/Download/gdal-2.0.1/frmts/gif/giflib/egif_lib.c:137:(.text+0x4c7): relocation truncated to fit: R_X86_64_PC32 against undefined symbol `setmode'</span></span><br></pre></td></tr></table></figure>
-<p>查询得知，<code>setmode()</code> 函数并不是标准函数库的一部分，它是一个 BSD 函数。使用 <code>setmode()</code> 函数，需要包含以下头文件：<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;io.h&gt;</span></span></span><br></pre></td></tr></table></figure></p>
-<p>因此解决方案是：找到 dgif_lib.c 和 egif_lib.c，分别在 <code>setmode()</code> 函数前添加头文件 <code>#include &lt;io.h&gt;</code> 。</p>
-<p>更新：在 GDAL 2.0.2 中，编译 gdalserver.c 时会报 fd_set 未定义的错误，解决方法是在该文件的46行下面添加 <code>#include &lt;sys/select.h&gt;</code> 。</p>
-<p>更新2：使用坐标系转换需要 proj.4 支持，在 cygwin 平台下，GDAL 默认链接到 <code>cygproj-0.dll</code>，可能会出现找不到 proj.4 的错误。这时，在 <code>ogr/ogrct.cpp</code> 中将 98 行的 <code>#  define LIBNAME      &quot;cygproj-0.dll&quot;</code> 改为 <code>#  define LIBNAME      &quot;cygproj-1.dll&quot;</code> 后，重新编译。</p>
-
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-      
-      
+  
   <nav class="pagination">
     
-      <a class="prev" href="/page/45/">
-        <i class="iconfont icon-left"></i>
-        <span class="prev-text">上一页</span>
-      </a>
-    
-    
-      <a class="next" href="/page/47/">
-        <span class="next-text">下一页</span>
-        <i class="iconfont icon-right"></i>
-      </a>
     
   </nav>
 
 
-    
-  </section>
+
 
           </div>
           

@@ -36,7 +36,7 @@
 
 
 
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.1">
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.2">
 
 
 
@@ -53,7 +53,7 @@
 
 
 
-<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.1">
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.2">
 
 
 
@@ -83,8 +83,9 @@
 
 
 
+
 <script>
-  window.config = {"title":"jingsam","subtitle":null,"description":"GIS, mapping","author":"jingsam","language":"zh-Hans","timezone":null,"url":"https://jingsam.github.io","root":"/","permalink":":year/:month/:day/:title.html","permalink_defaults":null,"source_dir":"source","public_dir":"public","tag_dir":"tags","archive_dir":"archives","category_dir":"categories","code_dir":"downloads/code","i18n_dir":":lang","skip_render":null,"new_post_name":":year-:month-:day-:title.md","default_layout":"post","titlecase":false,"external_link":true,"filename_case":0,"render_drafts":false,"post_asset_folder":false,"relative_link":false,"future":true,"highlight":{"enable":true,"auto_detect":false,"line_number":true,"tab_replace":null,"first_line_number":"always1"},"default_category":"uncategorized","category_map":null,"tag_map":null,"date_format":"YYYY-MM-DD","time_format":"HH:mm:ss","per_page":1,"pagination_dir":"page","theme":"even","deploy":{"type":"git","repo":"git@github.com:jingsam/jingsam.github.io.git","branch":"master"},"ignore":[],"auto_spacing":true,"feed":{"type":"atom","limit":20,"hub":null,"content":true,"content_limit":140,"content_limit_delim":"","path":"atom.xml"},"archive_generator":{"per_page":0,"yearly":true,"monthly":false,"daily":false},"index_generator":{"per_page":1,"order_by":"-date"},"server":{"port":4000,"log":false,"compress":false,"header":true},"marked":{"gfm":true,"pedantic":false,"sanitize":false,"tables":true,"breaks":true,"smartLists":true,"smartypants":true,"modifyAnchors":"","autolink":true},"since":2015,"favicon":"/favicon.ico","rss":"default","menu":{"Home":"/","Archives":"/archives/","About":"/about"},"color":"Default","mode":"default","toc":true,"fancybox":true,"pjax":true,"copyright":{"enable":true,"license":"<a rel=\"license\" href=\"http://creativecommons.org/licenses/by-nc/4.0/\" target=\"_blank\">知识共享署名-非商业性使用 4.0 国际许可协议</a>"},"reward":{"enable":false,"qrCode":{"wechat":null,"alipay":null}},"social":{"email":"jing-sam@qq.com","stack-overflow":null,"twitter":null,"facebook":null,"linkedin":null,"google":null,"github":"https://github.com/jingsam","weibo":"http://weibo.com/u/1902650267","zhihu":"https://www.zhihu.com/people/jingsam","douban":null,"pocket":null,"tumblr":null,"instagram":null},"leancloud":{"app_id":null,"app_key":null},"baidu_analytics":null,"baidu_verification":null,"google_analytics":null,"google_verification":null,"disqus_shortname":"jingsam","changyan":{"appid":null,"appkey":null},"livere_datauid":null,"version":"2.10.1"};
+  window.config = {"leancloud":{"app_id":null,"app_key":null},"toc":true,"fancybox":true,"pjax":true};
 </script>
 
     <title> 手动挡模式申请Let's Encrypt通配符证书 - jingsam </title>
@@ -203,7 +204,7 @@
   <div class="post-toc" id="post-toc">
     <h2 class="post-toc-title">文章目录</h2>
     <div class="post-toc-content">
-      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#验证域名的三种模式"><span class="toc-text">验证域名的三种模式</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#申请域名的步骤"><span class="toc-text">申请域名的步骤</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#总结"><span class="toc-text">总结</span></a></li></ol>
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#验证域名的三种模式"><span class="toc-text">验证域名的三种模式</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#申请域名的步骤"><span class="toc-text">申请域名的步骤</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#证书更新"><span class="toc-text">证书更新</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#总结"><span class="toc-text">总结</span></a></li></ol>
     </div>
   </div>
 
@@ -245,8 +246,9 @@
 <p>TXT记录修改好之后，使用<code>dig -t TXT _acme-challenge.example.com</code>来验证TXT记录是否生效了。如果确认生效了，则按回车完成证书的申请：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">Press Enter to Continue</span><br><span class="line">Waiting for verification...</span><br><span class="line">Cleaning up challenges</span><br><span class="line"></span><br><span class="line">IMPORTANT NOTES:</span><br><span class="line"> - Congratulations! Your certificate and chain have been saved at:</span><br><span class="line">   /etc/letsencrypt/live/example.com/fullchain.pem</span><br><span class="line">   Your key file has been saved at:</span><br><span class="line">   /etc/letsencrypt/live/example.com/privkey.pem</span><br><span class="line">   Your cert will expire on 2019-01-10. To obtain a new or tweaked</span><br><span class="line">   version of this certificate in the future, simply run certbot</span><br><span class="line">   again. To non-interactively renew *all* of your certificates, run</span><br><span class="line">   &quot;certbot renew&quot;</span><br><span class="line"> - Your account credentials have been saved in your Certbot</span><br><span class="line">   configuration directory at /etc/letsencrypt. You should make a</span><br><span class="line">   secure backup of this folder now. This configuration directory will</span><br><span class="line">   also contain certificates and private keys obtained by Certbot so</span><br><span class="line">   making regular backups of this folder is ideal.</span><br><span class="line"> - If you like Certbot, please consider supporting our work by:</span><br><span class="line"></span><br><span class="line">   Donating to ISRG / Let&apos;s Encrypt:   https://letsencrypt.org/donate</span><br><span class="line">   Donating to EFF:                    https://eff.org/donate-le</span><br></pre></td></tr></table></figure>
 <p>上面的信息告诉我们，证书保存在<code>/etc/letsencrypt/live/example.com/fullchain.pem</code>，证书的秘钥保存在<code>/etc/letsencrypt/live/example.com/privkey.pem</code>，我们可以把这两个文件拷贝到服务器上用于设置https。</p>
-<p>证书的有效期是90天，我们可以在证书失效前30天更新证书的有效期：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ docker run -it --rm --name certbot \</span><br><span class="line">    -v $PWD:/etc/letsencrypt \</span><br><span class="line">    certbot/certbot:v0.27.1 \</span><br><span class="line">    renew</span><br></pre></td></tr></table></figure>
+<h1 id="证书更新"><a href="#证书更新" class="headerlink" title="证书更新"></a>证书更新</h1><p>证书的有效期是90天，在证书失效前30天之内，Let’s Encrypt会发邮件通知我们。</p>
+<p>虽然有专门的<code>renew</code>命令用来自动更新证书，但是我们申请的是通配符证书，仍然需要手动验证域名。因此，我们需要重新运行原来申请证书的命令来更新证书：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ docker run -it --rm --name certbot \</span><br><span class="line">    -v $PWD:/etc/letsencrypt \</span><br><span class="line">    certbot/certbot:v0.27.1 \</span><br><span class="line">    certonly --manual --preferred-challenges=dns-01 \</span><br><span class="line">    --server=https://acme-v02.api.letsencrypt.org/directory</span><br></pre></td></tr></table></figure>
 <h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>本文通过手动模式一步一步操作，完成了通配符域名的申请。只要理解了let’s encrypt验证域名的http模式和dns模式的原理，申请域名就能做到心中有数。下一篇将讲一讲在nginx环境下，如何使用申请到的证书配置https。</p>
 
       
@@ -394,7 +396,7 @@
      
       2015 - 
     
-    2018
+    2019
 
     <span class="heart">
       <i class="iconfont icon-heart"></i>
@@ -467,7 +469,7 @@
   
 
 
-    <script type="text/javascript" src="/js/src/even.js?v=2.10.1"></script>
+    <script type="text/javascript" src="/js/src/even.js?v=2.10.2"></script>
 
   </body>
 </html>
