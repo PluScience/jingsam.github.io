@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-Hans">
-  <head><meta name="generator" content="Hexo 3.8.0">
-    
-<meta charset="UTF-8">
+  <head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
@@ -15,53 +13,16 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
-
-
-  <meta name="description" content="《Mapbox矢量瓦片标准》深度解析">
-
-
-
-
-
-
-
-
-
-
-
-
-
-  <link rel="alternate" href="/atom.xml" title="jingsam">
-
-
-
-
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.10.2">
-
-
-
+<meta name="description" content="《Mapbox矢量瓦片标准》深度解析"><link rel="alternate" href="/atom.xml" title="jingsam"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.11.0">
 <link rel="canonical" href="https://jingsam.github.io/2016/04/16/vector-tiles-spec-in-depth.html">
 
+<link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css"><link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css"><script type="text/x-mathjax-config">
+    MathJax.Hub.Config({ tex2jax: { inlineMath: [['$','$'], ['\\(','\\)']] } });
+  </script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.11.0">
 
-
-  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css">
-
-
-
-
-  <link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css">
-
-
-
-<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.10.2">
-
-
-
-  
-
-
-
-  <script id="baidu_push">
+<script id="baidu_push">
 (function(){
     var bp = document.createElement('script');
     var curProtocol = window.location.protocol.split(':')[0];
@@ -75,20 +36,11 @@
     s.parentNode.insertBefore(bp, s);
 })();
 </script>
-
-
-
-
-
-
-
-
-
 <script>
-  window.config = {"leancloud":{"app_id":null,"app_key":null},"toc":true,"fancybox":true,"pjax":true};
+  window.config = {"leancloud":{"app_id":null,"app_key":null},"toc":true,"fancybox":true,"pjax":true,"latex":true};
 </script>
 
-    <title> 《Mapbox矢量瓦片标准》深度解析 - jingsam </title>
+    <title>《Mapbox矢量瓦片标准》深度解析 - jingsam</title>
   </head>
 
   <body><div id="mobile-navbar" class="mobile-navbar">
@@ -103,116 +55,59 @@
 </div>
 
 <nav id="mobile-menu" class="mobile-menu slideout-menu">
-  <ul class="mobile-menu-list">
-    
-      <a href="/">
-        <li class="mobile-menu-item">
-          
-          
-            首页
-          
-        </li>
-      </a>
-    
-      <a href="/archives/">
-        <li class="mobile-menu-item">
-          
-          
-            归档
-          
-        </li>
-      </a>
-    
-      <a href="/about">
-        <li class="mobile-menu-item">
-          
-          
-            关于
-          
-        </li>
-      </a>
-    
-  </ul>
+  <ul class="mobile-menu-list"><a href="/">
+        <li class="mobile-menu-item">首页
+          </li>
+      </a><a href="/archives/">
+        <li class="mobile-menu-item">归档
+          </li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">关于
+          </li>
+      </a></ul>
 </nav>
-
-    <div class="container" id="mobile-panel">
+<div class="container" id="mobile-panel">
       <header id="header" class="header"><div class="logo-wrapper">
   <a href="/." class="logo">jingsam</a>
 </div>
 
-<nav class="site-navbar">
-  
-    <ul id="menu" class="menu">
-      
-        <li class="menu-item">
+<nav class="site-navbar"><ul id="menu" class="menu"><li class="menu-item">
           <a class="menu-item-link" href="/">
-            
-            
-              首页
-            
-          </a>
+            首页
+            </a>
         </li>
-      
-        <li class="menu-item">
+      <li class="menu-item">
           <a class="menu-item-link" href="/archives/">
-            
-            
-              归档
-            
-          </a>
+            归档
+            </a>
         </li>
-      
-        <li class="menu-item">
-          <a class="menu-item-link" href="/about">
-            
-            
-              关于
-            
-          </a>
+      <li class="menu-item">
+          <a class="menu-item-link" href="/about/">
+            关于
+            </a>
         </li>
-      
-    </ul>
-  
-</nav>
-
-      </header>
+      </ul></nav>
+</header>
 
       <main id="main" class="main">
         <div class="content-wrapper">
-          <div id="content" class="content">
-            
-  
-  <article class="post">
+          <div id="content" class="content"><article class="post">
     <header class="post-header">
-      <h1 class="post-title">
-        
-          《Mapbox矢量瓦片标准》深度解析
-        
-      </h1>
+      <h1 class="post-title">《Mapbox矢量瓦片标准》深度解析
+        </h1>
 
       <div class="post-meta">
         <span class="post-time">
           2016-04-16
-        </span>
-        
-        
-      </div>
+        </span></div>
     </header>
 
-    
-    
-  <div class="post-toc" id="post-toc">
+    <div class="post-toc" id="post-toc">
     <h2 class="post-toc-title">文章目录</h2>
     <div class="post-toc-content">
       <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#坐标"><span class="toc-text">坐标</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#version字段"><span class="toc-text">version字段</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#游标"><span class="toc-text">游标</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#tag"><span class="toc-text">tag</span></a></li></ol>
     </div>
-  </div>
-
-
-
-    <div class="post-content">
-      
-        <p><a href="/2016/03/04/vector-tile-spec.html">Mapbox矢量瓦片标准</a>至今已发布至2.1版，各版本间只有细微的差别。标准的内容并不长，相信大部分人能够在半小时内读完。标准对矢量瓦片的编码格式做了详细地描述，大部分内容简洁易懂，但是仍然有些细节容易被误解。本文提炼出几点内容，对矢量瓦片标准进行补充说明。</p>
+  </div><div class="post-content"><p><a href="/2016/03/04/vector-tile-spec.html">Mapbox矢量瓦片标准</a>至今已发布至2.1版，各版本间只有细微的差别。标准的内容并不长，相信大部分人能够在半小时内读完。标准对矢量瓦片的编码格式做了详细地描述，大部分内容简洁易懂，但是仍然有些细节容易被误解。本文提炼出几点内容，对矢量瓦片标准进行补充说明。</p>
 <h2 id="坐标"><a href="#坐标" class="headerlink" title="坐标"></a>坐标</h2><p>矢量数据切片为瓦片后，其坐标从地理坐标转换为屏幕坐标，以整数形式存储。整型比浮点型所需的存储空间更小，大大降低了瓦片的传输成本。</p>
 <p>我们通常可以将矢量瓦片看作是一种带元数据的图片，因为它和栅格瓦片一样，都是存储的屏幕坐标，但是两者之间在坐标上还是有差别的。</p>
 <p>在栅格瓦片中，坐标(0, 0)代表瓦片最左上角的一个像素点；而在矢量瓦片中，坐标(0, 0)代表的是瓦片的左边缘与上边缘的交点。所以，如下图示例，我们可以认为栅格瓦片的坐标是在格网中心，而矢量瓦片的坐标位于格网的交点。</p>
@@ -226,14 +121,8 @@
 <p><img src="/assets/cursor.png" alt="cursor"></p>
 <h2 id="tag"><a href="#tag" class="headerlink" title="tag"></a><code>tag</code></h2><p>矢量瓦片会按图层提取出所有的字段和值的唯一值，然后构建索引序列。对于要素的每个属性用一对<code>tag</code>字段表示。每对<code>tag</code>中，第一个<code>tag</code>表示字段的索引号，第二个表示值的索引号。所以，一个要素的<code>tag</code>字段数目必定为偶数，并且<code>tag</code>字段的值要小于字段和值得唯一值个数。</p>
 
-      
-    </div>
-
-    
-      
-      
-
-  <div class="post-copyright">
+      </div>
+      <div class="post-copyright">
     <p class="copyright-item">
       <span>原文作者: </span>
       <a href="https://jingsam.github.io">jingsam</a>
@@ -243,119 +132,37 @@
       <a href="https://jingsam.github.io/2016/04/16/vector-tiles-spec-in-depth.html">https://jingsam.github.io/2016/04/16/vector-tiles-spec-in-depth.html</a>
     </p>
     <p class="copyright-item">
-      <span>许可协议: </span>
-      
-      <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>
+      <span>许可协议: </span><a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>
     </p>
   </div>
-
-
-
-      
-      
-    
-
-    
       <footer class="post-footer">
         
-        
-        
-  <nav class="post-nav">
-    
-      <a class="prev" href="/2016/04/17/config-eslint.html">
+        <nav class="post-nav"><a class="prev" href="/2016/04/17/config-eslint.html">
         <i class="iconfont icon-left"></i>
         <span class="prev-text nav-default">Eslint配置实战</span>
         <span class="prev-text nav-mobile">上一篇</span>
       </a>
-    
-    
-      <a class="next" href="/2016/04/14/traps-with-nodejs.html">
+    <a class="next" href="/2016/04/14/traps-with-nodejs.html">
         <span class="next-text nav-default">Nodejs开发工具遇到的坑</span>
         <span class="prev-text nav-mobile">下一篇</span>
         <i class="iconfont icon-right"></i>
       </a>
-    
-  </nav>
-
-
-      </footer>
-    
-
-  </article>
-
-
-          </div>
-          
-  <div class="comments" id="comments">
-    
-      <div id="disqus_thread">
+    </nav></footer>
+    </article></div><div class="comments" id="comments"><div id="disqus_thread">
         <noscript>
           Please enable JavaScript to view the
           <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a>
         </noscript>
       </div>
-    
-  </div>
-
-
-        </div>
+    </div></div>
       </main>
 
-      <footer id="footer" class="footer">
-
-  <div class="social-links">
-    
-      
-        
-          <a href="mailto:jing-sam@qq.com" class="iconfont icon-email" title="email"></a>
-        
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-        
-          <a href="https://github.com/jingsam" class="iconfont icon-github" title="github"></a>
-        
-      
-    
-      
-        
-          <a href="http://weibo.com/u/1902650267" class="iconfont icon-weibo" title="weibo"></a>
-        
-      
-    
-      
-        
-          <a href="https://www.zhihu.com/people/jingsam" class="iconfont icon-zhihu" title="zhihu"></a>
-        
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-
-    
-      <a href="/atom.xml" class="iconfont icon-rss" title="rss"></a>
-    
-  </div>
-
-
-
-<div class="copyright">
+      <footer id="footer" class="footer"><div class="social-links"><a href="mailto:jing-sam@qq.com" class="iconfont icon-email" title="email"></a>
+        <a href="https://github.com/jingsam" class="iconfont icon-github" title="github"></a>
+        <a href="http://weibo.com/u/1902650267" class="iconfont icon-weibo" title="weibo"></a>
+        <a href="https://www.zhihu.com/people/jingsam" class="iconfont icon-zhihu" title="zhihu"></a>
+        <a href="/atom.xml" class="iconfont icon-rss" title="rss"></a>
+    </div><div class="copyright">
   <span class="power-by">
     由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
   </span>
@@ -365,31 +172,18 @@
     <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
   </span>
 
-  <span class="copyright-year">
-    
-    &copy; 
-     
-      2015 - 
-    
-    2019
-
-    <span class="heart">
+  <span class="copyright-year">&copy;2015 - 2019<span class="heart">
       <i class="iconfont icon-heart"></i>
     </span>
     <span class="author">jingsam</span>
   </span>
 </div>
-
-      </footer>
+</footer>
 
       <div class="back-to-top" id="back-to-top">
         <i class="iconfont icon-up"></i>
       </div>
-    </div>
-
-    
-  
-  <script type="text/javascript">
+    </div><script type="text/javascript">
     var disqus_config = function () {
         this.page.url = 'https://jingsam.github.io/2016/04/16/vector-tiles-spec-in-depth.html';
         this.page.identifier = '2016/04/16/vector-tiles-spec-in-depth.html';
@@ -403,48 +197,11 @@
     s.setAttribute('data-timestamp', +new Date());
     (d.head || d.body).appendChild(s);
     })();  
-  </script>
-
-  
-
-  
-
-
-
-    
-  
-
-
-
-  
-  
-
-
-
-
-
-  
-    <script type="text/javascript" src="/lib/jquery/jquery.min.js"></script>
-  
-
-  
-    <script type="text/javascript" src="/lib/slideout/slideout.js"></script>
-  
-
-  
-    <script type="text/javascript" src="/lib/fancybox/jquery.fancybox.pack.js"></script>
-  
-
-  
-    <script type="text/javascript" src="/lib/pjax/jquery.pjax.min.js"></script>
-  
-
-  
-    <script type="text/javascript" src="/lib/nprogress/nprogress.min.js"></script>
-  
-
-
-    <script type="text/javascript" src="/js/src/even.js?v=2.10.2"></script>
-
-  </body>
+  </script><script type="text/javascript" src="/lib/jquery/jquery.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout.js"></script>
+  <script type="text/javascript" src="/lib/fancybox/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/lib/pjax/jquery.pjax.min.js"></script>
+  <script type="text/javascript" src="/lib/nprogress/nprogress.min.js"></script>
+  <script type="text/javascript" src="/js/src/even.js?v=2.11.0"></script>
+</body>
 </html>

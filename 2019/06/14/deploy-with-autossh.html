@@ -13,8 +13,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
-<meta name="description" content="GIS, mapping"><link rel="alternate" href="/atom.xml" title="jingsam"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.11.0">
-<link rel="canonical" href="https://jingsam.github.io/">
+<meta name="description" content="利用反向代理实现内网服务器自动部署"><link rel="alternate" href="/atom.xml" title="jingsam"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.11.0">
+<link rel="canonical" href="https://jingsam.github.io/2019/06/14/deploy-with-autossh.html">
 
 <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css"><link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css"><script type="text/x-mathjax-config">
     MathJax.Hub.Config({ tex2jax: { inlineMath: [['$','$'], ['\\(','\\)']] } });
@@ -40,7 +40,7 @@
   window.config = {"leancloud":{"app_id":null,"app_key":null},"toc":true,"fancybox":true,"pjax":true,"latex":true};
 </script>
 
-    <title>jingsam</title>
+    <title>利用反向代理实现内网服务器自动部署 - jingsam</title>
   </head>
 
   <body><div id="mobile-navbar" class="mobile-navbar">
@@ -91,9 +91,9 @@
 
       <main id="main" class="main">
         <div class="content-wrapper">
-          <div id="content" class="content"><section id="posts" class="posts"><article class="post">
+          <div id="content" class="content"><article class="post">
     <header class="post-header">
-      <h1 class="post-title"><a class="post-link" href="/2019/06/14/deploy-with-autossh.html">利用反向代理实现内网服务器自动部署</a>
+      <h1 class="post-title">利用反向代理实现内网服务器自动部署
         </h1>
 
       <div class="post-meta">
@@ -102,7 +102,12 @@
         </span></div>
     </header>
 
-    <div class="post-content"><p>当前持续集成的流行，大大提高了开发迭代的速度。自动化部署作为持续集成的最后一公里，对于完成整个闭环至关重要。如果生产服务器部署至公网且开通了ssh端口，那么测试服务器完成测试打包后，可以很方便地利用ssh将部署包推送到生产服务器上完成部署。但是，如果生产服务器部署在内网，测试服务器部署在外网，那么测试服务器就无法得知生产服务器的IP，无法利用ssh远程登录实现自动部署。</p>
+    <div class="post-toc" id="post-toc">
+    <h2 class="post-toc-title">文章目录</h2>
+    <div class="post-toc-content">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#技术原理"><span class="toc-text">技术原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#持久化连接"><span class="toc-text">持久化连接</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#免密登录"><span class="toc-text">免密登录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结"><span class="toc-text">总结</span></a></li></ol>
+    </div>
+  </div><div class="post-content"><p>当前持续集成的流行，大大提高了开发迭代的速度。自动化部署作为持续集成的最后一公里，对于完成整个闭环至关重要。如果生产服务器部署至公网且开通了ssh端口，那么测试服务器完成测试打包后，可以很方便地利用ssh将部署包推送到生产服务器上完成部署。但是，如果生产服务器部署在内网，测试服务器部署在外网，那么测试服务器就无法得知生产服务器的IP，无法利用ssh远程登录实现自动部署。</p>
 <p>本文利用ssh的反向代理技术，来实现内网服务器的自动部署。</p>
 <h2 id="技术原理"><a href="#技术原理" class="headerlink" title="技术原理"></a>技术原理</h2><p>ssh一般用来客户端远程登录到服务器上，而ssh反向代理“反其道而行之”，由服务端主动发起请求连接客户端，然后在客户端打开一个端口，之后发往客户端的数据包将会转发到服务端。例如在服务端执行：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -NR 22022:localhost:22 clientUser@clientMachine</span><br></pre></td></tr></table></figure>
@@ -142,12 +147,35 @@
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本文借助ssh反向代理技术，实现了内网服务器与测试服务器的互通，并且利用autossh解决了ssh持久连接的问题，以及利用复制私钥来实现测试服务器到内网服务器的免密登录。最终，结合这些技术，实现了内网服务的自动化部署。</p>
 <p>在实际测试过程中，ssh的反向代理连接速度慢而且不是很稳定，下一步研究webhook技术来实现自动部署。</p>
 
-        </div></article>
-      <nav class="pagination"><a class="next" href="/page/2/">
-        <span class="next-text">下一页</span>
+      </div>
+      <div class="post-copyright">
+    <p class="copyright-item">
+      <span>原文作者: </span>
+      <a href="https://jingsam.github.io">jingsam</a>
+    </p>
+    <p class="copyright-item">
+      <span>原文链接: </span>
+      <a href="https://jingsam.github.io/2019/06/14/deploy-with-autossh.html">https://jingsam.github.io/2019/06/14/deploy-with-autossh.html</a>
+    </p>
+    <p class="copyright-item">
+      <span>许可协议: </span><a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>
+    </p>
+  </div>
+      <footer class="post-footer">
+        
+        <nav class="post-nav"><a class="next" href="/2019/01/15/nginx-access-log.html">
+        <span class="next-text nav-default">简单搞定Nginx日志分割</span>
+        <span class="prev-text nav-mobile">下一篇</span>
         <i class="iconfont icon-right"></i>
       </a>
-    </nav></section></div></div>
+    </nav></footer>
+    </article></div><div class="comments" id="comments"><div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    </div></div>
       </main>
 
       <footer id="footer" class="footer"><div class="social-links"><a href="mailto:jing-sam@qq.com" class="iconfont icon-email" title="email"></a>
@@ -176,7 +204,21 @@
       <div class="back-to-top" id="back-to-top">
         <i class="iconfont icon-up"></i>
       </div>
-    </div><script type="text/javascript" src="/lib/jquery/jquery.min.js"></script>
+    </div><script type="text/javascript">
+    var disqus_config = function () {
+        this.page.url = 'https://jingsam.github.io/2019/06/14/deploy-with-autossh.html';
+        this.page.identifier = '2019/06/14/deploy-with-autossh.html';
+        this.page.title = '利用反向代理实现内网服务器自动部署';
+    };
+    (function() {
+    var d = document, s = d.createElement('script');
+
+    s.src = '//jingsam.disqus.com/embed.js';
+
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+    })();  
+  </script><script type="text/javascript" src="/lib/jquery/jquery.min.js"></script>
   <script type="text/javascript" src="/lib/slideout/slideout.js"></script>
   <script type="text/javascript" src="/lib/fancybox/jquery.fancybox.pack.js"></script>
   <script type="text/javascript" src="/lib/pjax/jquery.pjax.min.js"></script>

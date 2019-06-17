@@ -14,7 +14,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
 <meta name="description" content="GIS, mapping"><link rel="alternate" href="/atom.xml" title="jingsam"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.11.0">
-<link rel="canonical" href="https://jingsam.github.io/page/48/">
+<link rel="canonical" href="https://jingsam.github.io/page/60/">
 
 <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css"><link rel="stylesheet" type="text/css" href="/lib/nprogress/nprogress.min.css"><script type="text/x-mathjax-config">
     MathJax.Hub.Config({ tex2jax: { inlineMath: [['$','$'], ['\\(','\\)']] } });
@@ -93,35 +93,42 @@
         <div class="content-wrapper">
           <div id="content" class="content"><section id="posts" class="posts"><article class="post">
     <header class="post-header">
-      <h1 class="post-title"><a class="post-link" href="/2016/01/16/compiling-geos-on-cygwin.html">在 Cygwin 上编译 GEOS</a>
+      <h1 class="post-title"><a class="post-link" href="/2015/08/03/how-to-load-gis-data-in-netlogo.html">Netlogo读写GIS数据的方法</a>
         </h1>
 
       <div class="post-meta">
         <span class="post-time">
-          2016-01-16
+          2015-08-03
         </span></div>
     </header>
 
-    <div class="post-content"><p>GEOS (Geometry Engine - Open Source) 是 Java Topology Suite (JTS) 的 C++ 实现，提供大量的几何操作函数。</p>
-<p>Cygwin 的官方源中并没有 GEOS 的二进制发行包，所以要在 Cygwin 上使用 GEOS 必须自行编译。</p>
-<p>编译的第一步，需要到 GEOS 的<a href="http://trac.osgeo.org/geos/" target="_blank" rel="noopener">官网</a>上下载源代码。</p>
-<p>源代码解压后，进入到解压后的目录，使用 Linux 常用的三条命令进行编译安装：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">./configure</span><br><span class="line">make</span><br><span class="line">make install</span><br></pre></td></tr></table></figure>
+    <div class="post-content"><p>使用NetLogo进行地理过程模拟时，不可避免地要对GIS数据进行读写，本文主要讲栅格数据的读写，矢量数据留待以后再讲。</p>
+<p>Netlogo目前只支持ESRI ASCII Grid(后缀通常为.asc或.grd)格式的栅格数据，所以其他格式的数据请先使用ArcGIS里面的“Raster to ASCII”工具进行转换。</p>
+<p>NetLogo读写GIS数据需要gis扩展支持，因此需要代码页前部声明：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">extensions [gis]</span><br></pre></td></tr></table></figure>
 
-<p>我在编译的过程中，出现如下错误：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">libtool: compile:  g++ -DHAVE_CONFIG_H -I. -I../include -I../include/geos -I../include -DGEOS_CAPI_VERSION=\<span class="string">"3.5.0-CAPI-1.9.0\" -DGEOS_JTS_PORT=\"1.13.0\" -DGEOS_INLINE -pedantic -Wall -ansi -Wno-long-long -ffloat-store -g -O2 -MT libgeos_c_la-geos_ts_c.lo -MD -MP -MF .deps/libgeos_c_la-geos_ts_c.Tpo -c geos_ts_c.cpp  -DDLL_EXPORT -DPIC -o .libs/libgeos_c_la-geos_ts_c.o</span></span><br><span class="line"><span class="string">geos_ts_c.cpp: 在成员函数‘void GEOSContextHandle_HS::NOTICE_MESSAGE(std::string, ...)’中:</span></span><br><span class="line"><span class="string">geos_ts_c.cpp:225:81: 错误：‘vsnprintf’在此作用域中尚未声明</span></span><br><span class="line"><span class="string">       int result = vsnprintf(msgBuffer, sizeof(msgBuffer) - 1, fmt.c_str(), args);</span></span><br><span class="line"><span class="string">                                                                                 ^</span></span><br><span class="line"><span class="string">geos_ts_c.cpp: 在成员函数‘void GEOSContextHandle_HS::ERROR_MESSAGE(std::string, ...)’中:</span></span><br><span class="line"><span class="string">geos_ts_c.cpp:246:81: 错误：‘vsnprintf’在此作用域中尚未声明</span></span><br><span class="line"><span class="string">       int result = vsnprintf(msgBuffer, sizeof(msgBuffer) - 1, fmt.c_str(), args);</span></span><br></pre></td></tr></table></figure>
+<p>读取数据前，首先需要设置坐标系，但并不是必须的。NetLogo支持地理坐标系和投影坐标系，以WKT格式描述坐标系，需提供坐标系文件(后缀通常为.prj)，代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gis:load-coordinate-system &quot;Transverse_Mercator.prj&quot;</span><br></pre></td></tr></table></figure>
 
-<p>错误提示 <code>vsnprintf()</code> 函数未声明，查询得知此函数出现于 C++11 标准。而上面的编译命令中有 <code>-ansi</code>，限定了以 C++98 标准进行编译，所以无法找到 <code>vsnprintf()</code> 函数的声明和定义。</p>
-<p>解决方案很简单：进入到源代码目录下的 capi 子目录，找到 Makefile 文件，去掉编译命令中的 <code>-ansi</code> 选项。</p>
+<p>对于投影坐标系，NetLogo目前只支持有限的几种坐标系：</p>
+<p>|Albers_Conic_Equal_Area      |Lambert_Conformal_Conic_2SP |Polyconic          |<br>|Lambert_Azimuthal_Equal_Area |Mercator_1SP                |Robinson           |<br>|Azimuthal_Equidistant        |Miller                      |Stereographic      |<br>|Cylindrical_Equal_Area       |Oblique_Mercator            |Transverse_Mercator|<br>|Equidistant_Conic            |hotine_oblique_mercator<br>|Gnomonic                     |Orthographic</p>
+<p>设置完坐标系后，即可利用函数<code>gis:load-dataset</code>读取数据：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">let data gis:load-dataset dem.asc</span><br></pre></td></tr></table></figure>
+
+<p>将数据读取至变量<code>data</code>之后，一般还需要将数据写入瓦片：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">gis:set-world-envelope (gis:envelope-of data)</span><br><span class="line">gis:apply-raster data patch-own-variable</span><br></pre></td></tr></table></figure>
+
+<p>目前NetLogo仅仅支持栅格数据的保存，代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gis:store-dataset data mydata.asc</span><br></pre></td></tr></table></figure>
+
+<p>最后附上完整代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">extensions [gis]      ;读写GIS数据需要用到gis扩展</span><br><span class="line"></span><br><span class="line">patches-own [patch-own-variable]</span><br><span class="line"></span><br><span class="line">;读取</span><br><span class="line">to import-data [file]</span><br><span class="line">  gis:load-coordinate-system (word projection &quot;.prj&quot;)    ;设置坐标系（非必须）</span><br><span class="line">  let data gis:load-dataset file</span><br><span class="line"></span><br><span class="line">  gis:set-world-envelope (gis:envelope-of data)          ;将窗口范围设置为数据框范围</span><br><span class="line">  gis:apply-raster data patch-own-variable               ;将数据读取至patch-own-variable变量</span><br><span class="line">end</span><br><span class="line"></span><br><span class="line">;保存</span><br><span class="line">to save-data [data file]</span><br><span class="line">  gis:store-dataset data file</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+
 
         </div></article>
-      <nav class="pagination"><a class="prev" href="/page/47/">
+      <nav class="pagination"><a class="prev" href="/page/59/">
         <i class="iconfont icon-left"></i>
         <span class="prev-text">上一页</span>
-      </a>
-    <a class="next" href="/page/49/">
-        <span class="next-text">下一页</span>
-        <i class="iconfont icon-right"></i>
       </a>
     </nav></section></div></div>
       </main>
