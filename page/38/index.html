@@ -93,61 +93,53 @@
         <div class="content-wrapper">
           <div id="content" class="content"><section id="posts" class="posts"><article class="post">
     <header class="post-header">
-      <h1 class="post-title"><a class="post-link" href="/2016/04/20/deploy-to-digitialocean.html">Nodejs网站部署到DigtialOcean</a>
+      <h1 class="post-title"><a class="post-link" href="/2016/05/08/setup-shadowsocks-http-proxy-on-ubuntu-server.html">Ubuntu server命令行配置shadowsocks全局代理</a>
         </h1>
 
       <div class="post-meta">
         <span class="post-time">
-          2016-04-20
+          2016-05-08
         </span></div>
     </header>
 
-    <div class="post-content"><p>最近基于Express + Mongodb开发了一个纯API服务，现在要部署到公网上。我选择的是DigitialOcean的主机，但整个部署过程不仅仅适用于DigitialOcean，其他VPS也可参考。</p>
-<h2 id="创建主机"><a href="#创建主机" class="headerlink" title="创建主机"></a>创建主机</h2><p>假设我们现在已经注册了DigitialOcean账号，并且通过了邮箱验证和信用卡绑定。<br>首先创建一个主机，登录后点击<code>Create Droplets</code>，即可开始创建主机。Droplets的意思是小水滴，DigitialOcean是数字海洋，两者之间的关系还是蛮形象的。<br>在创建主机界面，我们可以选择主机的操作系统、服务器的位置、服务器的硬件配置等。我选择的是Ubuntu 15.10，San Franscisco的机房，以及最便宜5美元一个月的配置：1 CPU + 512M RAM + 20G SSD。<br>选择完配置之后，先别忙着点确定。里面有一项叫SSH key，可以将你的SSH的公钥填进去，这样我们稍后登录主机的时候就不需要填密码了。当然，如果你不知道怎么生成SSH key或者嫌麻烦，也可以通过密码登录，密码会在你创建完主机之后发到你的注册邮箱。</p>
-<h2 id="创建用户"><a href="#创建用户" class="headerlink" title="创建用户"></a>创建用户</h2><p>当主机创建完之后，我们可以通过SSH远程登录到主机上：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh root@xxx.xxx.xxx.xxx</span><br></pre></td></tr></table></figure>
+    <div class="post-content"><p>由于Ubuntu Server是不带用户界面的，所以要为Server配置Shadowsocks还是稍显麻烦。本文就是我配置Shadowsocks的一些经验，以待参考。</p>
+<h3 id="安装shadowsocks"><a href="#安装shadowsocks" class="headerlink" title="安装shadowsocks"></a>安装shadowsocks</h3><p>由于shadowsocks是基于python开发的，所以必须安装python：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install python</span><br></pre></td></tr></table></figure>
 
-<p>这里有个问题就是，我们是以root身份登录到系统中，而我们网站不能在root权限下部署。否则，要是有黑客获取了网站控制权限，就掌握了主机的控制权限，这是很危险的。所以，我们需要创建一个普通权限的用户，以普通用户的身份部署网站。</p>
-<p>使用下面的命令添加新用户和密码，其中<code>-m</code>表示在<code>/home</code>目录下创建用户文件夹。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">add user -m judy</span><br><span class="line">passwd judy</span><br></pre></td></tr></table></figure>
+<p>接着安装python的包管理器pip：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install python-pip</span><br></pre></td></tr></table></figure>
 
-<p>为了之后安装软件方便，我们将新用户添加到<code>sudo</code>组中：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo adduser judy sudo</span><br></pre></td></tr></table></figure>
+<p>安装完毕之后，通过pip直接安装shadowsocks：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo pip install shadowsocks</span><br></pre></td></tr></table></figure>
 
-<p>现在我们完成了新用户的创建。有些人在使用SSH登录到DigitalOcean后会发现很卡，打个命令半天才回显，在这里我推荐一款很好用的SSH替代软件：mosh。SSH的机制是我们输入一个字符，这个字符会发送到远程服务器，然后远程服务器收到后再发送回终端显示。在这个传输过程中，如果网络条件不好，会产生明显地卡顿。而mosh在你输入一个字符时，立即在终端上显示，然后再后台自动地将命令发送到远程服务器。因此即使在较差的网络条件下，mosh也可以很流畅。</p>
-<p>mosh需要在客户端和服务端同时安装，安装的的命令如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apt-get install mosh</span><br></pre></td></tr></table></figure>
+<h3 id="配置shadowsocks"><a href="#配置shadowsocks" class="headerlink" title="配置shadowsocks"></a>配置shadowsocks</h3><p>新建一个配置文件<code>shawdowsocks.json</code>，然后配置相应的参数：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">"server"</span>: <span class="string">"&#123;your-server&#125;"</span>,</span><br><span class="line">  <span class="attr">"server_port"</span>: <span class="number">40002</span>,</span><br><span class="line">  <span class="attr">"local_port"</span>: <span class="number">1080</span>,</span><br><span class="line">  <span class="attr">"password"</span>: <span class="string">"&#123;your-password&#125;"</span>,</span><br><span class="line">  <span class="attr">"timeout"</span>: <span class="number">600</span>,</span><br><span class="line">  <span class="attr">"method"</span>: <span class="string">"aes-256-cfb"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>退出root用户，然后用mosh重连，你将会发现比之前流畅多了，mosh连接的命令和SSH一样：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mosh judy@xxx.xxx.xxx.xxx</span><br></pre></td></tr></table></figure>
+<p>上面的参数需要你的shawdowsocks服务提供商为你提供，当然你也可以自己搭建一个。如何搭建个人的shawdowsocks不在本文讨论范围之内，请参阅其他教程。</p>
+<p>配置完成后就可以启动shawdowsocks服务：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo sslocal -c shawdowsocks.json -d start</span><br></pre></td></tr></table></figure>
 
-<h2 id="安装nodejs"><a href="#安装nodejs" class="headerlink" title="安装nodejs"></a>安装nodejs</h2><p>由于我们的网站是基于Express的，因此需要安装nodejs。Ubuntu的官方源上没有nodejs，需要添加nodesource源，安装的命令如下：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install curl</span><br><span class="line">curl -sL https://deb.nodesource.com/setup_5.x | sudo -E bash -</span><br><span class="line">sudo apt-get install nodejs</span><br></pre></td></tr></table></figure>
+<h3 id="配置全局代理"><a href="#配置全局代理" class="headerlink" title="配置全局代理"></a>配置全局代理</h3><p>启动shawdowsocks服务后，发现并不能翻墙上网，这是因为shawdowsocks是socks 5代理，需要客户端配合才能翻墙。</p>
+<p>为了让整个系统都走shawdowsocks通道，需要配置全局代理，可以通过polipo实现。</p>
+<p>首先是安装polipo：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install polipo</span><br></pre></td></tr></table></figure>
 
-<p><code>sudo</code>命令是临时借用root的权限去执行命令。</p>
-<h2 id="安装mongodb和git"><a href="#安装mongodb和git" class="headerlink" title="安装mongodb和git"></a>安装mongodb和git</h2><p>网站的数据库采用的是mongodb，幸运的是Ubuntu的官方源收录了mongodb，所以我们可以直接用apt安装：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install mongodb</span><br></pre></td></tr></table></figure>
+<p>接着修改polipo的配置文件<code>/etc/polipo/config</code>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">logSyslog = <span class="literal">true</span></span><br><span class="line">logFile = /var/<span class="built_in">log</span>/polipo/polipo.log</span><br><span class="line"></span><br><span class="line">proxyAddress = <span class="string">"0.0.0.0"</span></span><br><span class="line"></span><br><span class="line">socksParentProxy = <span class="string">"127.0.0.1:1080"</span></span><br><span class="line">socksProxyType = socks5</span><br><span class="line"></span><br><span class="line">chunkHighMark = 50331648</span><br><span class="line">objectHighMark = 16384</span><br><span class="line"></span><br><span class="line">serverMaxSlots = 64</span><br><span class="line">serverSlots = 16</span><br><span class="line">serverSlots1 = 32</span><br></pre></td></tr></table></figure>
 
-<p>mongodb安装完之后会自动启动守护程序mongod，并设置了开机自启动。检查mongodb是否成功启动，可以运行<code>mongo</code>连接数据是否成功。</p>
-<p>网站的源代码托管在GitHub上，所以要把代码下载下来，我们还需要安装git：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install git</span><br></pre></td></tr></table></figure>
+<p>重启polipo服务：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo /etc/init.d/polipo restart</span><br></pre></td></tr></table></figure>
 
-<h2 id="部署"><a href="#部署" class="headerlink" title="部署"></a>部署</h2><p>通过git将网站源代码拉取下来，并安装相应的依赖：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git clone https://github.com/&#123;your_git_repo&#125; site</span><br><span class="line">cd site</span><br><span class="line">npm install</span><br></pre></td></tr></table></figure>
+<p>为终端配置http代理：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">export http_proxy=&quot;http://127.0.0.1:8123/&quot;</span><br></pre></td></tr></table></figure>
 
-<p>网站的软件环境基本上准备好了，如果代码有测试的话，可以跑一遍测试看网站是否各项功能正常。</p>
-<p>Express网站开发的时候，默认的服务端口是3000。由于服务是公开发布的，总不能让用户还在网址后面加个端口号吧。所以，我们将网站切换到80端口：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">PORT=80 node ./bin/www</span><br></pre></td></tr></table></figure>
+<p>接着测试下能否翻墙：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl www.google.com</span><br></pre></td></tr></table></figure>
 
-<p>不幸的是，你将马上看到出错信息，信息显示80端口只有root用户才能使用。实际上，任何小于1024的端口，都只能由root用户使用。所以我们用采取一定的措施，使得网站服务可以使用80端口。方法很简单，我们可以借助cap2实现：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install libcap2-bin</span><br><span class="line">sudo <span class="built_in">setcap</span> cap_net_bind_service=+ep `<span class="built_in">which</span> nodejs`</span><br></pre></td></tr></table></figure>
+<p>如果有响应，则全局代理配置成功。</p>
+<h3 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h3><p>服务器重启后，下面两句需要重新执行：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo sslocal -c shawdowsocks.json -d start</span><br><span class="line">export http_proxy=&quot;http://127.0.0.1:8123/&quot;</span><br></pre></td></tr></table></figure>
 
-<p>后一条命令中的<code>which nodejs</code>是找出nodejs可执行文件的路径，一定要是nodejs的实际路径，不能是符号链接。</p>
-<p>执行以上命令后，再次测试就会发现能够使用80端口了。</p>
-<h2 id="更改时区"><a href="#更改时区" class="headerlink" title="更改时区"></a>更改时区</h2><p>新建的主机默认的时区是0时区，更改为北京时间可用交互式的命令行工具<code>tzselect</code>:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">tzselect</span><br><span class="line">sudo cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime</span><br></pre></td></tr></table></figure>
-
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>通过以上过程，基本上完成了对服务器的配置。但是还有很多工作要做，例如nodejs进程自动重启、网站制动部署等，这将在以后的博文中逐步说明。</p>
 
         </div></article>
       <nav class="pagination"><a class="prev" href="/page/37/">

@@ -93,7 +93,7 @@
         <div class="content-wrapper">
           <div id="content" class="content"><section id="posts" class="posts"><article class="post">
     <header class="post-header">
-      <h1 class="post-title"><a class="post-link" href="/2015/12/16/solve-octopress-genesis-theme-self-contradictory-dependencies.html">解决octopress-genesis-theme安装失败的问题</a>
+      <h1 class="post-title"><a class="post-link" href="/2015/12/16/export-path.html">Export PATH 可以用通配符吗？</a>
         </h1>
 
       <div class="post-meta">
@@ -102,13 +102,17 @@
         </span></div>
     </header>
 
-    <div class="post-content"><p>最近在一台新机器上搭建 Octopress 博客时，bundle 安装组件时无限 Resolving dependencies。我的 <code>Gemfile</code> 如下：</p>
-<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">source <span class="string">'https://ruby.taobao.org/'</span></span><br><span class="line"></span><br><span class="line">gem <span class="string">'octopress'</span>, <span class="string">'~&gt; 3.0.0'</span></span><br><span class="line"></span><br><span class="line">group <span class="symbol">:jekyll_plugins</span> <span class="keyword">do</span></span><br><span class="line">  gem <span class="string">'octopress-genesis-theme'</span></span><br><span class="line">  gem <span class="string">'octopress-codefence'</span></span><br><span class="line">  gem <span class="string">'octopress-solarized'</span></span><br><span class="line">  gem <span class="string">'octopress-feeds'</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+    <div class="post-content"><p>我在 Cygwin 上安装 bundler 之后，使用 bundle 命令提示 command not found。以我的经验来看，估计是 bundle 的路径没有添加到 <code>PATH</code> 环境变量中。查找 bundle 文件发现它存在于 ~/bin 目录下，把这个目录 export 到 PATH 变量中，命令如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">export PATH=~/bin:$PATH</span><br></pre></td></tr></table></figure>
 
-<p>通过排除法，最终发现是 octopress-genesis-theme 这个组件出现了问题，从提示信息来看，问题是出在它的有些依赖组件需要 jekyll 2，而我安装的是 jekyll 3。所以解决方法就简单了，直接将 jekyll 的版本锁定到 2，更改后的 <code>Gemfile</code> 如下：</p>
-<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">source <span class="string">'https://ruby.taobao.org/'</span></span><br><span class="line"></span><br><span class="line">gem <span class="string">'octopress'</span>, <span class="string">'~&gt; 3.0.0'</span></span><br><span class="line">gem <span class="string">'jekyll'</span>, <span class="string">'~&gt; 2.0'</span></span><br><span class="line"></span><br><span class="line">group <span class="symbol">:jekyll_plugins</span> <span class="keyword">do</span></span><br><span class="line">  gem <span class="string">'octopress-genesis-theme'</span></span><br><span class="line">  gem <span class="string">'octopress-codefence'</span></span><br><span class="line">  gem <span class="string">'octopress-solarized'</span></span><br><span class="line">  gem <span class="string">'octopress-feeds'</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<p>而后发现 bundle 命令还是不行运行，百思不得解之际，突然想到是不是 <code>PATH</code> 变量中不支持使用 <code>~</code> 这样的通配符？遂改用绝对路径：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">export PATH=/home/jingsam/bin:$PATH</span><br></pre></td></tr></table></figure>
 
-<p>以上的方法只是个简单的 Hack，作为强迫症的我，还是希望其他组件支持最新的 jekyll 3。组件维护者没有更新的情况下，就只能忍忍了。</p>
+<p>问题解决！</p>
+<p>至于 <code>PATH</code> 变量到底支不支持通配符，等以后查询到相关信息再来更新。</p>
+<p><strong>更新</strong>：PATH 可以引用 <code>$HOME</code> 变量，因此可以这么写：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">export PATH=$HOME/bin:$PATH</span><br></pre></td></tr></table></figure>
+
 
         </div></article>
       <nav class="pagination"><a class="prev" href="/page/53/">

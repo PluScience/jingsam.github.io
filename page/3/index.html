@@ -93,42 +93,33 @@
         <div class="content-wrapper">
           <div id="content" class="content"><section id="posts" class="posts"><article class="post">
     <header class="post-header">
-      <h1 class="post-title"><a class="post-link" href="/2018/11/24/npm-package-offline-install.html">离线安装npm包的几种方法</a>
+      <h1 class="post-title"><a class="post-link" href="/2019/01/15/nginx-access-log.html">简单搞定Nginx日志分割</a>
         </h1>
 
       <div class="post-meta">
         <span class="post-time">
-          2018-11-24
+          2019-01-15
         </span></div>
     </header>
 
-    <div class="post-content"><p>这段时间的工作主题就是Linux<br>下的“离线部署”，包括mongo、mysql、postgresql、nodejs、nginx等软件的离线部署。平常在服务器上借助apt-get就能轻松搞定的事情，在离线环境下就变得异常艰难。<a href="1">上一篇文章</a>讲了使用snap离线安装软件的方式，但对于npm包怎么离线部署，snap是无能为力的。本篇文章就来讲一讲离线安装npm包的几种方法。</p>
-<p>接下来的部分，我将以离线安装pm2为例来进行说明。pm2是一个进程守护程序，用于启动node集群和服务进程出错时自动重启，在生产环境下部署nodejs应用一般都会使用到。</p>
-<h1 id="使用npm-link"><a href="#使用npm-link" class="headerlink" title="使用npm link"></a>使用<code>npm link</code></h1><p>使用<code>npm link</code>的方式是最常用的方法，具体做法是在联网机器上下载pm2的源码并安装好依赖，拷贝到离线服务器上，最后借助<code>npm link</code>将pm2链接到全局区域。</p>
-<p>首先，将pm2的源代码克隆下来：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git clone https://github.com/Unitech/pm2.git</span><br></pre></td></tr></table></figure>
+    <div class="post-content"><p>nginx日志分割是很常见的运维工作，关于这方面的文章也很多，通常无外乎两种做法：一是采用cron定期执行shell脚本对日志文件进行归档；二是使用专门日志归档工作logrotate。</p>
+<p>第一种写shell脚本的方法用得不多，毕竟太原始。相比之下，使用logrotate则要省心得多，配置logrotate很简单。关于如何配置logrotate不是本文要讲的内容，感兴趣的话可以自行搜索。</p>
+<p>虽然大多数Linux发行版都自带了logrotate，但在有些情况下不见得安装了logrotate，比如nginx的docker镜像、较老版本的Linux发行版。虽然我们可以使用包管理器安装logrotate，但前提是服务器能够访问互联网，企业内部的服务器可不一定能够联网。</p>
+<p>其实我们有更简单的方法，从nginx 0.7.6版本开始<code>access_log</code>的路径配置可以包含变量，我们可以利用这个特性来实现日志分割。例如，我们想按天来分割日志，那么我们可以这样配置：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">access_log logs/access-$logdate.log main;</span><br></pre></td></tr></table></figure>
 
-<p>然后进入到pm2项目中，安装好所有的依赖：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ cd pm2</span><br><span class="line">$ npm install</span><br></pre></td></tr></table></figure>
+<p>那么接下来的问题是我们怎么提取出<code>$logdate</code>这个变量？网上有建议使用下面的方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">if ($time_iso8601 ~ &quot;^(\d&#123;4&#125;)-(\d&#123;2&#125;)-(\d&#123;2&#125;)&quot;) &#123;</span><br><span class="line">  set $year $1;</span><br><span class="line">  set $month $2;</span><br><span class="line">  set $day $3;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">access_log logs/access-$year-$month-$day.log main;</span><br></pre></td></tr></table></figure>
 
-<p>将安装好依赖的pm2文件夹拷贝到目标服务器上，进入pm2目录链接到全局区域：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ cd pm2</span><br><span class="line">$ npm link</span><br></pre></td></tr></table></figure>
+<p>上面的方法有两个问题：一是如果<code>if</code>条件不成立，那么<code>$year</code>、<code>$month</code>和<code>$month</code>这三个变量将不会被设置，那么日志将会记录到<code>access-$year-$month-$day.log</code>这个文件中；二是<code>if</code>只能出现在<code>server</code>和<code>location</code>块中，而<code>access_log</code>通常会配置到顶层的<code>http</code>块中，这时候<code>if</code>就不适用。</p>
+<p>如果要在<code>http</code>块中设置<code>access_log</code>，更好的方法是使用<code>map</code>指令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">map $time_iso8601 $logdate &#123;</span><br><span class="line">  &apos;~^(?&lt;ymd&gt;\d&#123;4&#125;-\d&#123;2&#125;-\d&#123;2&#125;)&apos; $ymd;</span><br><span class="line">  default                       &apos;date-not-found&apos;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">access_log logs/access-$logdate.log main;</span><br></pre></td></tr></table></figure>
 
-<p>这种方式最关键的是借助<code>npm link</code>完成链接，但<code>npm link</code>这条命令本意是设计给开发人员调试用的。但开发人员开发某个全局命令工具的时候，通过将命令从本地工程目录链接到全局，这样调试的时候，可以实时查看本地代码在全局环境下的执行情况。所以，<code>npm link</code>的项目需要安装所有的依赖，包括<code>dependencies</code>以及<code>devDependencies</code>，而我们如果只是使用而不是开发某个包的话，正常情况下不应该安装<code>devDependencies</code>。</p>
-<p>总而言之，这种方式优点是比较简单，缺点是安装了不需要的<code>devDependencies</code>，对于有“洁癖”的人是难以忍受的。</p>
-<h1 id="使用npm-bundle"><a href="#使用npm-bundle" class="headerlink" title="使用npm bundle"></a>使用<code>npm bundle</code></h1><p>那有什么方法相比于上一种方法更干净呢？答案是使用npm-bundle工具将pm2的所有依赖打包，然后到目标服务器上使用<code>npm install &lt;tarball file&gt;</code>安装。</p>
-<p>首先在联网机器上安装npm-bundle工具：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ npm install -g npm-bundle</span><br></pre></td></tr></table></figure>
+<p><code>map</code>指令通过设置默认值，保证<code>$logdate</code>始终有值，并且可以出现在<code>http</code>块中，完美地解决了<code>if</code>指令的问题。</p>
+<p>最后，为了提高日志的效率，建议配置<code>open_log_file_cache</code>，完整的日志分割配置如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">log_format  main  &apos;$remote_addr - $remote_user [$time_local] &quot;$request&quot; &apos;</span><br><span class="line">                  &apos;$status $body_bytes_sent &quot;$http_referer&quot; &apos;</span><br><span class="line">                  &apos;&quot;$http_user_agent&quot; &quot;$http_x_forwarded_for&quot;&apos;;</span><br><span class="line"></span><br><span class="line">map $time_iso8601 $logdate &#123;</span><br><span class="line">  &apos;~^(?&lt;ymd&gt;\d&#123;4&#125;-\d&#123;2&#125;-\d&#123;2&#125;)&apos; $ymd;</span><br><span class="line">  default                       &apos;date-not-found&apos;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">access_log logs/access-$logdate.log main;</span><br><span class="line">open_log_file_cache max=10;</span><br></pre></td></tr></table></figure>
 
-<p>然后打包pm2：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ npm-bundle pm2</span><br></pre></td></tr></table></figure>
-
-<p>上面的命令会生成一个tgz的包文件，复制到目标服务器上安装：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ npm install -g ./pm2-3.2.2.tgz</span><br></pre></td></tr></table></figure>
-
-<p>npm-bundle的本质是借助<code>npm pack</code>来实现打包的。<code>npm pack</code>会打包包本身以及<code>bundledDependencies</code>中的依赖，npm-bundle则是将pm2的所有<code>dependencies</code>记录到<code>bundledDependencies</code>，来实现所有依赖的打包。</p>
-<p>这种方式不需要安装多余的<code>devDependencies</code>，并且不需要克隆pm2的源码，比第一种方法更方便。</p>
-<p>更新：<code>npm-bundle</code>对于scoped packages的处理有bug，不能正确地打包，这时考虑采用第一种方式。</p>
+<p>本文完。</p>
 
         </div></article>
       <nav class="pagination"><a class="prev" href="/page/2/">

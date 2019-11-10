@@ -93,33 +93,54 @@
         <div class="content-wrapper">
           <div id="content" class="content"><section id="posts" class="posts"><article class="post">
     <header class="post-header">
-      <h1 class="post-title"><a class="post-link" href="/2019/01/15/nginx-access-log.html">简单搞定Nginx日志分割</a>
+      <h1 class="post-title"><a class="post-link" href="/2019/06/14/deploy-with-autossh.html">利用ssh反向穿透实现内网服务器自动部署</a>
         </h1>
 
       <div class="post-meta">
         <span class="post-time">
-          2019-01-15
+          2019-06-14
         </span></div>
     </header>
 
-    <div class="post-content"><p>nginx日志分割是很常见的运维工作，关于这方面的文章也很多，通常无外乎两种做法：一是采用cron定期执行shell脚本对日志文件进行归档；二是使用专门日志归档工作logrotate。</p>
-<p>第一种写shell脚本的方法用得不多，毕竟太原始。相比之下，使用logrotate则要省心得多，配置logrotate很简单。关于如何配置logrotate不是本文要讲的内容，感兴趣的话可以自行搜索。</p>
-<p>虽然大多数Linux发行版都自带了logrotate，但在有些情况下不见得安装了logrotate，比如nginx的docker镜像、较老版本的Linux发行版。虽然我们可以使用包管理器安装logrotate，但前提是服务器能够访问互联网，企业内部的服务器可不一定能够联网。</p>
-<p>其实我们有更简单的方法，从nginx 0.7.6版本开始<code>access_log</code>的路径配置可以包含变量，我们可以利用这个特性来实现日志分割。例如，我们想按天来分割日志，那么我们可以这样配置：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">access_log logs/access-$logdate.log main;</span><br></pre></td></tr></table></figure>
+    <div class="post-content"><p>当前持续集成的流行，大大提高了开发迭代的速度。自动化部署作为持续集成的最后一公里，对于完成整个闭环至关重要。如果生产服务器部署至公网且开通了ssh端口，那么测试服务器完成测试打包后，可以很方便地利用ssh将部署包推送到生产服务器上完成部署。但是，如果生产服务器部署在内网，测试服务器部署在外网，那么测试服务器就无法得知生产服务器的IP，无法利用ssh远程登录实现自动部署。</p>
+<p>本文利用ssh的反向穿透技术，来实现内网服务器的自动部署。</p>
+<h2 id="技术原理"><a href="#技术原理" class="headerlink" title="技术原理"></a>技术原理</h2><p>ssh一般用来客户端远程登录到服务器上，而ssh反向穿透“反其道而行之”，由服务端主动发起请求连接客户端，然后在客户端打开一个端口，之后发往客户端的数据包将会转发到服务端。例如在服务端执行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -NR 22022:localhost:22 clientUser@clientMachine</span><br></pre></td></tr></table></figure>
 
-<p>那么接下来的问题是我们怎么提取出<code>$logdate</code>这个变量？网上有建议使用下面的方法：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">if ($time_iso8601 ~ &quot;^(\d&#123;4&#125;)-(\d&#123;2&#125;)-(\d&#123;2&#125;)&quot;) &#123;</span><br><span class="line">  set $year $1;</span><br><span class="line">  set $month $2;</span><br><span class="line">  set $day $3;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">access_log logs/access-$year-$month-$day.log main;</span><br></pre></td></tr></table></figure>
+<p>连接成功后，发往客户端<code>22022</code>的数据包将被转发到服务端的<code>22</code>端口上。这时，如果客户端具有公网IP，那么我们就可以利用客户端机器作为跳板，远程登录到内网服务器上，命令如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -p 22022 serverUser@clientMachine</span><br></pre></td></tr></table></figure>
 
-<p>上面的方法有两个问题：一是如果<code>if</code>条件不成立，那么<code>$year</code>、<code>$month</code>和<code>$month</code>这三个变量将不会被设置，那么日志将会记录到<code>access-$year-$month-$day.log</code>这个文件中；二是<code>if</code>只能出现在<code>server</code>和<code>location</code>块中，而<code>access_log</code>通常会配置到顶层的<code>http</code>块中，这时候<code>if</code>就不适用。</p>
-<p>如果要在<code>http</code>块中设置<code>access_log</code>，更好的方法是使用<code>map</code>指令：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">map $time_iso8601 $logdate &#123;</span><br><span class="line">  &apos;~^(?&lt;ymd&gt;\d&#123;4&#125;-\d&#123;2&#125;-\d&#123;2&#125;)&apos; $ymd;</span><br><span class="line">  default                       &apos;date-not-found&apos;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">access_log logs/access-$logdate.log main;</span><br></pre></td></tr></table></figure>
+<p>通过ssh的反向穿透技术，让内网服务器借用公网客户机的IP，实现内网服务器公网可见。在此基础上，实现内网服务器自动部署的原理如下图：</p>
+<p><img src="/assets/ssh-reverse-proxy.png" alt=""></p>
+<p>上述原理很简单，但具体操作起来，还是有许多细节要考虑，下面对此一一说明。</p>
+<h2 id="持久化连接"><a href="#持久化连接" class="headerlink" title="持久化连接"></a>持久化连接</h2><p>通过ssh在第①步建立了生产服务器<code>prodServer</code>与跳板机<code>jumpServer</code>的连接隧道，但是这条隧道如果长时间没有数据包传输，那么ssh会主动关闭连接，之后测试服务器<code>testServer</code>就不能再通过跳板机连接到生产服务器。</p>
+<p>为了保持生产服务器与跳板机的连接隧道不断开，需要ssh自动重连。ssh不支持自动重连功能，幸好有autossh帮我们完成这项工作。</p>
+<p>autossh不属于系统自带工具，我们需要在生产服务器安装它，Ubuntu上的安装命令如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install autossh</span><br></pre></td></tr></table></figure>
 
-<p><code>map</code>指令通过设置默认值，保证<code>$logdate</code>始终有值，并且可以出现在<code>http</code>块中，完美地解决了<code>if</code>指令的问题。</p>
-<p>最后，为了提高日志的效率，建议配置<code>open_log_file_cache</code>，完整的日志分割配置如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">log_format  main  &apos;$remote_addr - $remote_user [$time_local] &quot;$request&quot; &apos;</span><br><span class="line">                  &apos;$status $body_bytes_sent &quot;$http_referer&quot; &apos;</span><br><span class="line">                  &apos;&quot;$http_user_agent&quot; &quot;$http_x_forwarded_for&quot;&apos;;</span><br><span class="line"></span><br><span class="line">map $time_iso8601 $logdate &#123;</span><br><span class="line">  &apos;~^(?&lt;ymd&gt;\d&#123;4&#125;-\d&#123;2&#125;-\d&#123;2&#125;)&apos; $ymd;</span><br><span class="line">  default                       &apos;date-not-found&apos;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">access_log logs/access-$logdate.log main;</span><br><span class="line">open_log_file_cache max=10;</span><br></pre></td></tr></table></figure>
+<p>安装好之后，执行以下命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">autossh -M 0 -f -o <span class="string">"ServerAliveInterval=30"</span> -o <span class="string">"ServerAliveCountMax=3"</span> -o <span class="string">"ExitOnForwardFailure=yes"</span> -NR 22022:localhost:22 jump@jumpServer</span><br></pre></td></tr></table></figure>
 
-<p>本文完。</p>
+<p>上述命令中，除了<code>-M 0</code>和<code>-f</code>是autossh的参数外，其他参数都原样传递给ssh，其中<code>-M 0</code>表示不另开端口监测ssh，<code>-f</code>表示后台运行。auotssh以前是靠<code>-M</code>另开一个端口发送心跳数据包，由于新版ssh（protocol 2）内建了心跳功能，所以不再推荐另开端口。上面的命令使用<code>ServerAliveInterval</code>和<code>ServerAliveCountMax</code>两个参数，表示客户端向服务端每30秒发送一次心跳数据包，如果发3次还没响应，那么断开连接。我们也可以在服务端的<code>/etc/ssh/sshd_config</code>配置文件中添加<code>ClientAliveInterval 30</code>和<code>ClientAliveCountMax 3</code>参数后，重启sshd，表示由服务端向客户端发送心跳数据包。<code>ExitOnForwardFailure</code>表示ssh转发失败后，关闭连接并退出，这样autossh才能监测到错误并重启ssh连接。</p>
+<p>执行上述命令后，我们只能在<code>jumpServer</code>上登录到<code>prodServer</code>。如果我们想要从任意机器上远程登录到<code>prodServer</code>，需要在<code>jumpServer</code>的<code>/etc/ssh/sshd_config</code>中添加<code>GatewayPorts yes</code>参数并重启sshd，之后执行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -p 22022 prod@jumpServer</span><br></pre></td></tr></table></figure>
+
+<p>如果<code>prodServer</code>重启后，我们希望<code>autossh</code>也能随系统启动，此时需要将<code>autossh</code>添加到启动项中，以下是以systemd为例，新建一个<code>/lib/systemd/system/autossh.service</code>配置文件来添加autossh启动项：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">[Unit]</span><br><span class="line">Description=autossh</span><br><span class="line">Wants=network-online.target sshd.service</span><br><span class="line">After=network-online.target sshd.service</span><br><span class="line"></span><br><span class="line">[Service]</span><br><span class="line">Type=simple</span><br><span class="line">User=geoeye</span><br><span class="line">Environment=&quot;AUTOSSH_GATETIME=0&quot;</span><br><span class="line">ExecStart=/usr/bin/autossh -M 0 -o &quot;ServerAliveInterval=30&quot; -o &quot;ServerAliveCountMax=3&quot; -NR 22022:localhost:22 jingsam@www.foxgis.com</span><br><span class="line">ExecStop=/bin/kill $MAINPID</span><br><span class="line">Restart=on-failure</span><br><span class="line"></span><br><span class="line">[Install]</span><br><span class="line">WantedBy=multi-user.target</span><br></pre></td></tr></table></figure>
+
+<p>注意上面启动autossh的命令中，要把<code>-f</code>选项去掉，并且autossh使用绝对路径。</p>
+<p>最后执行以下命令执行来启动autossh：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl <span class="built_in">enable</span> autossh</span><br><span class="line">sudo systemctl start autossh</span><br></pre></td></tr></table></figure>
+
+<h2 id="免密登录"><a href="#免密登录" class="headerlink" title="免密登录"></a>免密登录</h2><p>不管是<code>prodServer</code>在系统启动时反向连接到<code>jumpServer</code>，还是<code>testServer</code>完成自动测试后推送部署包到<code>prodServer</code>，这些过程都是后台自动执行，我们没有机会去输入登录密码。因此，我们需要在三者之间配置ssh key，实现免密登录。</p>
+<p>首先是<code>prodServer</code>连接到<code>jumpServer</code>，这一步比较简单，只需在<code>prodServer</code>使用<code>ssh-copy-id</code>命令将公钥复制到<code>jumpServer</code>即可。</p>
+<p>然后是<code>testServer</code>连接到<code>prodServer</code>，这一步稍微有点复杂，主要是因为<code>testServer</code>一般是动态创建的虚拟机或容器，测试完就删除了，所以没办法提前将<code>testServer</code>的公钥复制到<code>prodServer</code>。解决的思路是使用任意机器登录一次<code>prodServer</code>并将该机器的公钥复制到<code>prodServer</code>，然后将该该机器的私钥复制到<code>testServer</code>，让<code>testServer</code>伪装成为该机器登录<code>prodServer</code>。Gitlab、Travis-ci、Circle CI各自有不同的方法安全地传输ssh key，具体参考相应的文档。Gitlab可以在project和group中的“设置-&gt;CI/CD-&gt;Variables”中设置环境变量，如下图：</p>
+<p><img src="/assets/gitlab-variables.png" alt=""></p>
+<p>设置好之后，配置<code>.gitlab-ci.yml</code>：</p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">deploy:</span></span><br><span class="line"><span class="attr">  stage:</span> <span class="string">deploy</span></span><br><span class="line"><span class="attr">  before_script:</span></span><br><span class="line"><span class="bullet">    -</span> <span class="string">'which ssh-agent || ( apt-get update -y &amp;&amp; apt-get install openssh-client -y )'</span></span><br><span class="line"><span class="bullet">    -</span> <span class="string">eval</span> <span class="string">$(ssh-agent</span> <span class="bullet">-s)</span></span><br><span class="line"><span class="bullet">    -</span> <span class="string">echo</span> <span class="string">"$SSH_PRIVATE_KEY"</span> <span class="string">| tr -d '\r' | ssh-add - &gt; /dev/null</span></span><br><span class="line"><span class="string">    - mkdir -p ~/.ssh</span></span><br><span class="line"><span class="string">    - chmod 700 ~/.ssh</span></span><br><span class="line"><span class="string">    - ssh-keyscan www.foxgis.com &gt;&gt; ~/.ssh/known_hosts</span></span><br><span class="line"><span class="string">    - chmod 644 ~/.ssh/known_hosts</span></span><br><span class="line"><span class="string">    - '[[ -f /.dockerenv ]] &amp;&amp; echo -e "Host *\n\tStrictHostKeyChecking no\n\n" &gt; ~/.ssh/config'</span></span><br><span class="line"><span class="string"></span><span class="attr">  script:</span></span><br><span class="line"><span class="bullet">    -</span> <span class="string">ssh</span> <span class="bullet">-p</span> <span class="number">22022</span> <span class="string">prod@jumpServer</span> <span class="comment"># 这里写具体的部署逻辑</span></span><br><span class="line"><span class="attr">  only:</span></span><br><span class="line"><span class="bullet">    -</span> <span class="string">master</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本文借助ssh反向穿透技术，实现了内网服务器与测试服务器的互通，并且利用autossh解决了ssh持久连接的问题，以及利用复制私钥来实现测试服务器到内网服务器的免密登录。最终，结合这些技术，实现了内网服务的自动化部署。</p>
+<p>在实际测试过程中，ssh的反向穿透连接速度慢而且不是很稳定，下一步研究webhook技术来实现自动部署。</p>
 
         </div></article>
       <nav class="pagination"><a class="prev" href="/">
