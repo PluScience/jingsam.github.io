@@ -102,7 +102,7 @@
         </span></div>
     </header>
 
-    <div class="post-content"><p>这段时间的工作主题就是Linux<br>下的“离线部署”，包括mongo、mysql、postgresql、nodejs、nginx等软件的离线部署。平常在服务器上借助apt-get就能轻松搞定的事情，在离线环境下就变得异常艰难。<a href="1">上一篇文章</a>讲了使用snap离线安装软件的方式，但对于npm包怎么离线部署，snap是无能为力的。本篇文章就来讲一讲离线安装npm包的几种方法。</p>
+    <div class="post-content"><p>这段时间的工作主题就是Linux<br>下的“离线部署”，包括mongo、mysql、postgresql、nodejs、nginx等软件的离线部署。平常在服务器上借助apt-get就能轻松搞定的事情，在离线环境下就变得异常艰难。<a href="/2018/11/24/npm-package-offline-install.html">上一篇文章</a>讲了使用snap离线安装软件的方式，但对于npm包怎么离线部署，snap是无能为力的。本篇文章就来讲一讲离线安装npm包的几种方法。</p>
 <p>接下来的部分，我将以离线安装pm2为例来进行说明。pm2是一个进程守护程序，用于启动node集群和服务进程出错时自动重启，在生产环境下部署nodejs应用一般都会使用到。</p>
 <h1 id="使用npm-link"><a href="#使用npm-link" class="headerlink" title="使用npm link"></a>使用<code>npm link</code></h1><p>使用<code>npm link</code>的方式是最常用的方法，具体做法是在联网机器上下载pm2的源码并安装好依赖，拷贝到离线服务器上，最后借助<code>npm link</code>将pm2链接到全局区域。</p>
 <p>首先，将pm2的源代码克隆下来：</p>
@@ -157,7 +157,7 @@
     <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
   </span>
 
-  <span class="copyright-year">&copy;2015 - 2019<span class="heart">
+  <span class="copyright-year">&copy;2015 - 2020<span class="heart">
       <i class="iconfont icon-heart"></i>
     </span>
     <span class="author">jingsam</span>

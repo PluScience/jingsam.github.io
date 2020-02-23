@@ -107,7 +107,7 @@
     <div class="post-toc-content">
       <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#原理"><span class="toc-text">原理</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Nodejs实现"><span class="toc-text">Nodejs实现</span></a></li></ol>
     </div>
-  </div><div class="post-content"><p>在<a href="1">Git内部原理之Git对象哈希</a>中，讲解了Git对象hash的原理，接下来的这篇文章讲一讲Git对象如何存储。</p>
+  </div><div class="post-content"><p>在<a href="http://jingsam.github.io/2018/06/10/git-hash.html">Git内部原理之Git对象哈希</a>中，讲解了Git对象hash的原理，接下来的这篇文章讲一讲Git对象如何存储。</p>
 <h1 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h1><p>数据对象、树对象和提交对象都是存储在<code>.git/objects</code>目录下，目录的结构如下：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">.git</span><br><span class="line">|-- objects</span><br><span class="line">    |-- 01</span><br><span class="line">    |   |-- 55eb4229851634a0f03eb265b69f5a2d56f341</span><br><span class="line">    |-- 1f</span><br><span class="line">    |   |-- 7a7a472abf3dd9643fd615f6da379c4acb3e3a</span><br><span class="line">    |-- 83</span><br><span class="line">        |-- baae61804e65cc73a7201a7252750c76066a30</span><br></pre></td></tr></table></figure>
 
@@ -116,7 +116,7 @@
 
 <p>这里就产生了一个疑问：为什么Git要这么设计目录结构，而不直接用Git对象的40位hash作为文件名？原因是有两点：</p>
 <p>1.有些文件系统对目录下的文件数量有限制。例如，FAT32限制单目录下的最大文件数量是65535个，如果使用U盘拷贝Git文件就可能出现问题。<br>2.有些文件系统访问文件是一个线性查找的过程，目录下的文件越多，访问越慢。</p>
-<p>在在<a href="1">Git内部原理之Git对象哈希</a>中，我们知道Git对象会在原内容前加个一个头部：</p>
+<p>在在<a href="http://jingsam.github.io/2018/06/10/git-hash.html">Git内部原理之Git对象哈希</a>中，我们知道Git对象会在原内容前加个一个头部：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">store = header + content</span><br></pre></td></tr></table></figure>
 
 <p>Git对象在存储前，会使用zlib的deflate算法进行压缩，即简要描述为：</p>
@@ -180,7 +180,7 @@
     <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
   </span>
 
-  <span class="copyright-year">&copy;2015 - 2019<span class="heart">
+  <span class="copyright-year">&copy;2015 - 2020<span class="heart">
       <i class="iconfont icon-heart"></i>
     </span>
     <span class="author">jingsam</span>

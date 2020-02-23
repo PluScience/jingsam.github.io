@@ -111,12 +111,13 @@
 <p>结果访问的时候发现老是报<code>502 Bad Gateway</code>错误，错误日志显示无法连接到upstream。</p>
 <p>仔细想一想，<code>nginx.conf</code>中的<code>localhost</code>似乎有问题。由于nginx是运行在docker容器中的，这个<code>localhost</code>是容器的localhost，而不是宿主机的localhost。</p>
 <p>到这里，就出现了本文要解决的问题：如何从容器中访问到宿主机的网络？通过搜索网络，有如下几种方法：</p>
-<h1 id="使用宿主机IP"><a href="#使用宿主机IP" class="headerlink" title="使用宿主机IP"></a>使用宿主机IP</h1><p>在安装Docker的时候，会在宿主机安装一个虚拟网关<code>docker0</code>，我们可以使用宿主机在<code>docker0</code>上的IP地址来代替<code>localhost</code>。</p>
+<h1 id="使用宿主机IP"><a href="#使用宿主机IP" class="headerlink" title="使用宿主机IP"></a>使用宿主机IP</h1><p>在安装Docker的时候，会在宿主机安装一个虚拟网卡<code>docker0</code>，我们可以使用宿主机在<code>docker0</code>上的IP地址来代替<code>localhost</code>。</p>
 <p>首先，使用如下命令查询宿主机IP地址：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ ip addr show docker0</span><br><span class="line">3: docker0: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc noqueue state UP group default</span><br><span class="line">    link/ether 02:42:d5:4c:f2:1e brd ff:ff:ff:ff:ff:ff</span><br><span class="line">    inet 172.17.0.1/16 scope global docker0</span><br><span class="line">       valid_lft forever preferred_lft forever</span><br><span class="line">    inet6 fe80::42:d5ff:fe4c:f21e/64 scope link</span><br><span class="line">       valid_lft forever preferred_lft forever</span><br></pre></td></tr></table></figure>
 
 <p>可以发现宿主机的IP是<code>172.17.0.1</code>，那么将<code>proxy_pass http://localhost:1234</code>改为<code>proxy_pass http://172.17.0.1:1234</code>就可以解决<code>502 Bad Gateway</code>错误。</p>
-<p>但是，不同系统下宿主机的IP是不同的，例如Linux下一般是<code>172.17.0.1</code>, macOS下一般是<code>192.168.65.1</code>，并且这个IP还可以更改。所以使用IP配置<code>nginx.conf</code>，不能跨环境通用。</p>
+<p>macOS下并没有<code>docker0</code>虚拟网卡，宿主机IP默认是<code>192.168.65.1</code>，也可以使用<code>host.docker.internal</code>这个特殊的DNS名称来解析宿主机IP。</p>
+<p>由此发现，不同系统下宿主机的IP是不同的，所以使用宿主机IP，不能跨环境通用。</p>
 <h1 id="使用host网络"><a href="#使用host网络" class="headerlink" title="使用host网络"></a>使用host网络</h1><p>Docker容器运行的时候有<code>host</code>、<code>bridge</code>、<code>none</code>三种网络可供配置。默认是<code>bridge</code>，即桥接网络，以桥接模式连接到宿主机；<code>host</code>是宿主网络，即与宿主机共用网络；<code>none</code>则表示无网络，容器将无法联网。</p>
 <p>当容器使用<code>host</code>网络时，容器与宿主共用网络，这样就能在容器中访问宿主机网络，那么容器的<code>localhost</code>就是宿主机的<code>localhost</code>。</p>
 <p>在docker中使用<code>--network host</code>来为容器配置<code>host</code>网络：</p>
@@ -153,7 +154,7 @@
     <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
   </span>
 
-  <span class="copyright-year">&copy;2015 - 2019<span class="heart">
+  <span class="copyright-year">&copy;2015 - 2020<span class="heart">
       <i class="iconfont icon-heart"></i>
     </span>
     <span class="author">jingsam</span>

@@ -102,7 +102,7 @@
         </span></div>
     </header>
 
-    <div class="post-content"><p>在上一篇<a href="1">文章</a>中，将了数据对象、树对象和提交对象三种Git对象，每种对象会计算出一个hash值。那么，Git是如何计算出Git对象的hash值？本文的内容就是来解答这个问题。</p>
+    <div class="post-content"><p>在上一篇<a href="https://jingsam.github.io/2018/06/03/git-objects.html">文章</a>中，将了数据对象、树对象和提交对象三种Git对象，每种对象会计算出一个hash值。那么，Git是如何计算出Git对象的hash值？本文的内容就是来解答这个问题。</p>
 <h1 id="Git对象的hash方法"><a href="#Git对象的hash方法" class="headerlink" title="Git对象的hash方法"></a>Git对象的hash方法</h1><p>Git中的数据对象、树对象和提交对象的hash方法原理是一样的，可以描述为：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">header = &quot;&lt;type&gt; &quot; + content.length + &quot;\0&quot;</span><br><span class="line">hash = sha1(header + content)</span><br></pre></td></tr></table></figure>
 
@@ -115,7 +115,7 @@
 <h2 id="数据对象"><a href="#数据对象" class="headerlink" title="数据对象"></a>数据对象</h2><p>数据对象的格式如下：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">blob &lt;content length&gt;&lt;NULL&gt;&lt;content&gt;</span><br></pre></td></tr></table></figure>
 
-<p>从上一篇<a href="1">文章</a>中我们知道，使用<code>git hash-object</code>可以计算出一个40位的hash值，例如：</p>
+<p>从上一篇<a href="https://jingsam.github.io/2018/06/03/git-objects.html">文章</a>中我们知道，使用<code>git hash-object</code>可以计算出一个40位的hash值，例如：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ echo -n &quot;what is up, doc?&quot; | git hash-object --stdin</span><br><span class="line">bd9dbf5aae1a3862dd1526723246b20206e5fc37</span><br></pre></td></tr></table></figure>
 
 <p>注意，上面在<code>echo</code>后面使用了<code>-n</code>选项，用来阻止自动在字符串末尾添加换行符，否则会导致实际传给<code>git hash-object</code>是<code>what is up, doc?\n</code>，而不是我们直观认为的<code>what is up, doc?</code>。</p>
@@ -136,7 +136,7 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tree &lt;content length&gt;&lt;NUL&gt;&lt;file mode&gt; &lt;filename&gt;&lt;NUL&gt;&lt;item sha&gt;...</span><br></pre></td></tr></table></figure>
 
 <p>需要注意的是，<code>&lt;item sha&gt;</code>部分是二进制形式的sha1码，而不是十六进制形式的sha1码。</p>
-<p>我们从上一篇<a href="1">文章</a>摘出一个树对象做实验，其内容如下：</p>
+<p>我们从上一篇<a href="https://jingsam.github.io/2018/06/03/git-objects.html">文章</a>摘出一个树对象做实验，其内容如下：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ git cat-file -p d8329fc1cc938780ffdd9f94e0d364e0ea74f579</span><br><span class="line">100644 blob 83baae61804e65cc73a7201a7252750c76066a30  test.txt</span><br></pre></td></tr></table></figure>
 
 <p>我们首先使用<code>xxd</code>把<code>83baae61804e65cc73a7201a7252750c76066a30</code>转换成为二进制形式，并将结果保存为<code>sha1.txt</code>以方便后面做追加操作：</p>
@@ -157,7 +157,7 @@
 <h2 id="提交对象"><a href="#提交对象" class="headerlink" title="提交对象"></a>提交对象</h2><p>提交对象的格式如下：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">commit &lt;content length&gt;&lt;NUL&gt;tree &lt;tree sha&gt;</span><br><span class="line">parent &lt;parent sha&gt;</span><br><span class="line">[parent &lt;parent sha&gt; if several parents from merges]</span><br><span class="line">author &lt;author name&gt; &lt;author e-mail&gt; &lt;timestamp&gt; &lt;timezone&gt;</span><br><span class="line">committer &lt;author name&gt; &lt;author e-mail&gt; &lt;timestamp&gt; &lt;timezone&gt;</span><br><span class="line"></span><br><span class="line">&lt;commit message&gt;</span><br></pre></td></tr></table></figure>
 
-<p>我们从上一篇<a href="1">文章</a>摘出一个提交对象做实验，其内容如下：</p>
+<p>我们从上一篇<a href="https://jingsam.github.io/2018/06/03/git-objects.html">文章</a>摘出一个提交对象做实验，其内容如下：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ echo &apos;first commit&apos; | git commit-tree d8329fc1cc938780ffdd9f94e0d364e0ea74f579</span><br><span class="line">db1d6f137952f2b24e3c85724ebd7528587a067a</span><br><span class="line">$ git cat-file -p db1d6f137952f2b24e3c85724ebd7528587a067a</span><br><span class="line">tree d8329fc1cc938780ffdd9f94e0d364e0ea74f579</span><br><span class="line">author jingsam &lt;jing-sam@qq.com&gt; 1528022503 +0800</span><br><span class="line">committer jingsam &lt;jing-sam@qq.com&gt; 1528022503 +0800</span><br><span class="line"></span><br><span class="line">first commit</span><br></pre></td></tr></table></figure>
 
 <p>这里需要注意的是，由于<code>echo &#39;first commit&#39;</code>没有添加<code>-n</code>选项，因此实际的提交信息是<code>first commit\n</code>。使用<code>wc</code>计算出提交内容的字节数：</p>
@@ -199,7 +199,7 @@
     <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
   </span>
 
-  <span class="copyright-year">&copy;2015 - 2019<span class="heart">
+  <span class="copyright-year">&copy;2015 - 2020<span class="heart">
       <i class="iconfont icon-heart"></i>
     </span>
     <span class="author">jingsam</span>
